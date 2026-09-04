@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Interactive Quiz | SciMentra</title>
+  <meta name="theme-color" content="#0f3d6b" />
+
+  <style>
+    :root {
+      --blue: #1762a7;
+      --navy: #0f3d6b;
+      --ink: #123c62;
+      --muted: #6a7f94;
+      --line: #d8e7f5;
+      --soft: #f4f8fc;
+      --danger: #b42318;
+      --success: #16794b;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--soft);
+      color: var(--ink);
+    }
+
+    body::after {
+      content: "SciMentra\A IIT & NEET FOUNDATION";
+      white-space: pre;
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: clamp(28px, 5vw, 72px);
+      font-weight: 900;
+      line-height: 1.15;
+      color: rgba(15, 61, 107, 0.035);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(90deg, var(--blue), var(--navy));
+      color: #fff;
+      text-align: center;
+      padding: 18px 14px 20px;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+      box-shadow: 0 4px 14px rgba(15, 61, 107, 0.14);
+    }
+
+    .brand {
+      margin: 0;
+      font-size: clamp(26px, 4.5vw, 34px);
+      font-weight: 900;
+    }
+
+    .brand-sub {
+      margin-top: 4px;
+      font-size: clamp(14px, 2.6vw, 17px);
+      font-weight: 700;
+      color: #e5f0fb;
+      letter-spacing: 0.04em;
+    }
+
+    main {
+      width: min(860px, calc(100% - 24px));
+      margin: 22px auto 40px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.98);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 4px 18px rgba(0,27,68,0.08);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .page-title {
+      margin: 0;
+      text-align: center;
+      color: var(--navy);
+      font-size: clamp(22px, 4vw, 29px);
+      font-weight: 900;
+    }
+
+    .subtitle {
+      max-width: 640px;
+      margin: 8px auto 18px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .book-info {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .info-item {
+      min-width: 0;
+      background: #f8fbfe;
+      border: 1px solid #cfe1f2;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .info-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      display: block;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      overflow-wrap: anywhere;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .level-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .level-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid #d7e7f5;
+      border-radius: 14px;
+      background: #fbfdff;
+    }
+
+    .level-name {
+      color: var(--navy);
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 3px;
+    }
+
+    .level-desc {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .count-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .count-input {
+      width: 72px;
+      min-height: 48px;
+      border: 1.7px solid #bcd6ef;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--navy);
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+
+    .count-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(23,98,167,0.12);
+    }
+
+    .questions-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 13px;
+      background: #eef6fd;
+      border: 1px solid #cfe2f4;
+    }
+
+    .total-label {
+      color: var(--navy);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .total-value {
+      min-width: 54px;
+      text-align: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .create-btn {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 13px;
+      background: linear-gradient(90deg, var(--blue), var(--navy));
+      color: #fff;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(15,61,107,0.2);
+    }
+
+    .create-btn:hover { filter: brightness(1.04); }
+    .create-btn:active { transform: translateY(1px); }
+    .create-btn:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+
+    .secondary-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .secondary-btn {
+      min-height: 44px;
+      border: 1.4px solid #bcd6ef;
+      border-radius: 11px;
+      background: #fff;
+      color: var(--blue);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .secondary-btn:hover { background: #f3f8fd; }
+
+    .status {
+      display: none;
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 11px;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .status.show { display: block; }
+    .status.error { color: var(--danger); background: #fff5f4; border: 1px solid #ffd7d2; }
+    .status.success { color: var(--success); background: #f0fbf6; border: 1px solid #c7eedb; }
+
+    .note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .prompt-preview { display: none; margin-top: 14px; }
+    .prompt-preview.show { display: block; }
+
+    .prompt-preview label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .prompt-box {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      padding: 12px;
+      border: 1.4px solid #c8dced;
+      border-radius: 11px;
+      background: #f9fbfd;
+      color: #274d70;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.55;
+      outline: none;
+    }
+
+    @media (max-width: 620px) {
+      main { width: min(100% - 16px, 860px); margin-top: 14px; }
+      .panel { padding: 14px; border-radius: 15px; }
+      .book-info { grid-template-columns: 1fr; }
+      .level-row { padding: 12px; }
+      .level-desc { font-size: 12px; }
+      .count-input { width: 64px; }
+      .questions-label { display: none; }
+      .secondary-actions { grid-template-columns: 1fr; }
+      .create-btn { min-height: 56px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+  <header>
+    <h1 class="brand">SciMentra</h1>
+    <div class="brand-sub">IIT &amp; NEET FOUNDATION</div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2 class="page-title">Interactive Quiz</h2>
+      <p class="subtitle">
+        Choose the number of questions for each Foundation level. Your class, subject and chapter are taken automatically from Book Learning Support.
+      </p>
+
+      <div class="book-info">
+        <div class="info-item"><span class="info-label">Class</span><span class="info-value" id="info-class">—</span></div>
+        <div class="info-item"><span class="info-label">Board</span><span class="info-value" id="info-board">—</span></div>
+        <div class="info-item"><span class="info-label">Subject</span><span class="info-value" id="info-subject">—</span></div>
+        <div class="info-item"><span class="info-label">Chapter</span><span class="info-value" id="info-chapter">—</span></div>
+      </div>
+
+      <div id="configuration-error" class="status error"></div>
+    </section>
+
+    <section class="panel">
+      <h3 class="section-title">Choose Your Quiz</h3>
+
+      <div class="level-list">
+        <div class="level-row">
+          <div>
+            <div class="level-name">Foundation Concepts</div>
+            <div class="level-desc">Basic conceptual, recall and direct-application Foundation questions.</div>
+          </div>
+          <div class="count-wrap">
+            <input class="count-input" id="concepts-count" type="number" inputmode="numeric" min="0" max="20" step="1" value="0" aria-label="Foundation Concepts number of questions" />
+            <span class="questions-label">Questions</span>
+          </div>
+        </div>
+
+        <div class="level-row">
+          <div>
+            <div class="level-name">Foundation Mains</div>
+            <div class="level-desc">Application-based and tricky Foundation questions requiring careful reasoning.</div>
+          </div>
+          <div class="count-wrap">
+            <input class="count-input" id="mains-count" type="number" inputmode="numeric" min="0" max="20" step="1" value="0" aria-label="Foundation Mains number of questions" />
+            <span class="questions-label">Questions</span>
+          </div>
+        </div>
+
+        <div class="level-row">
+          <div>
+            <div class="level-name">Foundation Advance</div>
+            <div class="level-desc">Challenging multi-step reasoning within the selected class syllabus.</div>
+          </div>
+          <div class="count-wrap">
+            <input class="count-input" id="advance-count" type="number" inputmode="numeric" min="0" max="20" step="1" value="0" aria-label="Foundation Advance number of questions" />
+            <span class="questions-label">Questions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span class="total-label">Total Questions</span>
+        <span class="total-value" id="total-count">0</span>
+      </div>
+
+      <button type="button" id="create-quiz-btn" class="create-btn">✨ Create Interactive Quiz with Gemini</button>
+
+      <div class="secondary-actions">
+        <button type="button" id="copy-prompt-btn" class="secondary-btn">Copy Quiz Prompt</button>
+        <button type="button" id="preview-prompt-btn" class="secondary-btn">Preview Quiz Prompt</button>
+      </div>
+
+      <div id="action-status" class="status"></div>
+
+      <div id="prompt-preview" class="prompt-preview">
+        <label for="prompt-box">Gemini Quiz Prompt</label>
+        <textarea id="prompt-box" class="prompt-box" readonly></textarea>
+      </div>
+
+      <p class="note">
+        Gemini must be signed in to create its interactive quiz experience. When you tap the main button, SciMentra copies the prepared quiz prompt and opens Gemini.
+      </p>
+    </section>
+  </main>
+</div>
+
+<script>
+  const qs = new URLSearchParams(window.location.search);
+
+  function firstParam(names, fallback = "") {
+    for (const name of names) {
+      const value = qs.get(name);
+      if (value && String(value).trim()) return String(value).trim();
+    }
+    return fallback;
+  }
+
+  const QUIZ_CONTEXT = {
+    className: firstParam(["class", "className", "c"]),
+    board: firstParam(["board", "b"], "IIT & NEET Foundation"),
+    subject: firstParam(["subject", "sub", "s"]),
+    chapter: firstParam(["chapter", "ch"])
+  };
+
+  const infoClass = document.getElementById("info-class");
+  const infoBoard = document.getElementById("info-board");
+  const infoSubject = document.getElementById("info-subject");
+  const infoChapter = document.getElementById("info-chapter");
+
+  const conceptsInput = document.getElementById("concepts-count");
+  const mainsInput = document.getElementById("mains-count");
+  const advanceInput = document.getElementById("advance-count");
+
+  const totalCount = document.getElementById("total-count");
+  const createQuizBtn = document.getElementById("create-quiz-btn");
+  const copyPromptBtn = document.getElementById("copy-prompt-btn");
+  const previewPromptBtn = document.getElementById("preview-prompt-btn");
+  const configError = document.getElementById("configuration-error");
+  const actionStatus = document.getElementById("action-status");
+  const promptPreview = document.getElementById("prompt-preview");
+  const promptBox = document.getElementById("prompt-box");
+
+  infoClass.textContent = QUIZ_CONTEXT.className || "Not provided";
+  infoBoard.textContent = QUIZ_CONTEXT.board || "Not provided";
+  infoSubject.textContent = QUIZ_CONTEXT.subject || "Not provided";
+  infoChapter.textContent = QUIZ_CONTEXT.chapter || "Not provided";
+
+  const missingFields = [];
+  if (!QUIZ_CONTEXT.className) missingFields.push("Class");
+  if (!QUIZ_CONTEXT.subject) missingFields.push("Subject");
+  if (!QUIZ_CONTEXT.chapter) missingFields.push("Chapter");
+
+  if (missingFields.length) {
+    configError.className = "status error show";
+    configError.textContent = "This quiz link is incomplete. Missing: " + missingFields.join(", ") + ".";
+    createQuizBtn.disabled = true;
+    copyPromptBtn.disabled = true;
+    previewPromptBtn.disabled = true;
+  }
+
+  function clampCount(input) {
+    let value = Number.parseInt(input.value, 10);
+    if (!Number.isFinite(value)) value = 0;
+    value = Math.max(0, Math.min(20, value));
+    input.value = String(value);
+    return value;
+  }
+
+  function getCounts() {
+    return {
+      concepts: clampCount(conceptsInput),
+      mains: clampCount(mainsInput),
+      advance: clampCount(advanceInput)
+    };
+  }
+
+  function updateTotal() {
+    const counts = getCounts();
+    const total = counts.concepts + counts.mains + counts.advance;
+    totalCount.textContent = String(total);
+    return total;
+  }
+
+  function showStatus(message, type) {
+    actionStatus.className = "status " + type + " show";
+    actionStatus.textContent = message;
+  }
+
+  function hideStatus() {
+    actionStatus.className = "status";
+    actionStatus.textContent = "";
+  }
+
+  function buildQuizPrompt() {
+  const counts = getCounts();
+
+  const total =
+    counts.concepts +
+    counts.mains +
+    counts.advance;
+
+  if (total <= 0) {
+    throw new Error(
+      "Enter at least 1 question in any Foundation level."
+    );
+  }
+
+  const distribution = [];
+
+  if (counts.concepts > 0) {
+    distribution.push(
+      `Foundation Concepts: ${counts.concepts} question${counts.concepts === 1 ? "" : "s"}`
+    );
+  }
+
+  if (counts.mains > 0) {
+    distribution.push(
+      `Foundation Mains: ${counts.mains} question${counts.mains === 1 ? "" : "s"}`
+    );
+  }
+
+  if (counts.advance > 0) {
+    distribution.push(
+      `Foundation Advance: ${counts.advance} question${counts.advance === 1 ? "" : "s"}`
+    );
+  }
+
+  return `Create a quiz about "${QUIZ_CONTEXT.chapter}" for ${QUIZ_CONTEXT.className} students studying ${QUIZ_CONTEXT.subject}.
+
+IMPORTANT:
+Create this using Gemini's built-in INTERACTIVE QUIZ study-material feature.
+
+Do NOT conduct the quiz as a normal chat conversation.
+Do NOT ask Question 1 directly in the chat.
+Do NOT display the questions as a normal text response.
+Do NOT simply quiz me one question at a time in this conversation.
+
+Generate an actual Gemini Interactive Quiz that can be opened and taken using Gemini's Quiz interface.
+
+Class: ${QUIZ_CONTEXT.className}
+Board: ${QUIZ_CONTEXT.board}
+Subject: ${QUIZ_CONTEXT.subject}
+Chapter: ${QUIZ_CONTEXT.chapter}
+
+Question Distribution:
+${distribution.join("\n")}
+
+Total Questions: ${total}
+
+Use these Foundation difficulty standards STRICTLY:
+
+FOUNDATION CONCEPTS:
+- Basic conceptual, recall, or direct-application questions suitable for students beginning IIT/NEET Foundation training.
+- Use a single concept and avoid unnecessary multi-step reasoning.
+- Keep the questions competitive-exam oriented, simple and focused.
+- Do not reduce this level to ordinary board-textbook drill.
+
+FOUNDATION MAINS:
+- Difficult and very difficult Foundation questions.
+- Require moderate application, careful reading, 1–2 steps, or combining two related ideas.
+- Use tricky Foundation-style reasoning.
+- Make these clearly more challenging than Foundation Concepts, but not full Olympiad level.
+
+FOUNDATION ADVANCE:
+- Challenging Olympiad/NTSE/IIT Foundation style questions.
+- Require multi-step logical reasoning and, where suitable, combine two or more concepts.
+- Use non-standard twists, deeper application, or novel approaches.
+- Keep every question strictly within the selected class syllabus.
+- Do not require higher-class methods.
+
+INTERACTIVE QUIZ REQUIREMENTS:
+1. Create an actual Gemini Interactive Quiz study material.
+2. Do not answer with a normal conversational quiz.
+3. Follow the exact number of questions requested for each Foundation level.
+4. Create exactly ${total} questions in total.
+5. Keep every question strictly within the selected chapter and class level.
+6. Give exactly four options for every question.
+7. Give exactly one correct answer for every question.
+8. Questions must be fresh, accurate, unambiguous and non-repetitive.
+9. Independently verify every answer before finalizing the quiz.
+10. Use plausible distractors based on common student errors or misconceptions.
+11. Include useful hints without directly revealing the answer.
+12. Include clear explanations for answers.
+13. Enable scoring and performance review.
+14. Allow the student to review incorrect answers.
+15. Allow additional practice after completion.
+16. For Mathematics, render mathematical notation clearly and correctly.
+
+Do not begin by displaying Question 1 in the chat.
+
+Create the Gemini Interactive Quiz study material now.`;
+}
+
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.style.position = "absolute";
+    helper.style.left = "-9999px";
+    document.body.appendChild(helper);
+    helper.select();
+    helper.setSelectionRange(0, helper.value.length);
+    const ok = document.execCommand("copy");
+    helper.remove();
+    return ok;
+  }
+
+  [conceptsInput, mainsInput, advanceInput].forEach(input => {
+    input.addEventListener("input", () => {
+      hideStatus();
+      updateTotal();
+    });
+    input.addEventListener("blur", updateTotal);
+  });
+
+  previewPromptBtn.addEventListener("click", () => {
+    hideStatus();
+    try {
+      const prompt = buildQuizPrompt();
+      promptBox.value = prompt;
+      promptPreview.classList.toggle("show");
+      previewPromptBtn.textContent = promptPreview.classList.contains("show") ? "Hide Quiz Prompt" : "Preview Quiz Prompt";
+    } catch (error) {
+      showStatus(error.message, "error");
+    }
+  });
+
+  copyPromptBtn.addEventListener("click", async () => {
+    hideStatus();
+    try {
+      const prompt = buildQuizPrompt();
+      promptBox.value = prompt;
+      const copied = await copyText(prompt);
+      if (copied) {
+        showStatus("Quiz prompt copied successfully.", "success");
+      } else {
+        promptPreview.classList.add("show");
+        showStatus("Automatic copy was blocked. The quiz prompt is shown below so you can copy it manually.", "error");
+      }
+    } catch (error) {
+      showStatus(error.message, "error");
+    }
+  });
+
+  createQuizBtn.addEventListener("click", async () => {
+    hideStatus();
+
+    let prompt;
+    try {
+      prompt = buildQuizPrompt();
+    } catch (error) {
+      showStatus(error.message, "error");
+      return;
+    }
+
+    promptBox.value = prompt;
+
+    let copied = false;
+    try {
+      copied = await copyText(prompt);
+    } catch (error) {
+      copied = false;
+    }
+
+    if (copied) {
+      showStatus("Quiz prompt copied. Gemini is opening — paste the prompt into Gemini and submit it to create the interactive quiz.", "success");
+    } else {
+      promptPreview.classList.add("show");
+      showStatus("Gemini is opening. Automatic copy was blocked, so copy the prompt shown below and paste it into Gemini.", "error");
+    }
+
+    window.open("https://gemini.google.com/app", "_blank", "noopener,noreferrer");
+  });
+
+  updateTotal();
+</script>
+</body>
+</html>
