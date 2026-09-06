@@ -1806,7 +1806,26 @@ IMPORTANT:
         );
     }
   }
-  function openChatGPT(promptText) {
+ const CLASS6_MATH_NOTEBOOK =
+  "https://notebook.google.com/notebook/cac089cf-2256-40de-b8b2-fe61e7d65908/preview";
+
+
+function openNotebookLM(promptText) {
+
+  navigator.clipboard.writeText(promptText)
+    .catch(error => {
+      console.error("Could not copy NotebookLM prompt:", error);
+    });
+
+  window.open(
+    CLASS6_MATH_NOTEBOOK,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+
+function openChatGPT(promptText) {
     const chatgptUrl =
       "https://chatgpt.com/?q=" +
       encodeURIComponent(promptText);
@@ -1818,18 +1837,31 @@ IMPORTANT:
     );
   }
 
-  toolButtons.forEach(button => {
+ toolButtons.forEach(button => {
     button.addEventListener("click", () => {
       try {
+
         const tool = button.dataset.tool || "";
         const prompt = buildPrompt(tool);
+
+        if (
+          selectedRole === "teacher" &&
+          tool === "board-work"
+        ) {
+          openNotebookLM(prompt);
+          return;
+        }
+
         openChatGPT(prompt);
+
       } catch (error) {
+
         alert(
           error && error.message
             ? error.message
-                         : "Could not open the AI learning tool."
+            : "Could not open the AI learning tool."
         );
+
       }
     });
   });
