@@ -1619,36 +1619,116 @@ ${getStudentLearningRules()}`;
 
 
   function buildBoardWorkPrompt() {
-    return `You are assisting a teacher preparing classroom board work.
+    return `You are assisting a teacher in preparing classroom board work strictly from the SciMentra textbook available as the source for this lesson.
 
 ${getLessonContext()}
 
-Prepare clear, concise and classroom-ready BOARD WORK for this lesson.
+SOURCE RULES:
 
-Give:
+- First study the selected chapter or selected topic carefully.
+- Use ONLY the concepts, subtopics, definitions, rules, formulas, methods, terminology and level actually covered in the SciMentra textbook.
+- Do not replace the textbook content with a general explanation of the chapter.
+- Follow the textbook's actual concept progression as closely as possible.
+- Do not introduce concepts or methods that are outside the selected chapter.
+- The SciMentra textbook is an IIT & NEET Foundation book.
+- Preserve the progression from basic understanding to FOUNDATION MAINS and FOUNDATION ADVANCED wherever these levels are relevant in the chapter.
+- Do not reduce the content to ordinary school-level teaching only.
+- Difficulty must come from deeper application and reasoning using concepts already covered in the textbook.
+- If a requested item is genuinely not applicable to a particular subtopic, do not invent it.
 
-1. TOPIC HEADING
-2. LEARNING OBJECTIVE
-3. PREREQUISITE RECALL
-4. KEY DEFINITIONS / RULES / FORMULAS
-5. TEACHING SEQUENCE
-6. TWO SIMPLE WORKED EXAMPLES
-7. ONE FOUNDATION MAINS EXAMPLE
-8. ONE COMMON STUDENT MISTAKE AND HOW TO CORRECT IT
-9. THREE QUICK ORAL CHECK QUESTIONS WITH ANSWERS
-10. FINAL BOARD RECAP
+FIRST IDENTIFY THE CHAPTER STRUCTURE:
+
+Before preparing the board work, internally identify all the major concepts and subtopics actually covered in the selected chapter or topic.
 
 IMPORTANT:
-- Keep the board work concise enough for practical classroom use.
-- Arrange it in the order a teacher should write and explain it.
-- Use language suitable for the given class.
-- Use correct mathematical/scientific notation.
-- Keep all methods within the selected class syllabus.
-- Maintain IIT & NEET Foundation standard.
-- Do not overcrowd the board.
-- Independently verify all calculations, formulas and answers before responding.`;
-  }
 
+If a specific Today's Topic / Concept is provided:
+- Prepare detailed board work ONLY for that selected topic or concept.
+- Do not unnecessarily cover the whole chapter.
+
+If Scope says "Use the whole chapter":
+- Do NOT try to compress the entire chapter into one classroom period.
+- Divide the chapter into a sensible multi-period teaching sequence based on its actual concepts and subtopics.
+- Clearly show PERIOD 1, PERIOD 2, PERIOD 3 and so on as required.
+- The number of periods must depend on the actual chapter content, not on a fixed number.
+
+PREPARE CLASSROOM-READY BOARD WORK.
+
+Start with:
+
+1. CHAPTER / TOPIC HEADING
+
+2. LEARNING OBJECTIVES
+Give suitable learning objectives based on the actual concepts being taught.
+
+3. PREREQUISITE RECALL
+Mention only the previous knowledge genuinely required for understanding this lesson.
+
+Then prepare the main board work SUBTOPIC BY SUBTOPIC.
+
+FOR EACH MAJOR SUBTOPIC, GIVE:
+
+A. SUBTOPIC HEADING
+
+B. KEY CONCEPT / DEFINITION
+Give concise, board-ready wording faithful to the textbook.
+
+C. IMPORTANT RULE / FORMULA / IDEA
+Include only what is relevant to that subtopic.
+
+D. TEACHER EXPLANATION SEQUENCE
+Show the order in which the teacher should write and explain the idea on the board.
+
+E. SIMPLE ILLUSTRATIVE EXAMPLE(S)
+Give as many simple examples as genuinely required to understand the different forms or applications of that concept.
+Do NOT force the same number of examples for every subtopic.
+
+F. FOUNDATION MAINS
+Give suitable Foundation Mains example(s) wherever applicable to that subtopic.
+The examples must use only concepts already taught in the chapter.
+
+G. FOUNDATION ADVANCED
+Give suitable Foundation Advanced reasoning or challenge example(s) wherever applicable.
+Do not use higher-class concepts merely to make the question difficult.
+
+H. COMMON STUDENT MISTAKE
+Mention a likely misconception or error for that particular subtopic and how the teacher should correct it.
+
+I. QUICK ORAL CHECK
+Give short oral question(s) with concise teacher answers to check understanding before moving to the next concept.
+
+AFTER ALL SUBTOPICS, GIVE:
+
+4. CHAPTER CONNECTION
+Briefly show how the important concepts of the chapter connect with one another.
+
+5. FINAL BOARD RECAP
+Give only the most important points, formulas, rules or relationships that should remain on the board at the end.
+
+BOARD-WORK STYLE:
+
+- Write for an actual classroom board, not like a textbook article.
+- Use headings, short points, equations, tables or examples wherever appropriate.
+- Avoid unnecessary long paragraphs.
+- Keep explanations age-appropriate.
+- Use correct mathematical/scientific notation.
+- Do not overcrowd individual board sections.
+- Keep the teaching sequence practical.
+- Cover every important concept in the selected scope.
+- Give more examples where a concept has multiple important applications.
+- Give fewer examples where one example is sufficient.
+- Do not use a fixed number of examples for every chapter.
+- Maintain the actual SciMentra IIT & NEET Foundation level.
+
+FINAL CHECK:
+
+Before responding, verify that:
+- all major concepts in the selected scope have been covered,
+- the sequence follows the textbook,
+- Foundation Mains and Foundation Advanced are included where appropriate,
+- no higher-class or unrelated concept has been introduced,
+- all formulas, calculations, examples and answers are correct.`;
+  }
   function buildExitTicketPrompt() {
     return `You are assisting a teacher who wants to check student understanding at the end of the lesson.
 
