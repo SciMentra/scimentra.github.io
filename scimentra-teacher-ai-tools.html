@@ -488,7 +488,6 @@
 </head>
 
 <body>
-<body>
 
 <div id="role-gate" class="auth-gate">
   <div class="auth-card">
@@ -1253,8 +1252,8 @@
       toolsTitle.textContent =
         "Choose a Teacher Tool";
 
-      toolsNote.textContent =
-        "Tap a tool to open ChatGPT with the class, subject, chapter and optional topic already included.";
+     toolsNote.textContent =
+        "Tap a tool to use the SciMentra textbook in NotebookLM with the class, subject, chapter and optional topic already included.";
 
       footerNote.textContent =
         "AI output should be reviewed by the teacher before classroom use.";
@@ -1914,25 +1913,6 @@ IMPORTANT:
         );
     }
   }
- const CLASS6_MATH_NOTEBOOK =
-  "https://notebook.google.com/notebook/cac089cf-2256-40de-b8b2-fe61e7d65908/preview";
-
-
-function openNotebookLM(promptText) {
-
-  navigator.clipboard.writeText(promptText)
-    .catch(error => {
-      console.error("Could not copy NotebookLM prompt:", error);
-    });
-
-  window.open(
-    CLASS6_MATH_NOTEBOOK,
-    "_blank",
-    "noopener,noreferrer"
-  );
-}
-
-
 const CLASS6_MATH_NOTEBOOK =
   "https://notebook.google.com/notebook/cac089cf-2256-40de-b8b2-fe61e7d65908/preview";
 
