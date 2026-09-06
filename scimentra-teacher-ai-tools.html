@@ -1680,116 +1680,194 @@ IMPORTANT:
 - Verify all formulas, calculations, examples and answers before responding.`;
   }
   function buildExitTicketPrompt() {
-    return `You are assisting a teacher who wants to check student understanding at the end of the lesson.
+    return `Use only the uploaded SciMentra textbook as the source.
 
 ${getLessonContext()}
 
-Create a short EXIT TICKET for this lesson.
+Prepare a classroom-ready EXIT TICKET strictly from the selected chapter or topic.
 
-Give exactly 5 questions:
+First identify the concepts actually taught in the selected scope.
 
-1. One basic concept-check question.
-2. One direct-application question.
-3. One misconception-check question.
-4. One Foundation Mains reasoning question.
-5. One short challenge question suitable for the given class.
+If a specific Today's Topic / Concept is provided:
+- Prepare one Exit Ticket only for that selected topic.
 
-After the questions, give a separate TEACHER ANSWER KEY with concise answers.
+If Scope says "Use the whole chapter":
+- Follow the textbook's actual concept sequence.
+- Divide the chapter into realistic 40-minute teaching periods.
+- Prepare a separate Exit Ticket for EACH period.
+- Each Exit Ticket must assess only the concepts taught in that particular period.
+
+FOR EACH EXIT TICKET GIVE EXACTLY 5 QUESTIONS:
+
+1. BASIC CONCEPT CHECK
+Check whether the student understood an essential idea, definition, rule or relationship.
+
+2. DIRECT APPLICATION
+Give a short question requiring direct use of the concept taught.
+
+3. MISCONCEPTION CHECK
+Test a likely student misunderstanding or common mistake related to that lesson.
+
+4. FOUNDATION MAINS
+Give one suitable application or reasoning question at Foundation Mains level using only concepts already taught.
+
+5. FOUNDATION ADVANCED
+Give one short reasoning or challenge question at Foundation Advanced level using only concepts already taught.
+
+After the 5 questions give:
+
+TEACHER ANSWER KEY
+Give concise and clearly numbered answers to all 5 questions.
 
 IMPORTANT:
-- The questions must be answerable in about 5 to 8 minutes.
-- Keep every question strictly within the selected class and lesson.
-- Do not repeat the same concept unnecessarily.
-- Use clear and unambiguous wording.
-- Maintain IIT & NEET Foundation standard.
-- Independently verify every answer before responding.`;
+- Use only concepts covered in the SciMentra textbook.
+- Follow the textbook terminology, sequence and level.
+- Preserve the progression from Basic to Foundation Mains to Foundation Advanced.
+- Do not introduce higher-class or unrelated concepts.
+- Each Exit Ticket must be realistically answerable in about 5 to 8 minutes.
+- Keep questions short, clear and unambiguous.
+- Do not unnecessarily repeat the same concept.
+- Use correct mathematical/scientific notation.
+- Verify every question, calculation and answer before responding.`;
   }
 
   function buildRemedialPrompt() {
-    return `You are assisting a teacher who needs to reteach this lesson to students who are struggling.
+    return `Use only the uploaded SciMentra textbook as the source.
 
 ${getLessonContext()}
 
-Prepare a REMEDIAL TEACHING PLAN.
+Prepare practical REMEDIAL TEACHING SUPPORT strictly from the selected chapter or topic.
 
-Give:
+First identify the concepts, prerequisite knowledge and learning difficulties connected with the selected scope.
 
-1. LIKELY LEARNING GAP
-   Identify the prerequisite or concept students may be missing.
+If a specific Today's Topic / Concept is provided:
+- Focus only on that selected topic.
+- Prepare remedial support for students struggling with that concept.
+
+If Scope says "Use the whole chapter":
+- Identify the major subtopics in the textbook.
+- Organise remedial teaching subtopic by subtopic.
+- Follow the textbook's actual concept sequence.
+- Do not try to reteach the whole chapter in one period.
+- Divide the remedial support into realistic 40-minute periods where required.
+
+FOR EACH REMEDIAL PERIOD / SELECTED TOPIC GIVE:
+
+1. LEARNING GAP
+Identify what students may not have understood and the prerequisite knowledge they may be missing.
 
 2. SIMPLE RETEACHING EXPLANATION
-   Explain the concept in very simple classroom language.
+Explain the concept in simpler classroom language while remaining faithful to the textbook.
 
-3. ANOTHER WAY TO EXPLAIN IT
-   Give an alternative explanation, analogy, model or example.
+3. ANOTHER WAY TO EXPLAIN
+Give a suitable analogy, comparison, demonstration, visual idea or familiar example where appropriate.
 
-4. STEP-BY-STEP TEACHING SEQUENCE
-   Show how the teacher should rebuild the concept from easy to difficult.
+4. STEP-BY-STEP REBUILDING
+Show how the teacher should rebuild understanding from the easiest idea to the regular textbook level.
 
-5. THREE VERY EASY GUIDED EXAMPLES
-   Give worked examples suitable for weak students.
+5. GUIDED EXAMPLES
+Give as many simple worked examples as genuinely required.
+Begin with very easy examples and gradually increase difficulty.
 
-6. FIVE REMEDIAL PRACTICE QUESTIONS
-   Start easy and increase difficulty gradually.
+6. COMMON MISTAKES
+Identify likely errors made by struggling students and explain how the teacher should correct them.
 
-7. ANSWERS
-   Give concise answers to all five practice questions.
+7. REMEDIAL PRACTICE
+Give suitable short practice questions progressing from easy understanding to direct application.
 
-8. QUICK MASTERY CHECK
-   Give 3 short oral questions the teacher can use to decide whether students are ready to return to regular Foundation practice.
+8. FOUNDATION BRIDGE
+After the basic concept is secure, show how the teacher can gradually reconnect students to the Foundation Mains level covered in the textbook.
+
+9. FOUNDATION ADVANCED READINESS
+Do not immediately push weak students into Advanced questions.
+State what understanding or skills students should demonstrate before attempting the Foundation Advanced level of this chapter.
+
+10. QUICK MASTERY CHECK
+Give short oral or written questions with concise teacher answers to check whether students are ready to return to regular Foundation teaching.
 
 IMPORTANT:
-- Keep the explanation age-appropriate.
-- Do not use higher-class methods.
-- Focus on conceptual understanding before speed.
-- Use proper mathematical/scientific notation.
-- Verify every example and answer before responding.`;
+- Use only concepts covered in the SciMentra textbook.
+- Follow the textbook terminology, sequence and level.
+- Do not introduce higher-class or unrelated concepts.
+- Focus first on conceptual understanding, then application, then Foundation progression.
+- Do not use a fixed number of examples or practice questions; give enough for the concept being retaught.
+- Keep each remedial period realistic for approximately 40 minutes where periods are required.
+- Keep explanations simple without changing the mathematical/scientific meaning.
+- Use correct mathematical/scientific notation.
+- Verify all facts, formulas, examples, calculations and answers before responding.`;
   }
 
-  function buildTeachingSupportPrompt() {
-    return `You are assisting a teacher in planning and teaching this lesson effectively.
+ function buildTeachingSupportPrompt() {
+    return `Use only the uploaded SciMentra textbook as the source.
 
 ${getLessonContext()}
 
-Prepare TEACHING SUPPORT for this lesson.
+Prepare practical TEACHING SUPPORT strictly from the selected chapter or topic.
 
-Give:
+First identify the major concepts and subtopics actually covered in the textbook.
 
-1. CORE CONCEPTS
-   List the most important concepts students must understand.
+If a specific Today's Topic / Concept is provided:
+- Focus only on that topic.
+- Give detailed guidance for teaching that concept effectively.
 
-2. PREREQUISITE KNOWLEDGE
-   Mention what students should already know.
+If Scope says "Use the whole chapter":
+- Divide the chapter into realistic 40-minute periods: PERIOD 1, PERIOD 2, PERIOD 3 and so on.
+- Decide the number of periods according to the actual chapter content and difficulty.
+- Follow the textbook's concept sequence.
+- Do not overload any period.
+- Teach prerequisite concepts before dependent concepts.
 
-3. BEST TEACHING SEQUENCE
-   Suggest the order in which the ideas should be taught.
+FOR EACH PERIOD GIVE:
 
-4. CLASSROOM EXPLANATION STRATEGY
-   Explain how the teacher can introduce and develop the lesson.
+1. PERIOD TOPIC / CONCEPTS
 
-5. COMMON STUDENT MISCONCEPTIONS
-   List likely mistakes or misunderstandings and how to correct each one.
+2. CORE CONCEPTS
+State exactly what students should understand.
 
-6. TEACHING TIPS
-   Give useful examples, analogies, questioning techniques or demonstrations.
+3. PREREQUISITE KNOWLEDGE
+Mention only the previous knowledge genuinely required.
 
-7. CHECK FOR UNDERSTANDING
-   Give 5 short oral questions with answers.
+4. HOW TO INTRODUCE THE LESSON
+Suggest a suitable question, situation, observation, demonstration or familiar example.
 
-8. FOUNDATION CONNECTION
-   Explain how to move students from basic understanding to Foundation Mains reasoning without going beyond the class syllabus.
+5. BEST TEACHING SEQUENCE
+Explain the order in which the concepts should be developed.
 
-9. TEACHER CLOSURE
-   Give a 2-minute recap the teacher can use at the end of the lesson.
+6. CLASSROOM EXPLANATION STRATEGY
+Explain how the teacher should make each concept clear to students.
+
+7. TEACHING EXAMPLES
+Suggest examples suitable for the concepts and level of the textbook.
+Use as many examples as genuinely required.
+
+8. COMMON STUDENT MISCONCEPTIONS
+Identify likely mistakes or misunderstandings and explain how to correct them.
+
+9. TEACHING TIPS
+Give useful analogies, demonstrations, questioning techniques or classroom strategies where appropriate.
+
+10. CHECK FOR UNDERSTANDING
+Give suitable short oral questions with concise teacher answers.
+
+11. FOUNDATION MAINS CONNECTION
+Explain how to move students from basic understanding to Foundation Mains application using concepts covered in the textbook.
+
+12. FOUNDATION ADVANCED CONNECTION
+Explain how to develop deeper reasoning and Foundation Advanced thinking using the same chapter concepts.
+
+13. TEACHER CLOSURE
+Give a short 2-minute recap for the end of the period.
 
 IMPORTANT:
-- Keep everything practical for classroom use.
-- Maintain the given class level and IIT & NEET Foundation standard.
-- Do not use higher-class methods unless absolutely necessary.
-- Use clear mathematical/scientific notation.
-- Verify all factual statements, examples and answers before responding.`;
+- Use only concepts covered in the SciMentra textbook.
+- Follow the textbook terminology, sequence and level.
+- Preserve Basic → Foundation Mains → Foundation Advanced progression.
+- Do not introduce higher-class or unrelated concepts.
+- Adapt the teaching strategy to each subtopic.
+- Keep every period realistic for approximately 40 minutes.
+- Keep everything practical for actual classroom teaching.
+- Verify all facts, formulas, examples, calculations and answers.`;
   }
-
     function buildPrompt(tool) {
 
     if (selectedRole === "student") {
@@ -1855,6 +1933,55 @@ function openNotebookLM(promptText) {
 }
 
 
+const CLASS6_MATH_NOTEBOOK =
+  "https://notebook.google.com/notebook/cac089cf-2256-40de-b8b2-fe61e7d65908/preview";
+
+
+function openNotebookLM(promptText) {
+
+  window.open(
+    CLASS6_MATH_NOTEBOOK,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  navigator.clipboard.writeText(promptText)
+    .then(() => {
+      alert(
+        "SciMentra prompt copied.\n\nPaste it into the NotebookLM chat box and send."
+      );
+    })
+    .catch(() => {
+
+      const textArea =
+        document.createElement("textarea");
+
+      textArea.value = promptText;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+
+      document.body.appendChild(textArea);
+
+      textArea.focus();
+      textArea.select();
+
+      try {
+        document.execCommand("copy");
+
+        alert(
+          "SciMentra prompt copied.\n\nPaste it into the NotebookLM chat box and send."
+        );
+      } catch (error) {
+        alert(
+          "NotebookLM opened. Please copy the prompt manually."
+        );
+      }
+
+      document.body.removeChild(textArea);
+    });
+}
+
+
 function openChatGPT(promptText) {
     const chatgptUrl =
       "https://chatgpt.com/?q=" +
@@ -1874,9 +2001,14 @@ function openChatGPT(promptText) {
         const tool = button.dataset.tool || "";
         const prompt = buildPrompt(tool);
 
-        if (
+      if (
           selectedRole === "teacher" &&
-          tool === "board-work"
+          (
+            tool === "board-work" ||
+            tool === "teaching-support" ||
+            tool === "exit-ticket" ||
+            tool === "remedial"
+          )
         ) {
           openNotebookLM(prompt);
           return;
