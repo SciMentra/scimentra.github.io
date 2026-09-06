@@ -1619,144 +1619,65 @@ ${getStudentLearningRules()}`;
 
 
   function buildBoardWorkPrompt() {
-    return `You are assisting a teacher in preparing classroom board work strictly from the SciMentra textbook available as the source for this lesson.
+    return `Use only the uploaded SciMentra textbook as the source.
 
 ${getLessonContext()}
 
-SOURCE RULES:
+Prepare classroom-ready BOARD WORK strictly from the selected chapter or topic.
 
-- First study the selected chapter or selected topic carefully.
-- Use ONLY the concepts, subtopics, definitions, rules, formulas, methods, terminology and level actually covered in the SciMentra textbook.
-- Do not replace the textbook content with a general explanation of the chapter.
-- Follow the textbook's actual concept progression as closely as possible.
-- Do not introduce concepts or methods that are outside the selected chapter.
-- The SciMentra textbook is an IIT & NEET Foundation book.
-- Preserve the progression from basic understanding to FOUNDATION MAINS and FOUNDATION ADVANCED wherever these levels are relevant in the chapter.
-- Do not reduce the content to ordinary school-level teaching only.
-- Difficulty must come from deeper application and reasoning using concepts already covered in the textbook.
-- If a requested item is genuinely not applicable to a particular subtopic, do not invent it.
-
-FIRST IDENTIFY THE CHAPTER STRUCTURE:
-
-Before preparing the board work, internally identify all the major concepts and subtopics actually covered in the selected chapter or topic.
-
-IMPORTANT:
+First identify the major concepts and subtopics actually covered in the textbook.
 
 If a specific Today's Topic / Concept is provided:
-- Prepare detailed board work ONLY for that selected topic or concept.
-- Do not unnecessarily cover the whole chapter.
+- Prepare detailed board work only for that topic.
 
 If Scope says "Use the whole chapter":
-- Do NOT try to compress the entire chapter into one classroom period.
-- Divide the chapter into a realistic sequence of 40-MINUTE CLASS PERIODS based on the actual concepts and subtopics in the textbook.
-- Clearly show PERIOD 1, PERIOD 2, PERIOD 3 and so on as required.
-- The number of periods must depend on the actual chapter content and difficulty, not on a fixed number.
-- Each period must contain only the amount of content that can reasonably be taught, explained, practised and checked within 40 minutes.
-- Do not overload a single period simply to reduce the total number of periods.
+- Divide the chapter into realistic 40-minute periods: PERIOD 1, PERIOD 2, PERIOD 3 and so on.
+- Decide the number of periods according to the actual chapter content and difficulty.
+- Follow the textbook's concept sequence.
+- Do not overload any period.
 - Keep prerequisite concepts before dependent concepts.
-- Keep closely related subtopics together where practical.
 
-FOR EACH 40-MINUTE PERIOD, ORGANISE THE BOARD WORK APPROXIMATELY AS:
+FOR EACH 40-MINUTE PERIOD GIVE:
 
 1. PERIOD TITLE / SUBTOPICS
 
 2. QUICK RECALL / INTRODUCTION
-Approximately 3–5 minutes.
+Brief prerequisite recall needed for this period.
 
-3. CONCEPT EXPLANATION AND BOARD DEVELOPMENT
-Approximately 15–18 minutes.
+3. KEY CONCEPTS / DEFINITIONS / RULES / FORMULAS
+Use concise board-ready wording based on the textbook.
 
-4. ILLUSTRATIVE EXAMPLES
-Approximately 8–10 minutes.
+4. BOARD EXPLANATION SEQUENCE
+Show what the teacher should write and explain in order.
 
-5. FOUNDATION MAINS / FOUNDATION ADVANCED APPLICATION
-Approximately 5–8 minutes, where applicable.
+5. SIMPLE WORKED EXAMPLES
+Give as many examples as genuinely required for the concepts in that period.
+Do not use a fixed number of examples.
 
-6. QUICK ORAL CHECK / STUDENT RESPONSE
-Approximately 3–5 minutes.
+6. FOUNDATION MAINS
+Give suitable Foundation Mains example(s) wherever applicable.
 
-7. PERIOD RECAP
-Approximately 2 minutes.
-
-- These timings are approximate and may be adjusted according to the difficulty of the concepts.
-- Ensure the total teaching plan for each period is realistic for about 40 minutes.
-
-PREPARE CLASSROOM-READY BOARD WORK.
-
-Start with:
-
-1. CHAPTER / TOPIC HEADING
-
-2. LEARNING OBJECTIVES
-Give suitable learning objectives based on the actual concepts being taught.
-
-3. PREREQUISITE RECALL
-Mention only the previous knowledge genuinely required for understanding this lesson.
-
-Then prepare the main board work SUBTOPIC BY SUBTOPIC.
-
-FOR EACH MAJOR SUBTOPIC, GIVE:
-
-A. SUBTOPIC HEADING
-
-B. KEY CONCEPT / DEFINITION
-Give concise, board-ready wording faithful to the textbook.
-
-C. IMPORTANT RULE / FORMULA / IDEA
-Include only what is relevant to that subtopic.
-
-D. TEACHER EXPLANATION SEQUENCE
-Show the order in which the teacher should write and explain the idea on the board.
-
-E. SIMPLE ILLUSTRATIVE EXAMPLE(S)
-Give as many simple examples as genuinely required to understand the different forms or applications of that concept.
-Do NOT force the same number of examples for every subtopic.
-
-F. FOUNDATION MAINS
-Give suitable Foundation Mains example(s) wherever applicable to that subtopic.
-The examples must use only concepts already taught in the chapter.
-
-G. FOUNDATION ADVANCED
+7. FOUNDATION ADVANCED
 Give suitable Foundation Advanced reasoning or challenge example(s) wherever applicable.
-Do not use higher-class concepts merely to make the question difficult.
 
-H. COMMON STUDENT MISTAKE
-Mention a likely misconception or error for that particular subtopic and how the teacher should correct it.
+8. COMMON STUDENT MISTAKES
+Mention likely mistakes related to the concepts taught in that period and how to correct them.
 
-I. QUICK ORAL CHECK
-Give short oral question(s) with concise teacher answers to check understanding before moving to the next concept.
+9. QUICK ORAL CHECK
+Give short oral questions with concise teacher answers.
 
-AFTER ALL SUBTOPICS, GIVE:
+10. PERIOD RECAP
+Give the important points that should remain on the board at the end.
 
-4. CHAPTER CONNECTION
-Briefly show how the important concepts of the chapter connect with one another.
-
-5. FINAL BOARD RECAP
-Give only the most important points, formulas, rules or relationships that should remain on the board at the end.
-
-BOARD-WORK STYLE:
-
-- Write for an actual classroom board, not like a textbook article.
-- Use headings, short points, equations, tables or examples wherever appropriate.
-- Avoid unnecessary long paragraphs.
-- Keep explanations age-appropriate.
+IMPORTANT:
+- Use only concepts covered in the SciMentra textbook chapter.
+- Follow the textbook terminology, sequence and level.
+- Preserve the progression from basic understanding to Foundation Mains and Foundation Advanced.
+- Do not introduce higher-class or unrelated concepts.
+- Keep every period realistic for approximately 40 minutes.
+- Keep the output concise and practical for actual classroom board work.
 - Use correct mathematical/scientific notation.
-- Do not overcrowd individual board sections.
-- Keep the teaching sequence practical.
-- Cover every important concept in the selected scope.
-- Give more examples where a concept has multiple important applications.
-- Give fewer examples where one example is sufficient.
-- Do not use a fixed number of examples for every chapter.
-- Maintain the actual SciMentra IIT & NEET Foundation level.
-
-FINAL CHECK:
-
-Before responding, verify that:
-- all major concepts in the selected scope have been covered,
-- the sequence follows the textbook,
-- Foundation Mains and Foundation Advanced are included where appropriate,
-- no higher-class or unrelated concept has been introduced,
-- all formulas, calculations, examples and answers are correct.`;
+- Verify all formulas, calculations, examples and answers before responding.`;
   }
   function buildExitTicketPrompt() {
     return `You are assisting a teacher who wants to check student understanding at the end of the lesson.
