@@ -1919,48 +1919,50 @@ const CLASS6_MATH_NOTEBOOK =
 
 function openNotebookLM(promptText) {
 
+  const textArea =
+    document.createElement("textarea");
+
+  textArea.value = promptText;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.left = "-9999px";
+  textArea.style.top = "0";
+
+  document.body.appendChild(textArea);
+
+  textArea.focus();
+  textArea.select();
+
+  let copied = false;
+
+  try {
+    copied = document.execCommand("copy");
+  } catch (error) {
+    console.error(
+      "Prompt copy failed:",
+      error
+    );
+  }
+
+  document.body.removeChild(textArea);
+
+  if (copied) {
+    alert(
+      "SciMentra prompt copied.\n\nPaste it into the NotebookLM chat box and send."
+    );
+  } else {
+    alert(
+      "Could not copy the prompt. Please try again."
+    );
+    return;
+  }
+
   window.open(
     CLASS6_MATH_NOTEBOOK,
     "_blank",
     "noopener,noreferrer"
   );
-
-  navigator.clipboard.writeText(promptText)
-    .then(() => {
-      alert(
-        "SciMentra prompt copied.\n\nPaste it into the NotebookLM chat box and send."
-      );
-    })
-    .catch(() => {
-
-      const textArea =
-        document.createElement("textarea");
-
-      textArea.value = promptText;
-      textArea.style.position = "fixed";
-      textArea.style.opacity = "0";
-
-      document.body.appendChild(textArea);
-
-      textArea.focus();
-      textArea.select();
-
-      try {
-        document.execCommand("copy");
-
-        alert(
-          "SciMentra prompt copied.\n\nPaste it into the NotebookLM chat box and send."
-        );
-      } catch (error) {
-        alert(
-          "NotebookLM opened. Please copy the prompt manually."
-        );
-      }
-
-      document.body.removeChild(textArea);
-    });
 }
-
 
 function openChatGPT(promptText) {
     const chatgptUrl =
