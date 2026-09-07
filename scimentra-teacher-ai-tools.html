@@ -740,20 +740,20 @@
         </article>
 
 
-        <article class="tool-card" id="tool-card-5">
+               <article class="tool-card" id="tool-card-5">
           <div class="tool-icon" id="tool-icon-5">🗺️</div>
           <div class="tool-name" id="tool-name-5">
             Mind Map
           </div>
           <div class="tool-desc" id="tool-desc-5">
-            Open the prepared chapter mind map in NotebookLM.
+            Generate a clear visual mind map for the selected chapter or topic.
           </div>
           <button
             type="button"
             class="tool-btn"
             id="tool-btn-5"
             data-tool="mind-map">
-            View Mind Map
+            Generate Mind Map
           </button>
         </article>
 
@@ -764,14 +764,14 @@
             Flashcards
           </div>
           <div class="tool-desc" id="tool-desc-6">
-            Open the prepared chapter flashcards in NotebookLM.
+            Create concise study flashcards from the selected chapter or topic.
           </div>
           <button
             type="button"
             class="tool-btn"
             id="tool-btn-6"
             data-tool="flashcards">
-            View Flashcards
+            Create Flashcards
           </button>
         </article>
 
@@ -782,37 +782,37 @@
             Slide Deck
           </div>
           <div class="tool-desc" id="tool-desc-7">
-            Open the prepared slide deck in NotebookLM.
+            Prepare a classroom-ready slide deck for the selected chapter or topic.
           </div>
           <button
             type="button"
             class="tool-btn"
             id="tool-btn-7"
             data-tool="slide-deck">
-            View Slide Deck
+            Create Slide Deck
           </button>
         </article>
 
 
-        <article class="tool-card" id="tool-card-8">
+               <article class="tool-card" id="tool-card-8">
           <div class="tool-icon" id="tool-icon-8">🎨</div>
           <div class="tool-name" id="tool-name-8">
             Infographic
           </div>
           <div class="tool-desc" id="tool-desc-8">
-            Open the prepared chapter infographic in NotebookLM.
+            Generate a visual educational infographic for the selected chapter or topic.
           </div>
           <button
             type="button"
             class="tool-btn"
             id="tool-btn-8"
             data-tool="infographic">
-            View Infographic
+            Generate Infographic
           </button>
         </article>
 
 
-                    <article class="tool-card" id="tool-card-9">
+        <article class="tool-card" id="tool-card-9">
           <div class="tool-icon" id="tool-icon-9">🎯</div>
           <div class="tool-name" id="tool-name-9">
             Interactive Quiz
@@ -1749,21 +1749,21 @@ ${getStudentLearningRules()}`;
 
 
   function buildBoardWorkPrompt() {
-    return `Use only the uploaded SciMentra textbook as the source.
+    return `You are assisting a teacher in preparing classroom board work.
 
 ${getLessonContext()}
 
-Prepare classroom-ready BOARD WORK strictly from the selected chapter or topic.
+Prepare classroom-ready BOARD WORK for the selected chapter or topic.
 
-First identify the major concepts and subtopics actually covered in the textbook.
+First identify the major concepts and subtopics appropriate to the given class, subject and chapter.
 
 If a specific Today's Topic / Concept is provided:
 - Prepare detailed board work only for that topic.
 
 If Scope says "Use the whole chapter":
 - Divide the chapter into realistic 40-minute periods: PERIOD 1, PERIOD 2, PERIOD 3 and so on.
-- Decide the number of periods according to the actual chapter content and difficulty.
-- Follow the textbook's concept sequence.
+- Decide the number of periods according to the chapter content and difficulty.
+- Follow a logical concept sequence.
 - Do not overload any period.
 - Keep prerequisite concepts before dependent concepts.
 
@@ -1775,7 +1775,7 @@ FOR EACH 40-MINUTE PERIOD GIVE:
 Brief prerequisite recall needed for this period.
 
 3. KEY CONCEPTS / DEFINITIONS / RULES / FORMULAS
-Use concise board-ready wording based on the textbook.
+Use concise board-ready wording.
 
 4. BOARD EXPLANATION SEQUENCE
 Show what the teacher should write and explain in order.
@@ -1800,32 +1800,29 @@ Give short oral questions with concise teacher answers.
 Give the important points that should remain on the board at the end.
 
 IMPORTANT:
-- Use only concepts covered in the SciMentra textbook chapter.
-- Follow the textbook terminology, sequence and level.
+- Keep all content appropriate to the selected class, subject and chapter.
 - Preserve the progression from basic understanding to Foundation Mains and Foundation Advanced.
-- Do not introduce higher-class or unrelated concepts.
+- Do not introduce unnecessarily higher-class or unrelated concepts.
 - Keep every period realistic for approximately 40 minutes.
 - Keep the output concise and practical for actual classroom board work.
 - Use correct mathematical/scientific notation.
 - Verify all formulas, calculations, examples and answers before responding.`;
   }
   function buildExitTicketPrompt() {
-    return `Use only the uploaded SciMentra textbook as the source.
+    return `You are assisting a teacher in preparing an end-of-class assessment.
 
 ${getLessonContext()}
 
-Prepare a classroom-ready EXIT TICKET strictly from the selected chapter or topic.
-
-First identify the concepts actually taught in the selected scope.
+Prepare a classroom-ready EXIT TICKET for the selected chapter or topic.
 
 If a specific Today's Topic / Concept is provided:
 - Prepare one Exit Ticket only for that selected topic.
 
 If Scope says "Use the whole chapter":
-- Follow the textbook's actual concept sequence.
-- Divide the chapter into realistic 40-minute teaching periods.
+- Divide the chapter into realistic teaching periods.
+- Follow a logical concept sequence.
 - Prepare a separate Exit Ticket for EACH period.
-- Each Exit Ticket must assess only the concepts taught in that particular period.
+- Each Exit Ticket must assess only the concepts assigned to that period.
 
 FOR EACH EXIT TICKET GIVE EXACTLY 5 QUESTIONS:
 
@@ -1839,10 +1836,10 @@ Give a short question requiring direct use of the concept taught.
 Test a likely student misunderstanding or common mistake related to that lesson.
 
 4. FOUNDATION MAINS
-Give one suitable application or reasoning question at Foundation Mains level using only concepts already taught.
+Give one suitable application or reasoning question at Foundation Mains level.
 
 5. FOUNDATION ADVANCED
-Give one short reasoning or challenge question at Foundation Advanced level using only concepts already taught.
+Give one short reasoning or challenge question at Foundation Advanced level.
 
 After the 5 questions give:
 
@@ -1850,23 +1847,21 @@ TEACHER ANSWER KEY
 Give concise and clearly numbered answers to all 5 questions.
 
 IMPORTANT:
-- Use only concepts covered in the SciMentra textbook.
-- Follow the textbook terminology, sequence and level.
+- Keep all questions appropriate to the selected class, subject and chapter.
 - Preserve the progression from Basic to Foundation Mains to Foundation Advanced.
-- Do not introduce higher-class or unrelated concepts.
+- Do not introduce unnecessarily higher-class or unrelated concepts.
 - Each Exit Ticket must be realistically answerable in about 5 to 8 minutes.
 - Keep questions short, clear and unambiguous.
 - Do not unnecessarily repeat the same concept.
 - Use correct mathematical/scientific notation.
 - Verify every question, calculation and answer before responding.`;
   }
-
   function buildRemedialPrompt() {
-    return `Use only the uploaded SciMentra textbook as the source.
+   return `You are assisting a teacher with remedial teaching.
 
 ${getLessonContext()}
 
-Prepare practical REMEDIAL TEACHING SUPPORT strictly from the selected chapter or topic.
+Prepare practical REMEDIAL TEACHING SUPPORT for the selected chapter or topic.
 
 First identify the concepts, prerequisite knowledge and learning difficulties connected with the selected scope.
 
@@ -1875,9 +1870,9 @@ If a specific Today's Topic / Concept is provided:
 - Prepare remedial support for students struggling with that concept.
 
 If Scope says "Use the whole chapter":
-- Identify the major subtopics in the textbook.
+- Identify the major subtopics in the chapter.
 - Organise remedial teaching subtopic by subtopic.
-- Follow the textbook's actual concept sequence.
+- Follow a logical concept sequence.
 - Do not try to reteach the whole chapter in one period.
 - Divide the remedial support into realistic 40-minute periods where required.
 
@@ -1887,7 +1882,7 @@ FOR EACH REMEDIAL PERIOD / SELECTED TOPIC GIVE:
 Identify what students may not have understood and the prerequisite knowledge they may be missing.
 
 2. SIMPLE RETEACHING EXPLANATION
-Explain the concept in simpler classroom language while remaining faithful to the textbook.
+Explain the concept in simpler classroom language while keeping the meaning accurate.
 
 3. ANOTHER WAY TO EXPLAIN
 Give a suitable analogy, comparison, demonstration, visual idea or familiar example where appropriate.
@@ -1906,7 +1901,7 @@ Identify likely errors made by struggling students and explain how the teacher s
 Give suitable short practice questions progressing from easy understanding to direct application.
 
 8. FOUNDATION BRIDGE
-After the basic concept is secure, show how the teacher can gradually reconnect students to the Foundation Mains level covered in the textbook.
+After the basic concept is secure, show how the teacher can gradually move students towards Foundation Mains level.
 
 9. FOUNDATION ADVANCED READINESS
 Do not immediately push weak students into Advanced questions.
@@ -1916,8 +1911,8 @@ State what understanding or skills students should demonstrate before attempting
 Give short oral or written questions with concise teacher answers to check whether students are ready to return to regular Foundation teaching.
 
 IMPORTANT:
-- Use only concepts covered in the SciMentra textbook.
-- Follow the textbook terminology, sequence and level.
+- Keep all content appropriate to the selected class, subject and chapter.
+- Use clear and age-appropriate terminology.
 - Do not introduce higher-class or unrelated concepts.
 - Focus first on conceptual understanding, then application, then Foundation progression.
 - Do not use a fixed number of examples or practice questions; give enough for the concept being retaught.
@@ -1928,13 +1923,13 @@ IMPORTANT:
   }
 
  function buildTeachingSupportPrompt() {
-    return `Use only the uploaded SciMentra textbook as the source.
+    return `You are assisting a teacher in teaching this lesson effectively.
 
 ${getLessonContext()}
 
-Prepare practical TEACHING SUPPORT strictly from the selected chapter or topic.
+Prepare practical TEACHING SUPPORT for the selected chapter or topic.
 
-First identify the major concepts and subtopics actually covered in the textbook.
+First identify the major concepts and subtopics appropriate to the selected class and chapter.
 
 If a specific Today's Topic / Concept is provided:
 - Focus only on that topic.
@@ -1943,7 +1938,7 @@ If a specific Today's Topic / Concept is provided:
 If Scope says "Use the whole chapter":
 - Divide the chapter into realistic 40-minute periods: PERIOD 1, PERIOD 2, PERIOD 3 and so on.
 - Decide the number of periods according to the actual chapter content and difficulty.
-- Follow the textbook's concept sequence.
+- Follow a logical teaching sequence.
 - Do not overload any period.
 - Teach prerequisite concepts before dependent concepts.
 
@@ -1967,7 +1962,7 @@ Explain the order in which the concepts should be developed.
 Explain how the teacher should make each concept clear to students.
 
 7. TEACHING EXAMPLES
-Suggest examples suitable for the concepts and level of the textbook.
+Suggest examples suitable for the selected class and chapter.
 Use as many examples as genuinely required.
 
 8. COMMON STUDENT MISCONCEPTIONS
@@ -1980,7 +1975,7 @@ Give useful analogies, demonstrations, questioning techniques or classroom strat
 Give suitable short oral questions with concise teacher answers.
 
 11. FOUNDATION MAINS CONNECTION
-Explain how to move students from basic understanding to Foundation Mains application using concepts covered in the textbook.
+Explain how to move students from basic understanding to Foundation Mains application.
 
 12. FOUNDATION ADVANCED CONNECTION
 Explain how to develop deeper reasoning and Foundation Advanced thinking using the same chapter concepts.
@@ -1989,8 +1984,8 @@ Explain how to develop deeper reasoning and Foundation Advanced thinking using t
 Give a short 2-minute recap for the end of the period.
 
 IMPORTANT:
-- Use only concepts covered in the SciMentra textbook.
-- Follow the textbook terminology, sequence and level.
+- Keep all content appropriate to the selected class, subject and chapter.
+- Use clear and age-appropriate terminology.
 - Preserve Basic → Foundation Mains → Foundation Advanced progression.
 - Do not introduce higher-class or unrelated concepts.
 - Adapt the teaching strategy to each subtopic.
@@ -2225,73 +2220,6 @@ The final response should be the generated INFOGRAPHIC IMAGE, not a long textual
         );
     }
   }
-const CLASS6_MATH_NOTEBOOK =
-  "https://notebook.google.com/notebook/cac089cf-2256-40de-b8b2-fe61e7d65908/preview";
-
-
-function openNotebookLM(promptText) {
-
-  const textArea =
-    document.createElement("textarea");
-
-  textArea.value = promptText;
-  textArea.setAttribute("readonly", "");
-  textArea.style.position = "fixed";
-  textArea.style.left = "-9999px";
-  textArea.style.top = "0";
-
-  document.body.appendChild(textArea);
-
-  textArea.focus();
-  textArea.select();
-
-  let copied = false;
-
-  try {
-    copied = document.execCommand("copy");
-  } catch (error) {
-    console.error(
-      "Prompt copy failed:",
-      error
-    );
-  }
-
-  document.body.removeChild(textArea);
-
-  if (copied) {
-    alert(
-      "SciMentra prompt copied.\n\nPaste it into the NotebookLM chat box and send."
-    );
-  } else {
-    alert(
-      "Could not copy the prompt. Please try again."
-    );
-    return;
-  }
-
-  window.open(
-    CLASS6_MATH_NOTEBOOK,
-    "_blank",
-    "noopener,noreferrer"
-  );
-}
-
-function openNotebookLMStudio(resourceLabel) {
-
-  alert(
-    "NotebookLM will open.\n\nIn Studio, open the prepared " +
-    resourceLabel +
-    " for this chapter."
-  );
-
-  window.open(
-    CLASS6_MATH_NOTEBOOK,
-    "_blank",
-    "noopener,noreferrer"
-  );
-}
-
-
 function openChatGPT(promptText) {
     const chatgptUrl =
       "https://chatgpt.com/?q=" +
@@ -2322,13 +2250,14 @@ function openChatGPT(promptText) {
             "scimentra-interactive-quiz.html?" +
             quizParams.toString();
 
-                   window.location.href = quizUrl;
+                           window.location.href = quizUrl;
 
           return;
+        }
 
-                      const prompt = buildPrompt(tool);
+        const prompt = buildPrompt(tool);
 
-               openChatGPT(prompt);
+        openChatGPT(prompt);
 
       } catch (error) {
 
