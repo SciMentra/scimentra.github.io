@@ -2323,11 +2323,7 @@ function openChatGPT(promptText) {
       "https://chatgpt.com/?q=" +
       encodeURIComponent(promptText);
 
-    window.open(
-      chatgptUrl,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    window.location.href = chatgptUrl;
   }
 
   toolButtons.forEach(button => {
@@ -2352,14 +2348,9 @@ function openChatGPT(promptText) {
             "scimentra-interactive-quiz.html?" +
             quizParams.toString();
 
-          window.open(
-            quizUrl,
-            "_blank",
-            "noopener,noreferrer"
-          );
+                   window.location.href = quizUrl;
 
           return;
-        }
 
                if (
           selectedRole === "teacher" &&
