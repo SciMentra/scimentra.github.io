@@ -1363,8 +1363,8 @@
       toolsTitle.textContent =
         "Choose a Teacher Tool";
 
-          toolsNote.textContent =
-        "Tap a tool to use the SciMentra textbook in NotebookLM or open a prepared chapter resource.";
+                toolsNote.textContent =
+        "Choose a teaching tool to open ChatGPT with the class, subject, chapter and optional topic already included.";
 
       footerNote.textContent =
         "AI output should be reviewed by the teacher before classroom use.";
@@ -1407,35 +1407,35 @@
           tool:"teaching-support"
         },
 
-        {
+               {
           icon:"🗺️",
           name:"Mind Map",
-          desc:"Open the prepared chapter mind map in NotebookLM.",
-          button:"View Mind Map",
+          desc:"Generate a clear visual mind map for the selected chapter or topic.",
+          button:"Generate Mind Map",
           tool:"mind-map"
         },
 
         {
           icon:"🧠",
           name:"Flashcards",
-          desc:"Open the prepared chapter flashcards in NotebookLM.",
-          button:"View Flashcards",
+          desc:"Create concise study flashcards from the selected chapter or topic.",
+          button:"Create Flashcards",
           tool:"flashcards"
         },
 
         {
           icon:"📊",
           name:"Slide Deck",
-          desc:"Open the prepared chapter slide deck in NotebookLM.",
-          button:"View Slide Deck",
+          desc:"Prepare a classroom-ready slide deck for the selected chapter or topic.",
+          button:"Create Slide Deck",
           tool:"slide-deck"
         },
 
         {
           icon:"🎨",
           name:"Infographic",
-          desc:"Open the prepared chapter infographic in NotebookLM.",
-          button:"View Infographic",
+          desc:"Generate a visual educational infographic for the selected chapter or topic.",
+          button:"Generate Infographic",
           tool:"infographic"
         },
 
@@ -2024,6 +2024,175 @@ IMPORTANT:
 - Keep everything practical for actual classroom teaching.
 - Verify all facts, formulas, examples, calculations and answers.`;
   }
+      function buildMindMapPrompt() {
+
+    return `You are creating a VISUAL EDUCATIONAL MIND MAP for a teacher.
+
+${getLessonContext()}
+
+Create the final result as a MIND MAP IMAGE.
+
+IMPORTANT:
+- Do not give only a text outline.
+- Generate an actual visual image.
+- Use a clean educational layout.
+- Place the chapter/topic title at the centre.
+- Use clear branches, boxes, arrows and short labels.
+- Keep text large and readable.
+- Avoid overcrowding.
+
+Include only where relevant:
+
+1. MAIN CONCEPTS
+2. SUBTOPICS
+3. IMPORTANT DEFINITIONS
+4. RULES / FORMULAS / KEY IDEAS
+5. KEY EXAMPLES
+6. COMMON STUDENT MISTAKES
+7. FOUNDATION CONCEPTS
+8. FOUNDATION MAINS
+9. FOUNDATION ADVANCED
+10. QUICK RECAP
+
+Use age-appropriate content for the selected class.
+
+Use correct mathematical and scientific notation.
+
+The final response should be the generated MIND MAP IMAGE, not a long textual explanation.`;
+  }
+
+
+  function buildFlashcardsPrompt() {
+
+    return `You are creating classroom-ready STUDY FLASHCARDS.
+
+${getLessonContext()}
+
+Prepare useful flashcards for the selected chapter or topic.
+
+First identify the important concepts actually required for understanding and revision.
+
+Create as many flashcards as genuinely useful.
+Do not force a fixed number.
+
+FOR EACH FLASHCARD GIVE:
+
+FRONT:
+A short question, term, formula, concept or prompt.
+
+BACK:
+A concise and accurate explanation, definition, rule, example or answer.
+
+Organise the flashcards where appropriate into:
+
+1. KEY DEFINITIONS
+2. IMPORTANT RULES / FORMULAS
+3. CONCEPT UNDERSTANDING
+4. COMMON MISTAKES
+5. FOUNDATION CONCEPTS
+6. FOUNDATION MAINS
+7. FOUNDATION ADVANCED
+
+IMPORTANT:
+- Keep each card short.
+- One main idea per card.
+- Avoid unnecessary long explanations.
+- Use clear mathematical/scientific notation.
+- Keep everything suitable for the selected class.
+- Verify all facts, formulas and examples.`;
+  }
+
+
+  function buildSlideDeckPrompt() {
+
+    return `You are creating a CLASSROOM TEACHING SLIDE DECK.
+
+${getLessonContext()}
+
+Prepare a professional slide-by-slide presentation for the selected chapter or topic.
+
+If the whole chapter is selected:
+- Decide the number of slides according to the actual chapter content.
+- Follow a logical teaching sequence.
+- Do not overload slides.
+
+FOR EACH SLIDE GIVE:
+
+SLIDE NUMBER
+SLIDE TITLE
+MAIN CONTENT
+VISUAL / DIAGRAM SUGGESTION
+TEACHER EXPLANATION NOTE
+
+The presentation should include where appropriate:
+
+1. TITLE SLIDE
+2. LEARNING OBJECTIVES
+3. PREREQUISITE RECALL
+4. MAIN CONCEPTS
+5. DEFINITIONS / RULES / FORMULAS
+6. CLEAR EXAMPLES
+7. VISUAL EXPLANATIONS
+8. FOUNDATION CONCEPTS
+9. FOUNDATION MAINS
+10. FOUNDATION ADVANCED
+11. COMMON MISTAKES
+12. QUICK CHECK QUESTIONS
+13. CHAPTER / TOPIC RECAP
+
+IMPORTANT:
+- Keep slide text concise.
+- Use large classroom-friendly content.
+- Do not turn slides into textbook paragraphs.
+- Suggest diagrams, illustrations or visual elements where useful.
+- Use correct mathematical/scientific notation.
+- Verify all formulas, examples and answers.
+
+If presentation-file creation is available, create the actual editable slide deck.
+Otherwise provide the complete slide-by-slide deck content.`;
+  }
+
+
+  function buildInfographicPrompt() {
+
+    return `You are creating a VISUAL EDUCATIONAL INFOGRAPHIC.
+
+${getLessonContext()}
+
+Create the final result as a PORTRAIT INFOGRAPHIC IMAGE.
+
+IMPORTANT:
+- Do not give only a text summary.
+- Generate an actual infographic image.
+- Use a clean, modern educational design.
+- Use colourful but professional section boxes.
+- Use icons, arrows, diagrams and visual cues where useful.
+- Keep all text large and readable.
+- Avoid overcrowding.
+
+Include the most important chapter/topic content such as:
+
+1. TITLE
+2. MAIN CONCEPTS
+3. IMPORTANT DEFINITIONS
+4. RULES / FORMULAS / KEY IDEAS
+5. ONE OR MORE USEFUL EXAMPLES
+6. COMMON MISTAKES
+7. FOUNDATION CONCEPTS
+8. FOUNDATION MAINS
+9. FOUNDATION ADVANCED
+10. QUICK RECAP
+
+Design the image for classroom display, revision, PPT use and student sharing.
+
+Use age-appropriate language for the selected class.
+Use correct mathematical/scientific notation.
+Verify all facts, formulas and examples.
+
+The final response should be the generated INFOGRAPHIC IMAGE, not a long textual explanation.`;
+  }
+
+
     function buildPrompt(tool) {
 
     if (selectedRole === "student") {
@@ -2061,8 +2230,20 @@ IMPORTANT:
       case "remedial":
         return buildRemedialPrompt();
 
-      case "teaching-support":
+           case "teaching-support":
         return buildTeachingSupportPrompt();
+
+      case "mind-map":
+        return buildMindMapPrompt();
+
+      case "flashcards":
+        return buildFlashcardsPrompt();
+
+      case "slide-deck":
+        return buildSlideDeckPrompt();
+
+      case "infographic":
+        return buildInfographicPrompt();
 
       default:
         throw new Error(
@@ -2180,38 +2361,19 @@ function openChatGPT(promptText) {
           return;
         }
 
-        const studioTools = {
-          "mind-map": "Mind Map",
-          "flashcards": "Flashcards",
-          "slide-deck": "Slide Deck",
-          "infographic": "Infographic",
-          "video-overview": "Video Overview"
-        };
-
-        if (
+               if (
           selectedRole === "teacher" &&
-          studioTools[tool]
+          tool === "video-overview"
         ) {
-          openNotebookLMStudio(studioTools[tool]);
+          alert(
+            "Video Overview will be added separately."
+          );
           return;
         }
 
         const prompt = buildPrompt(tool);
 
-        if (
-          selectedRole === "teacher" &&
-          (
-            tool === "board-work" ||
-            tool === "teaching-support" ||
-            tool === "exit-ticket" ||
-            tool === "remedial"
-          )
-        ) {
-          openNotebookLM(prompt);
-          return;
-        }
-
-        openChatGPT(prompt);
+               openChatGPT(prompt);
 
       } catch (error) {
 
