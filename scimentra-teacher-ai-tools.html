@@ -668,7 +668,7 @@
 
       <div class="tools-grid">
 
-        <article class="tool-card">
+               <article class="tool-card" id="tool-card-1">
           <div class="tool-icon" id="tool-icon-1">📝</div>
           <div class="tool-name" id="tool-name-1">
             Board Work Generator
@@ -686,7 +686,7 @@
         </article>
 
 
-        <article class="tool-card">
+        <article class="tool-card" id="tool-card-2">
           <div class="tool-icon" id="tool-icon-2">✅</div>
           <div class="tool-name" id="tool-name-2">
             Exit Ticket Generator
@@ -704,7 +704,7 @@
         </article>
 
 
-        <article class="tool-card">
+        <article class="tool-card" id="tool-card-3">
           <div class="tool-icon" id="tool-icon-3">🎯</div>
           <div class="tool-name" id="tool-name-3">
             Remedial Teaching
@@ -722,7 +722,7 @@
         </article>
 
 
-        <article class="tool-card">
+        <article class="tool-card" id="tool-card-4">
           <div class="tool-icon" id="tool-icon-4">💡</div>
           <div class="tool-name" id="tool-name-4">
             Teaching Support
@@ -739,8 +739,97 @@
           </button>
         </article>
 
-      </div>
 
+        <article class="tool-card" id="tool-card-5">
+          <div class="tool-icon" id="tool-icon-5">🗺️</div>
+          <div class="tool-name" id="tool-name-5">
+            Mind Map
+          </div>
+          <div class="tool-desc" id="tool-desc-5">
+            Open the prepared chapter mind map in NotebookLM.
+          </div>
+          <button
+            type="button"
+            class="tool-btn"
+            id="tool-btn-5"
+            data-tool="mind-map">
+            View Mind Map
+          </button>
+        </article>
+
+
+        <article class="tool-card" id="tool-card-6">
+          <div class="tool-icon" id="tool-icon-6">🧠</div>
+          <div class="tool-name" id="tool-name-6">
+            Flashcards
+          </div>
+          <div class="tool-desc" id="tool-desc-6">
+            Open the prepared chapter flashcards in NotebookLM.
+          </div>
+          <button
+            type="button"
+            class="tool-btn"
+            id="tool-btn-6"
+            data-tool="flashcards">
+            View Flashcards
+          </button>
+        </article>
+
+
+        <article class="tool-card" id="tool-card-7">
+          <div class="tool-icon" id="tool-icon-7">📊</div>
+          <div class="tool-name" id="tool-name-7">
+            Slide Deck
+          </div>
+          <div class="tool-desc" id="tool-desc-7">
+            Open the prepared slide deck in NotebookLM.
+          </div>
+          <button
+            type="button"
+            class="tool-btn"
+            id="tool-btn-7"
+            data-tool="slide-deck">
+            View Slide Deck
+          </button>
+        </article>
+
+
+        <article class="tool-card" id="tool-card-8">
+          <div class="tool-icon" id="tool-icon-8">🎨</div>
+          <div class="tool-name" id="tool-name-8">
+            Infographic
+          </div>
+          <div class="tool-desc" id="tool-desc-8">
+            Open the prepared chapter infographic in NotebookLM.
+          </div>
+          <button
+            type="button"
+            class="tool-btn"
+            id="tool-btn-8"
+            data-tool="infographic">
+            View Infographic
+          </button>
+        </article>
+
+
+        <article class="tool-card" id="tool-card-9">
+          <div class="tool-icon" id="tool-icon-9">🎬</div>
+          <div class="tool-name" id="tool-name-9">
+            Video Overview
+          </div>
+          <div class="tool-desc" id="tool-desc-9">
+            Open the prepared chapter video overview in NotebookLM.
+          </div>
+          <button
+            type="button"
+            class="tool-btn"
+            id="tool-btn-9"
+            data-tool="video-overview">
+            View Video Overview
+          </button>
+        </article>
+
+      </div>
       <p class="footer-note" id="footer-note">
         AI output should be reviewed by the teacher before classroom use.
       </p>
@@ -1141,8 +1230,13 @@
     );
 
 
-  const toolUI = [1,2,3,4].map(
+   const toolUI = [1,2,3,4,5,6,7,8,9].map(
     number => ({
+
+      card:
+        document.getElementById(
+          `tool-card-${number}`
+        ),
 
       icon:
         document.getElementById(
@@ -1165,7 +1259,6 @@
         )
     })
   );
-
   infoClass.textContent = TEACHER_CONTEXT.className || "Not provided";
   infoBoard.textContent = TEACHER_CONTEXT.board || "Not provided";
   infoSubject.textContent = TEACHER_CONTEXT.subject || "Not provided";
@@ -1252,8 +1345,8 @@
       toolsTitle.textContent =
         "Choose a Teacher Tool";
 
-     toolsNote.textContent =
-        "Tap a tool to use the SciMentra textbook in NotebookLM with the class, subject, chapter and optional topic already included.";
+          toolsNote.textContent =
+        "Tap a tool to use the SciMentra textbook in NotebookLM or open a prepared chapter resource.";
 
       footerNote.textContent =
         "AI output should be reviewed by the teacher before classroom use.";
@@ -1262,7 +1355,7 @@
         "inline-block";
 
 
-      const teacherTools = [
+            const teacherTools = [
 
         {
           icon:"📝",
@@ -1294,30 +1387,68 @@
           desc:"Get concept sequence, prerequisites, common misconceptions, teaching tips, oral checks and classroom guidance.",
           button:"Get Teaching Support",
           tool:"teaching-support"
+        },
+
+        {
+          icon:"🗺️",
+          name:"Mind Map",
+          desc:"Open the prepared chapter mind map in NotebookLM.",
+          button:"View Mind Map",
+          tool:"mind-map"
+        },
+
+        {
+          icon:"🧠",
+          name:"Flashcards",
+          desc:"Open the prepared chapter flashcards in NotebookLM.",
+          button:"View Flashcards",
+          tool:"flashcards"
+        },
+
+        {
+          icon:"📊",
+          name:"Slide Deck",
+          desc:"Open the prepared chapter slide deck in NotebookLM.",
+          button:"View Slide Deck",
+          tool:"slide-deck"
+        },
+
+        {
+          icon:"🎨",
+          name:"Infographic",
+          desc:"Open the prepared chapter infographic in NotebookLM.",
+          button:"View Infographic",
+          tool:"infographic"
+        },
+
+        {
+          icon:"🎬",
+          name:"Video Overview",
+          desc:"Open the prepared chapter video overview in NotebookLM.",
+          button:"View Video Overview",
+          tool:"video-overview"
         }
       ];
 
+           toolUI.forEach((ui,index) => {
 
-      teacherTools.forEach(
-        (item,index) => {
+        const item = teacherTools[index];
 
-          toolUI[index].icon.textContent =
-            item.icon;
+        if (item) {
 
-          toolUI[index].name.textContent =
-            item.name;
+          ui.card.style.display = "flex";
+          ui.icon.textContent = item.icon;
+          ui.name.textContent = item.name;
+          ui.desc.textContent = item.desc;
+          ui.button.textContent = item.button;
+          ui.button.dataset.tool = item.tool;
+          ui.button.disabled = false;
 
-          toolUI[index].desc.textContent =
-            item.desc;
+        } else {
 
-          toolUI[index].button.textContent =
-            item.button;
-
-          toolUI[index].button.dataset.tool =
-            item.tool;
+          ui.card.style.display = "none";
         }
-      );
-
+      });
       return;
     }
 
@@ -1390,25 +1521,25 @@
     ];
 
 
-    studentTools.forEach(
-      (item,index) => {
+        toolUI.forEach((ui,index) => {
 
-        toolUI[index].icon.textContent =
-          item.icon;
+      const item = studentTools[index];
 
-        toolUI[index].name.textContent =
-          item.name;
+      if (item) {
 
-        toolUI[index].desc.textContent =
-          item.desc;
+        ui.card.style.display = "flex";
+        ui.icon.textContent = item.icon;
+        ui.name.textContent = item.name;
+        ui.desc.textContent = item.desc;
+        ui.button.textContent = item.button;
+        ui.button.dataset.tool = item.tool;
+        ui.button.disabled = false;
 
-        toolUI[index].button.textContent =
-          item.button;
+      } else {
 
-        toolUI[index].button.dataset.tool =
-          item.tool;
+        ui.card.style.display = "none";
       }
-    );
+    });
   }
 
 
@@ -1964,6 +2095,22 @@ function openNotebookLM(promptText) {
   );
 }
 
+function openNotebookLMStudio(resourceLabel) {
+
+  alert(
+    "NotebookLM will open.\n\nIn Studio, open the prepared " +
+    resourceLabel +
+    " for this chapter."
+  );
+
+  window.open(
+    CLASS6_MATH_NOTEBOOK,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+
 function openChatGPT(promptText) {
     const chatgptUrl =
       "https://chatgpt.com/?q=" +
@@ -1976,14 +2123,31 @@ function openChatGPT(promptText) {
     );
   }
 
- toolButtons.forEach(button => {
+  toolButtons.forEach(button => {
     button.addEventListener("click", () => {
       try {
 
         const tool = button.dataset.tool || "";
+
+        const studioTools = {
+          "mind-map": "Mind Map",
+          "flashcards": "Flashcards",
+          "slide-deck": "Slide Deck",
+          "infographic": "Infographic",
+          "video-overview": "Video Overview"
+        };
+
+        if (
+          selectedRole === "teacher" &&
+          studioTools[tool]
+        ) {
+          openNotebookLMStudio(studioTools[tool]);
+          return;
+        }
+
         const prompt = buildPrompt(tool);
 
-      if (
+        if (
           selectedRole === "teacher" &&
           (
             tool === "board-work" ||
