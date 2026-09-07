@@ -812,7 +812,7 @@
         </article>
 
 
-        <article class="tool-card" id="tool-card-9">
+                <article class="tool-card" id="tool-card-9">
           <div class="tool-icon" id="tool-icon-9">🎬</div>
           <div class="tool-name" id="tool-name-9">
             Video Overview
@@ -826,6 +826,24 @@
             id="tool-btn-9"
             data-tool="video-overview">
             View Video Overview
+          </button>
+        </article>
+
+
+        <article class="tool-card" id="tool-card-10">
+          <div class="tool-icon" id="tool-icon-10">🎯</div>
+          <div class="tool-name" id="tool-name-10">
+            Interactive Quiz
+          </div>
+          <div class="tool-desc" id="tool-desc-10">
+            Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.
+          </div>
+          <button
+            type="button"
+            class="tool-btn"
+            id="tool-btn-10"
+            data-tool="interactive-quiz">
+            Create Interactive Quiz
           </button>
         </article>
 
@@ -1230,7 +1248,7 @@
     );
 
 
-   const toolUI = [1,2,3,4,5,6,7,8,9].map(
+   const toolUI = [1,2,3,4,5,6,7,8,9,10].map(
     number => ({
 
       card:
@@ -1421,12 +1439,20 @@
           tool:"infographic"
         },
 
-        {
+                {
           icon:"🎬",
           name:"Video Overview",
           desc:"Open the prepared chapter video overview in NotebookLM.",
           button:"View Video Overview",
           tool:"video-overview"
+        },
+
+        {
+          icon:"🎯",
+          name:"Interactive Quiz",
+          desc:"Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.",
+          button:"Create Interactive Quiz",
+          tool:"interactive-quiz"
         }
       ];
 
@@ -2127,7 +2153,32 @@ function openChatGPT(promptText) {
     button.addEventListener("click", () => {
       try {
 
-        const tool = button.dataset.tool || "";
+               const tool = button.dataset.tool || "";
+
+        if (
+          selectedRole === "teacher" &&
+          tool === "interactive-quiz"
+        ) {
+
+          const quizParams = new URLSearchParams({
+            class: TEACHER_CONTEXT.className,
+            board: TEACHER_CONTEXT.board,
+            subject: TEACHER_CONTEXT.subject,
+            chapter: TEACHER_CONTEXT.chapter
+          });
+
+          const quizUrl =
+            "scimentra-interactive-quiz.html?" +
+            quizParams.toString();
+
+          window.open(
+            quizUrl,
+            "_blank",
+            "noopener,noreferrer"
+          );
+
+          return;
+        }
 
         const studioTools = {
           "mind-map": "Mind Map",
