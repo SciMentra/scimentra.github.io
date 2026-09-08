@@ -1346,7 +1346,7 @@
         "Choose a Teacher Tool";
 
                 toolsNote.textContent =
-        "Choose a teaching tool to open ChatGPT with the class, subject, chapter and optional topic already included.";
+         "Choose a teaching tool for this chapter.";
 
       footerNote.textContent =
         "AI output should be reviewed by the teacher before classroom use.";
@@ -1475,8 +1475,8 @@
     toolsTitle.textContent =
       "Choose a Student Tool";
 
-    toolsNote.textContent =
-      "Choose how you want ChatGPT to help you learn this chapter.";
+       toolsNote.textContent =
+      "Choose a learning tool for this chapter.";
 
     footerNote.textContent =
       "These tools are designed to help you understand and practise independently.";
@@ -1517,6 +1517,30 @@
         desc:"Challenge yourself with questions that gradually move from basic understanding to Foundation reasoning.",
         button:"Start Challenge",
         tool:"chapter-challenge"
+      },
+
+      {
+        icon:"🗺️",
+        name:"Mind Map",
+        desc:"Generate a clear A4 textbook-style visual mind map for this chapter or selected concept.",
+        button:"Generate Mind Map",
+        tool:"mind-map"
+      },
+
+      {
+        icon:"🎨",
+        name:"Infographic",
+        desc:"Generate an A4 educational infographic for quick visual revision of this chapter or concept.",
+        button:"Generate Infographic",
+        tool:"infographic"
+      },
+
+      {
+        icon:"🎯",
+        name:"Interactive Quiz",
+        desc:"Create an interactive chapter quiz with Foundation Concepts, Mains and Advanced levels.",
+        button:"Start Interactive Quiz",
+        tool:"interactive-quiz"
       }
     ];
 
@@ -1995,7 +2019,7 @@ IMPORTANT:
   }
       function buildMindMapPrompt() {
 
-    return `You are creating a VISUAL EDUCATIONAL MIND MAP for a teacher.
+   return `You are creating a VISUAL EDUCATIONAL MIND MAP for learning and revision.
 
 ${getLessonContext()}
 
@@ -2219,8 +2243,14 @@ The final response should be the generated INFOGRAPHIC IMAGE, not a long textual
         case "practice-me":
           return buildPracticeMePrompt();
 
-        case "chapter-challenge":
+              case "chapter-challenge":
           return buildChapterChallengePrompt();
+
+        case "mind-map":
+          return buildMindMapPrompt();
+
+        case "infographic":
+          return buildInfographicPrompt();
 
         default:
           throw new Error(
@@ -2276,8 +2306,7 @@ function openChatGPT(promptText) {
 
                const tool = button.dataset.tool || "";
 
-        if (
-          selectedRole === "teacher" &&
+               if (
           tool === "interactive-quiz"
         ) {
 
