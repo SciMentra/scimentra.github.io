@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Teacher AI Tools | SciMentra</title>
+  <title>IIT & NEET Foundation | Teacher AI Tools</title>
    <meta name="theme-color" content="#0f3d6b">
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -32,7 +32,7 @@
     }
 
     body::after{
-      content:"SciMentra\A IIT & NEET FOUNDATION";
+      content:attr(data-school-name) "\A IIT & NEET FOUNDATION";
       white-space:pre;
       position:fixed;
       left:50%;
@@ -487,13 +487,13 @@
   </style>
 </head>
 
-<body>
+<body data-school-name="">
 
 <div id="role-gate" class="auth-gate">
   <div class="auth-card">
 
-    <div class="auth-brand">SciMentra</div>
-    <div class="auth-sub">IIT &amp; NEET FOUNDATION</div>
+    <div class="auth-brand">IIT &amp; NEET FOUNDATION</div>
+<div class="auth-sub">SCHOOL LEARNING PORTAL</div>
 
     <h2 class="auth-title">Choose Access</h2>
 
@@ -516,8 +516,8 @@
     </button>
 
     <div class="auth-footer">
-      Teacher access requires the SciMentra school login.
-      Student learning tools open directly.
+      Teacher access requires the school login.
+Student learning tools open directly.
     </div>
 
   </div>
@@ -533,7 +533,7 @@
     <h2 class="auth-title">Teacher Login</h2>
 
     <p class="auth-description">
-      Sign in using the SciMentra login provided to your school.
+      Sign in using the login provided to your school.
     </p>
 
     <form id="school-login-form">
@@ -585,8 +585,8 @@
 <div class="page" id="main-page" style="display:none;">
 
   <header>
-    <h1 class="brand">SciMentra</h1>
-    <div class="brand-sub">IIT &amp; NEET FOUNDATION</div>
+   <h1 class="brand" id="school-brand-name">School</h1>
+<div class="brand-sub">IIT &amp; NEET FOUNDATION</div>
 
     <button
       type="button"
@@ -892,7 +892,10 @@
     document.getElementById("auth-gate");
 
   const mainPage =
-    document.getElementById("main-page");
+  document.getElementById("main-page");
+
+const schoolBrandName =
+  document.getElementById("school-brand-name");
 
   const schoolLoginForm =
     document.getElementById("school-login-form");
@@ -942,23 +945,55 @@
           .get();
 
 
-      if (
-        schoolDoc.exists &&
-        schoolDoc.data() &&
-        schoolDoc.data().active === true
-      ) {
+     if (
+  schoolDoc.exists &&
+  schoolDoc.data() &&
+  schoolDoc.data().active === true
+) {
 
-        selectedRole = "teacher";
+  const schoolData = schoolDoc.data();
 
-        roleGate.style.display = "none";
-        authGate.style.display = "none";
+  const schoolName =
+    String(
+      schoolData.schoolName || ""
+    ).trim();
 
-        applyRoleUI("teacher");
+  if (!schoolName) {
 
-        mainPage.style.display = "block";
+    await questionsAuth.signOut();
 
-        return;
-      }
+    authGate.style.display = "flex";
+
+    authError.textContent =
+      "School name is not configured for this account. Please contact the administrator.";
+
+    authError.style.display = "block";
+
+    return;
+  }
+
+  selectedRole = "teacher";
+
+  schoolBrandName.textContent =
+    schoolName;
+
+  document.body.setAttribute(
+    "data-school-name",
+    schoolName
+  );
+
+  document.title =
+    schoolName + " | Teacher AI Tools";
+
+  roleGate.style.display = "none";
+  authGate.style.display = "none";
+
+  applyRoleUI("teacher");
+
+  mainPage.style.display = "block";
+
+  return;
+}
 
 
       await questionsAuth.signOut();
@@ -967,8 +1002,7 @@
       authGate.style.display = "flex";
 
       authError.textContent =
-        "This school account is not authorised by SciMentra. Please contact SciMentra.";
-
+       "This school account is not authorised. Please contact the administrator.";
       authError.style.display = "block";
 
 
@@ -983,7 +1017,7 @@
       authGate.style.display = "flex";
 
       authError.textContent =
-        "Unable to verify SciMentra access. Please try again.";
+       "Unable to verify school access. Please try again.";
 
       authError.style.display = "block";
     }
@@ -1089,7 +1123,7 @@
         );
 
         authError.textContent =
-          "Invalid email or password. Please check the SciMentra login provided to your school.";
+          "Invalid email or password. Please check the login provided to your school.";
 
         authError.style.display =
           "block";
