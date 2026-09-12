@@ -393,10 +393,55 @@
     }
 
     .auth-input:focus{
-      outline:none;
-      border-color:#1762a7;
-      box-shadow:0 0 0 3px rgba(23,98,167,.12);
-    }
+  outline:none;
+  border-color:#1762a7;
+  box-shadow:0 0 0 3px rgba(23,98,167,.12);
+}
+
+#teacher-title{
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+
+  width:100%;
+  min-height:50px;
+
+  padding:11px 46px 11px 13px;
+
+  border:1.5px solid #bcd6ef;
+  border-radius:12px;
+
+  background-color:#fff;
+
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%231762a7' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  background-size:18px;
+
+  color:#123c62;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background-color .2s ease;
+}
+
+#teacher-title:hover{
+  border-color:#8ebfe8;
+  background-color:#fbfdff;
+}
+
+#teacher-title:focus{
+  outline:none;
+  border-color:#1762a7;
+  box-shadow:0 0 0 3px rgba(23,98,167,.12);
+}
 
     .auth-login-btn{
       width:100%;
@@ -527,8 +572,8 @@ Student learning tools open directly.
 <div id="auth-gate" class="auth-gate" style="display:none;">
   <div class="auth-card">
 
-    <div class="auth-brand">SciMentra</div>
-    <div class="auth-sub">IIT &amp; NEET FOUNDATION</div>
+    <div class="auth-brand">IIT &amp; NEET FOUNDATION</div>
+<div class="auth-sub">TEACHER ACCESS</div>
 
     <h2 class="auth-title">Teacher Login</h2>
 
@@ -544,24 +589,25 @@ Student learning tools open directly.
           type="text"
           id="teacher-name"
           class="auth-input"
-          placeholder="Example: Messiah Sastry"
+          placeholder="Enter teacher name"
           autocomplete="name"
           required>
       </div>
 
       <div class="auth-field">
         <label for="teacher-title">Title</label>
-        <select
-          id="teacher-title"
-          class="auth-input"
-          required>
-          <option value="Sir">Sir</option>
-          <option value="Madam">Madam</option>
-          <option value="Mr.">Mr.</option>
-          <option value="Ms.">Ms.</option>
-          <option value="Mrs.">Mrs.</option>
-          <option value="Dr.">Dr.</option>
-        </select>
+       <select
+  id="teacher-title"
+  class="auth-input"
+  required>
+  <option value="" disabled selected>Select Title</option>
+  <option value="Sir">Sir</option>
+  <option value="Madam">Madam</option>
+  <option value="Mr.">Mr.</option>
+  <option value="Ms.">Ms.</option>
+  <option value="Mrs.">Mrs.</option>
+  <option value="Dr.">Dr.</option>
+</select>
       </div>
 
       <div class="auth-field">
@@ -2297,9 +2343,9 @@ ${getLessonContext()}
 
 SCHOOL IDENTITY RULE:
 - Use exactly the School Name provided above wherever a school name is appropriate.
-- Use it on the title slide.
-- Never use SciMentra, St. Patrick's School, or another school name unless that exact name is provided above as the School Name.
-- Never guess or invent a school name.
+- Use that exact School Name on the title slide.
+- Do not use any other school or organisation name.
+- Never guess, invent, replace or substitute the School Name.
 
 Prepare a professional slide-by-slide presentation for the selected chapter or topic.
 If the whole chapter is selected:
