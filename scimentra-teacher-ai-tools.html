@@ -2782,12 +2782,16 @@ function openChatGPT(promptText) {
           tool === "interactive-quiz"
         ) {
 
-          const quizParams = new URLSearchParams({
-            class: TEACHER_CONTEXT.className,
-            board: TEACHER_CONTEXT.board,
-            subject: TEACHER_CONTEXT.subject,
-            chapter: TEACHER_CONTEXT.chapter
-          });
+  const quizParams = new URLSearchParams({
+  class: TEACHER_CONTEXT.className,
+  board: TEACHER_CONTEXT.board,
+  subject: TEACHER_CONTEXT.subject,
+  chapter: TEACHER_CONTEXT.chapter,
+  role: selectedRole,
+  school: currentSchoolName || "",
+  teacher: currentTeacherName || "",
+  teacherTitle: currentTeacherTitle || ""
+});
 
           const quizUrl =
             "scimentra-interactive-quiz.html?" +
