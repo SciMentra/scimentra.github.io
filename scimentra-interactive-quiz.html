@@ -431,7 +431,7 @@
         <span class="total-value" id="total-count">0</span>
       </div>
 
-      <button type="button" id="create-quiz-btn" class="create-btn">✨ Create Interactive Quiz with Gemini</button>
+      <button type="button" id="create-quiz-btn" class="create-btn">✨ Create Interactive Quiz</button>
 
      <!-- Prompt copy and preview controls removed for cleaner teacher interface -->
 
@@ -544,12 +544,14 @@ infoChapter.textContent =
   if (!QUIZ_CONTEXT.chapter) missingFields.push("Chapter");
 
   if (missingFields.length) {
-    configError.className = "status error show";
-    configError.textContent = "This quiz link is incomplete. Missing: " + missingFields.join(", ") + ".";
-    createQuizBtn.disabled = true;
-    copyPromptBtn.disabled = true;
-    previewPromptBtn.disabled = true;
-  }
+  configError.className = "status error show";
+  configError.textContent =
+    "This quiz link is incomplete. Missing: " +
+    missingFields.join(", ") +
+    ".";
+
+  createQuizBtn.disabled = true;
+}
 
   function clampCount(input) {
     let value = Number.parseInt(input.value, 10);
@@ -740,36 +742,8 @@ Create the Gemini Interactive Quiz study material now.`;
     input.addEventListener("blur", updateTotal);
   });
 
-  previewPromptBtn.addEventListener("click", () => {
-    hideStatus();
-    try {
-      const prompt = buildQuizPrompt();
-      promptBox.value = prompt;
-      promptPreview.classList.toggle("show");
-      previewPromptBtn.textContent = promptPreview.classList.contains("show") ? "Hide Quiz Prompt" : "Preview Quiz Prompt";
-    } catch (error) {
-      showStatus(error.message, "error");
-    }
-  });
-
-  copyPromptBtn.addEventListener("click", async () => {
-    hideStatus();
-    try {
-      const prompt = buildQuizPrompt();
-      promptBox.value = prompt;
-      const copied = await copyText(prompt);
-      if (copied) {
-        showStatus("Quiz prompt copied successfully.", "success");
-      } else {
-        promptPreview.classList.add("show");
-        showStatus("Automatic copy was blocked. The quiz prompt is shown below so you can copy it manually.", "error");
-      }
-    } catch (error) {
-      showStatus(error.message, "error");
-    }
-  });
-
-  createQuizBtn.addEventListener("click", async () => {
+ 
+    createQuizBtn.addEventListener("click", async () => {
     hideStatus();
 
     let prompt;
