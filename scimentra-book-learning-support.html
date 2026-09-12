@@ -775,16 +775,43 @@ Student access opens directly.
 
     <form id="school-login-form">
 
-      <div class="auth-field">
-        <label for="school-email">Email</label>
-        <input
-          type="email"
-          id="school-email"
-          class="auth-input"
-          placeholder="Enter school login email"
-          autocomplete="username"
-          required>
-      </div>
+     <div class="auth-field">
+  <label for="teacher-name">Teacher Name</label>
+  <input
+    type="text"
+    id="teacher-name"
+    class="auth-input"
+    placeholder="Enter teacher name"
+    autocomplete="name"
+    required>
+</div>
+
+<div class="auth-field">
+  <label for="teacher-title">Title</label>
+  <select
+    id="teacher-title"
+    class="auth-input"
+    required>
+    <option value="">Select Title</option>
+    <option value="Sir">Sir</option>
+    <option value="Madam">Madam</option>
+    <option value="Mr.">Mr.</option>
+    <option value="Ms.">Ms.</option>
+    <option value="Mrs.">Mrs.</option>
+    <option value="Dr.">Dr.</option>
+  </select>
+</div>
+
+<div class="auth-field">
+  <label for="school-email">Email</label>
+  <input
+    type="email"
+    id="school-email"
+    class="auth-input"
+    placeholder="Enter school login email"
+    autocomplete="username"
+    required>
+</div>
 
       <div class="auth-field">
         <label for="school-password">Password</label>
@@ -1054,13 +1081,32 @@ const mainPage = document.getElementById("main-page");
 const schoolBrandName =
   document.getElementById("school-brand-name");
 
-const schoolLoginForm = document.getElementById("school-login-form");
-const schoolEmail = document.getElementById("school-email");
-const schoolPassword = document.getElementById("school-password");
-const schoolLoginBtn = document.getElementById("school-login-btn");
-const authError = document.getElementById("auth-error");
+const schoolLoginForm =
+  document.getElementById("school-login-form");
+
+const teacherName =
+  document.getElementById("teacher-name");
+
+const teacherTitle =
+  document.getElementById("teacher-title");
+
+const schoolEmail =
+  document.getElementById("school-email");
+
+const schoolPassword =
+  document.getElementById("school-password");
+
+const schoolLoginBtn =
+  document.getElementById("school-login-btn");
+
+const authError =
+  document.getElementById("auth-error");
 
 let selectedRole = "";
+
+let currentSchoolName = "";
+let currentTeacherName = "";
+let currentTeacherTitle = "";
 
 
 async function handleTeacherAccess(user) {
@@ -1110,13 +1156,86 @@ async function handleTeacherAccess(user) {
     return;
   }
 
-  selectedRole = "teacher";
+ selectedRole = "teacher";
 
-  schoolBrandName.textContent =
-    schoolName;
+currentSchoolName =
+  schoolName;
 
-  document.title =
-    schoolName + " | Book Learning Support";
+const teacherProfileKey =
+  "scimentraTeacherProfile_" + user.uid;
+
+let savedTeacherProfile = {};
+
+try {
+  savedTeacherProfile =
+    JSON.parse(
+      localStorage.getItem(
+        teacherProfileKey
+      ) || "{}"
+    );
+} catch (error) {
+  savedTeacherProfile = {};
+}
+
+if (!currentTeacherName) {
+  currentTeacherName =
+    String(
+      savedTeacherProfile.name ||
+      teacherName.value ||
+      ""
+    ).trim();
+}
+
+if (!currentTeacherTitle) {
+  currentTeacherTitle =
+    String(
+      savedTeacherProfile.title ||
+      teacherTitle.value ||
+      ""
+    ).trim();
+}
+
+if (
+  !currentTeacherName ||
+  !currentTeacherTitle
+) {
+
+  await questionsAuth.signOut();
+
+  mainPage.style.display =
+    "none";
+
+  authGate.style.display =
+    "flex";
+
+  authError.textContent =
+    "Please enter your teacher name and select a title.";
+
+  authError.style.display =
+    "block";
+
+  return;
+}
+
+teacherName.value =
+  currentTeacherName;
+
+teacherTitle.value =
+  currentTeacherTitle;
+
+localStorage.setItem(
+  teacherProfileKey,
+  JSON.stringify({
+    name: currentTeacherName,
+    title: currentTeacherTitle
+  })
+);
+
+schoolBrandName.textContent =
+  schoolName;
+
+document.title =
+  schoolName + " | Book Learning Support";
 
   authGate.style.display = "none";
   roleGate.style.display = "none";
@@ -1236,11 +1355,40 @@ schoolLoginForm.addEventListener("submit", async event => {
 
   event.preventDefault();
 
-  const email = schoolEmail.value.trim();
-  const password = schoolPassword.value;
+  currentTeacherName =
+  teacherName.value.trim();
 
-  authError.style.display = "none";
-  authError.textContent = "";
+currentTeacherTitle =
+  teacherTitle.value.trim();
+
+if (!currentTeacherName) {
+  authError.textContent =
+    "Please enter your teacher name.";
+
+  authError.style.display =
+    "block";
+
+  return;
+}
+
+if (!currentTeacherTitle) {
+  authError.textContent =
+    "Please select your title.";
+
+  authError.style.display =
+    "block";
+
+  return;
+}
+
+const email =
+  schoolEmail.value.trim();
+
+const password =
+  schoolPassword.value;
+
+authError.style.display = "none";
+authError.textContent = "";
 
   schoolLoginBtn.disabled = true;
   schoolLoginBtn.textContent = "Checking...";
@@ -1887,7 +2035,33 @@ schoolLoginForm.addEventListener("submit", async event => {
     }
   }
 
-  function makeFullQuestionForChatGPT(data) {
+  function getTeacherPersonalisationText() {
+
+  if (selectedRole !== "teacher") {
+    return "";
+  }
+
+  const teacherDisplayName =
+    `${currentTeacherName} ${currentTeacherTitle}`.trim();
+
+  return (
+    `School Name: ${currentSchoolName}\n` +
+    `Teacher Name: ${currentTeacherName}\n` +
+    `Teacher Title: ${currentTeacherTitle}\n` +
+    `Address Teacher As: ${teacherDisplayName}\n\n` +
+
+    `PERSONALISATION RULE:\n` +
+    `- You are assisting the teacher identified above.\n` +
+    `- Address the teacher naturally using the exact value given in "Address Teacher As".\n` +
+    `- Use the teacher's name naturally in the opening and when giving important direct guidance.\n` +
+    `- Do not repeat the teacher's name unnecessarily.\n` +
+    `- Use only the provided Teacher Name, Teacher Title and School Name.\n` +
+    `- Never invent or substitute another teacher name or school name.\n\n`
+  );
+}
+
+
+function makeFullQuestionForChatGPT(data) {
     const questionText = String(data.question || data.body || data.text || "").trim();
     const options = Array.isArray(data.options) ? data.options : [];
 
@@ -1945,12 +2119,13 @@ async function openStudentHint(docId) {
     const fullQuestionForChatGPT =
       makeFullQuestionForChatGPT(data);
 
+const promptText =
+  `You are assisting a teacher who is teaching this question to students.\n\n` +
 
-  const promptText =
-      `You are a STRICT HINT-ONLY TUTOR for a student.\n\n` +
+  getTeacherPersonalisationText() +
 
-      `Class: ${BOOK_CONTEXT.className}\n` +
-      `Board: ${BOOK_CONTEXT.board}\n` +
+  `Class: ${BOOK_CONTEXT.className}\n` +
+  `Board: ${BOOK_CONTEXT.board}\n` +
       `Subject: ${BOOK_CONTEXT.subject}\n` +
       `Chapter: ${BOOK_CONTEXT.chapter}\n` +
       `Level: ${questionLevel}\n` +
