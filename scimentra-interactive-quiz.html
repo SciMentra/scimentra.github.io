@@ -607,21 +607,20 @@ Teacher: ${creatorName}
 School: ${QUIZ_CONTEXT.schoolName}
 
 QUIZ TITLE AND CREATOR DISPLAY RULE:
-- The quiz title must contain ONLY the Chapter Name.
-- Do NOT add Class, Subject, Teacher Name, School Name, Board or any other information to the quiz title.
-- Display the details separately below the title, each on its own line.
-- Use this exact order:
+- The creator details MUST be visible in the Gemini Interactive Quiz.
+- Do not omit the Teacher Name or School Name.
+- Use the following information in the quiz heading/title area:
 
-Chapter Title
-Class: ${QUIZ_CONTEXT.className}
-Subject: ${QUIZ_CONTEXT.subject}
+${QUIZ_CONTEXT.chapter}
+${QUIZ_CONTEXT.className} | ${QUIZ_CONTEXT.subject}
 Created by: ${creatorName}
-School: ${QUIZ_CONTEXT.schoolName}
+${QUIZ_CONTEXT.schoolName}
 
-- Never combine these details into one sentence, paragraph or title.
-- Never place the Teacher Name or School Name inside the quiz title.
-- Use exactly the teacher name, title and school name supplied above.
+- Keep the Chapter Name first and most prominent.
+- Keep "Created by: ${creatorName}" clearly visible.
+- Keep "${QUIZ_CONTEXT.schoolName}" clearly visible.
 - Do not invent or substitute another teacher or school name.
+- Do not remove the creator information even if Gemini does not provide a separate creator field.
 `
       : "";
   const total =
