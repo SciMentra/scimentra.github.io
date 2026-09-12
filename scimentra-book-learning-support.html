@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Book Learning Support | SciMentra</title>
+  <title>IIT & NEET Foundation | Book Learning Support</title>
 
   <script>
     window.MathJax = {
@@ -728,8 +728,8 @@
 <div id="role-gate" class="auth-gate">
   <div class="auth-card">
 
-    <div class="auth-brand">SciMentra</div>
-    <div class="auth-sub">IIT &amp; NEET FOUNDATION</div>
+   <div class="auth-brand">IIT &amp; NEET FOUNDATION</div>
+<div class="auth-sub">SCHOOL LEARNING PORTAL</div>
 
     <h2 class="auth-title">Choose Access</h2>
 
@@ -753,8 +753,8 @@
     </button>
 
     <div class="auth-footer">
-      Teacher access requires the SciMentra school login.
-      Student access opens directly.
+      Teacher access requires the school login.
+Student access opens directly.
     </div>
 
   </div>
@@ -770,7 +770,7 @@
     <h2 class="auth-title">Teacher Login</h2>
 
     <p class="auth-description">
-      Sign in using the SciMentra login provided to your school.
+      Sign in using the login provided to your school.
     </p>
 
     <form id="school-login-form">
@@ -809,7 +809,7 @@
     </form>
 
     <div class="auth-footer">
-      Access is available only to schools authorised by SciMentra.
+      Access is available only to authorised schools.
     </div>
 
   </div>
@@ -817,8 +817,8 @@
 
 <div class="page" id="main-page" style="display:none;">
   <header style="position:relative;">
-  <h1 class="brand">SciMentra</h1>
-  <div class="brand-sub">IIT &amp; NEET FOUNDATION</div>
+  <h1 class="brand" id="school-brand-name">School</h1>
+<div class="brand-sub">IIT &amp; NEET FOUNDATION</div>
 
   <button
     type="button"
@@ -1050,6 +1050,10 @@ const studentRoleBtn = document.getElementById("role-student-btn");
 
 const authGate = document.getElementById("auth-gate");
 const mainPage = document.getElementById("main-page");
+
+const schoolBrandName =
+  document.getElementById("school-brand-name");
+
 const schoolLoginForm = document.getElementById("school-login-form");
 const schoolEmail = document.getElementById("school-email");
 const schoolPassword = document.getElementById("school-password");
@@ -1079,24 +1083,19 @@ async function handleTeacherAccess(user) {
       .get();
 
     if (
-      schoolDoc.exists &&
-      schoolDoc.data() &&
-      schoolDoc.data().active === true
-    ) {
+  schoolDoc.exists &&
+  schoolDoc.data() &&
+  schoolDoc.data().active === true
+) {
 
-     authGate.style.display = "none";
-roleGate.style.display = "none";
-mainPage.style.display = "block";
+  const schoolData = schoolDoc.data();
 
-const teacherLogoutBtn =
-  document.getElementById("teacher-logout-btn");
+  const schoolName =
+    String(
+      schoolData.schoolName || ""
+    ).trim();
 
-if (teacherLogoutBtn) {
-  teacherLogoutBtn.style.display = "inline-block";
-}
-
-return;
-    }
+  if (!schoolName) {
 
     await questionsAuth.signOut();
 
@@ -1104,7 +1103,42 @@ return;
     authGate.style.display = "flex";
 
     authError.textContent =
-      "This school account is not authorised by SciMentra. Please contact SciMentra.";
+      "School name is not configured for this account. Please contact the administrator.";
+
+    authError.style.display = "block";
+
+    return;
+  }
+
+  selectedRole = "teacher";
+
+  schoolBrandName.textContent =
+    schoolName;
+
+  document.title =
+    schoolName + " | Book Learning Support";
+
+  authGate.style.display = "none";
+  roleGate.style.display = "none";
+  mainPage.style.display = "block";
+
+  const teacherLogoutBtn =
+    document.getElementById("teacher-logout-btn");
+
+  if (teacherLogoutBtn) {
+    teacherLogoutBtn.style.display = "inline-block";
+  }
+
+  return;
+}
+
+    await questionsAuth.signOut();
+
+    mainPage.style.display = "none";
+    authGate.style.display = "flex";
+
+    authError.textContent =
+      "This school account is not authorised. Please contact the administrator.";
 
     authError.style.display = "block";
 
@@ -1116,7 +1150,7 @@ return;
     authGate.style.display = "flex";
 
     authError.textContent =
-      "Unable to verify SciMentra access. Please try again.";
+     "Unable to verify school access. Please try again.";
 
     authError.style.display = "block";
   }
@@ -1225,7 +1259,7 @@ schoolLoginForm.addEventListener("submit", async event => {
     console.error("Login failed:", error);
 
     authError.textContent =
-      "Invalid email or password. Please check the SciMentra login provided to your school.";
+     "Invalid email or password. Please check the login provided to your school.";
 
     authError.style.display = "block";
 
@@ -1881,7 +1915,7 @@ async function openStudentHint(docId) {
     window.open("about:blank", "_blank");
 
   if (!chatWindow) {
-    alert("Please allow popups to open the SciMentra hint.");
+    alert("Please allow popups to open the learning hint.");
     return;
   }
 
