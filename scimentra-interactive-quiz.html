@@ -606,21 +606,16 @@ QUIZ CREATOR:
 Teacher: ${creatorName}
 School: ${QUIZ_CONTEXT.schoolName}
 
-QUIZ TITLE AND CREATOR DISPLAY RULE:
-- The creator details MUST be visible in the Gemini Interactive Quiz.
-- Do not omit the Teacher Name or School Name.
-- Use the following information in the quiz heading/title area:
+QUIZ TITLE RULE:
+- Use one clean single-line quiz title only.
+- Do NOT use \n, line-break codes or escaped newline characters.
+- Use this exact format:
 
-${QUIZ_CONTEXT.chapter}
-${QUIZ_CONTEXT.className} | ${QUIZ_CONTEXT.subject}
-Created by: ${creatorName}
-${QUIZ_CONTEXT.schoolName}
+${QUIZ_CONTEXT.chapter} | ${QUIZ_CONTEXT.className} | ${QUIZ_CONTEXT.subject} | Created by: ${creatorName} | ${QUIZ_CONTEXT.schoolName}
 
-- Keep the Chapter Name first and most prominent.
-- Keep "Created by: ${creatorName}" clearly visible.
-- Keep "${QUIZ_CONTEXT.schoolName}" clearly visible.
+- Keep the Chapter Name first.
+- Keep the Teacher Name and School Name visible.
 - Do not invent or substitute another teacher or school name.
-- Do not remove the creator information even if Gemini does not provide a separate creator field.
 `
       : "";
   const total =
@@ -716,14 +711,7 @@ INTERACTIVE QUIZ REQUIREMENTS:
 14. Allow the student to review incorrect answers.
 15. Allow additional practice after completion.
 16. For Mathematics, render mathematical notation clearly and correctly.
-17. Use NUMBERED CIRCULAR QUESTION NAVIGATION instead of anonymous progress bars or dashes.
-18. Display one circle for each question, with the question number inside the circle: 1, 2, 3, 4, 5 and so on.
-19. Each numbered circle must be selectable so the student can jump directly to that question.
-20. Clearly distinguish:
-    - Current question
-    - Answered questions
-    - Unanswered questions
-21. Do NOT use an anonymous horizontal progress bar or dash-only question navigator.
+17. Use Gemini's standard Interactive Quiz navigation.
 
 Do not begin by displaying Question 1 in the chat.
 
