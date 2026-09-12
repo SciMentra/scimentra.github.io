@@ -536,7 +536,33 @@ Student learning tools open directly.
       Sign in using the login provided to your school.
     </p>
 
-    <form id="school-login-form">
+   <form id="school-login-form">
+
+      <div class="auth-field">
+        <label for="teacher-name">Teacher Name</label>
+        <input
+          type="text"
+          id="teacher-name"
+          class="auth-input"
+          placeholder="Example: Messiah Sastry"
+          autocomplete="name"
+          required>
+      </div>
+
+      <div class="auth-field">
+        <label for="teacher-title">Title</label>
+        <select
+          id="teacher-title"
+          class="auth-input"
+          required>
+          <option value="Sir">Sir</option>
+          <option value="Madam">Madam</option>
+          <option value="Mr.">Mr.</option>
+          <option value="Ms.">Ms.</option>
+          <option value="Mrs.">Mrs.</option>
+          <option value="Dr.">Dr.</option>
+        </select>
+      </div>
 
       <div class="auth-field">
         <label for="school-email">Email</label>
@@ -897,8 +923,14 @@ Student learning tools open directly.
 const schoolBrandName =
   document.getElementById("school-brand-name");
 
-  const schoolLoginForm =
+   const schoolLoginForm =
     document.getElementById("school-login-form");
+
+  const teacherName =
+    document.getElementById("teacher-name");
+
+  const teacherTitle =
+    document.getElementById("teacher-title");
 
   const schoolEmail =
     document.getElementById("school-email");
@@ -919,7 +951,10 @@ const schoolBrandName =
     document.getElementById("teacher-logout-btn");
 
 
-  let selectedRole = "";
+     let selectedRole = "";
+  let currentSchoolName = "";
+  let currentTeacherName = "";
+  let currentTeacherTitle = "";
 
 
   async function handleTeacherAccess(user) {
@@ -972,7 +1007,53 @@ const schoolBrandName =
     return;
   }
 
-  selectedRole = "teacher";
+    selectedRole = "teacher";
+  currentSchoolName = schoolName;
+
+  const teacherProfileKey =
+    "scimentraTeacherProfile_" + user.uid;
+
+  const savedTeacherProfile =
+    JSON.parse(
+      localStorage.getItem(teacherProfileKey) || "{}"
+    );
+
+  if (!currentTeacherName) {
+    currentTeacherName =
+      String(savedTeacherProfile.name || "").trim();
+  }
+
+  if (!currentTeacherTitle) {
+    currentTeacherTitle =
+      String(savedTeacherProfile.title || "Sir").trim();
+  }
+
+  if (!currentTeacherName) {
+    await questionsAuth.signOut();
+
+    authGate.style.display = "flex";
+
+    authError.textContent =
+      "Please enter your teacher name before login.";
+
+    authError.style.display = "block";
+
+    return;
+  }
+
+  localStorage.setItem(
+    teacherProfileKey,
+    JSON.stringify({
+      name: currentTeacherName,
+      title: currentTeacherTitle
+    })
+  );
+
+  teacherName.value =
+    currentTeacherName;
+
+  teacherTitle.value =
+    currentTeacherTitle;
 
   schoolBrandName.textContent =
     schoolName;
@@ -1088,7 +1169,13 @@ const schoolBrandName =
     "submit",
     async event => {
 
-      event.preventDefault();
+            event.preventDefault();
+
+      currentTeacherName =
+        teacherName.value.trim();
+
+      currentTeacherTitle =
+        teacherTitle.value.trim();
 
       const email =
         schoolEmail.value.trim();
@@ -1147,7 +1234,10 @@ const schoolBrandName =
 
       try {
 
-        selectedRole = "";
+               selectedRole = "";
+        currentSchoolName = "";
+        currentTeacherName = "";
+        currentTeacherTitle = "";
 
         await questionsAuth.signOut();
 
@@ -1324,7 +1414,37 @@ const schoolBrandName =
       ).trim();
 
 
-    let text =
+           let text = "";
+
+    if (selectedRole === "teacher") {
+
+      if (currentSchoolName) {
+        text +=
+          `School Name: ${currentSchoolName}\n`;
+      }
+
+      if (currentTeacherName) {
+
+        const teacherDisplayName =
+          `${currentTeacherName} ${currentTeacherTitle}`.trim();
+
+        text +=
+          `Teacher Name: ${currentTeacherName}\n` +
+          `Teacher Title: ${currentTeacherTitle}\n` +
+          `Address Teacher As: ${teacherDisplayName}\n`;
+      }
+
+      text +=
+        `\nPERSONALISATION RULE:\n` +
+        `- You are assisting the teacher identified above.\n` +
+        `- Address the teacher naturally using the exact value given in "Address Teacher As".\n` +
+        `- Use the teacher's name naturally in the opening and when giving important direct guidance.\n` +
+        `- Do not repeat the teacher's name unnecessarily.\n` +
+        `- Use only the provided Teacher Name, Teacher Title and School Name.\n` +
+        `- Never invent or substitute another teacher name or school name.\n\n`;
+    }
+
+    text +=
       `Class: ${TEACHER_CONTEXT.className}\n` +
       `Board: ${TEACHER_CONTEXT.board}\n` +
       `Subject: ${TEACHER_CONTEXT.subject}\n` +
@@ -1358,8 +1478,13 @@ const schoolBrandName =
 
     if (role === "teacher") {
 
+           const teacherDisplayName =
+        `${currentTeacherName} ${currentTeacherTitle}`.trim();
+
       modeBadgeText.textContent =
-        "👨‍🏫 Teacher Copy";
+        teacherDisplayName
+          ? `👨‍🏫 ${teacherDisplayName}`
+          : "👨‍🏫 Teacher";
 
       pageTitle.textContent =
         "Teacher AI Tools";
@@ -2166,12 +2291,17 @@ IMPORTANT:
 
   function buildSlideDeckPrompt() {
 
-    return `You are creating a CLASSROOM TEACHING SLIDE DECK.
+        return `You are creating a CLASSROOM TEACHING SLIDE DECK.
 
 ${getLessonContext()}
 
-Prepare a professional slide-by-slide presentation for the selected chapter or topic.
+SCHOOL IDENTITY RULE:
+- Use exactly the School Name provided above wherever a school name is appropriate.
+- Use it on the title slide.
+- Never use SciMentra, St. Patrick's School, or another school name unless that exact name is provided above as the School Name.
+- Never guess or invent a school name.
 
+Prepare a professional slide-by-slide presentation for the selected chapter or topic.
 If the whole chapter is selected:
 - Decide the number of slides according to the actual chapter content.
 - Follow a logical teaching sequence.
