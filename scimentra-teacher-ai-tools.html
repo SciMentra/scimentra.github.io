@@ -398,49 +398,129 @@
   box-shadow:0 0 0 3px rgba(23,98,167,.12);
 }
 
-#teacher-title{
-  appearance:none;
-  -webkit-appearance:none;
-  -moz-appearance:none;
+/* MODERN TITLE DROPDOWN */
 
+.modern-select{
+  position:relative;
+  width:100%;
+}
+
+.modern-select-button{
   width:100%;
   min-height:50px;
 
-  padding:11px 46px 11px 13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  padding:11px 14px;
 
   border:1.5px solid #bcd6ef;
   border-radius:12px;
 
-  background-color:#fff;
-
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%231762a7' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-
-  background-repeat:no-repeat;
-  background-position:right 14px center;
-  background-size:18px;
-
+  background:#fff;
   color:#123c62;
+
   font-family:inherit;
   font-size:16px;
   font-weight:700;
 
+  text-align:left;
   cursor:pointer;
 
   transition:
-    border-color .2s ease,
-    box-shadow .2s ease,
-    background-color .2s ease;
+    border-color .18s ease,
+    box-shadow .18s ease,
+    background-color .18s ease;
 }
 
-#teacher-title:hover{
-  border-color:#8ebfe8;
-  background-color:#fbfdff;
+.modern-select-button:hover{
+  border-color:#8abce5;
+  background:#fbfdff;
 }
 
-#teacher-title:focus{
-  outline:none;
+.modern-select.open .modern-select-button{
   border-color:#1762a7;
   box-shadow:0 0 0 3px rgba(23,98,167,.12);
+}
+
+.modern-select-arrow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  flex-shrink:0;
+  color:#1762a7;
+
+  transition:transform .2s ease;
+}
+
+.modern-select.open .modern-select-arrow{
+  transform:rotate(180deg);
+}
+
+.modern-select-menu{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 7px);
+
+  display:none;
+
+  padding:7px;
+
+  background:#fff;
+
+  border:1px solid #d7e7f5;
+  border-radius:14px;
+
+  box-shadow:
+    0 14px 35px rgba(15,61,107,.18);
+
+  z-index:5000;
+}
+
+.modern-select.open .modern-select-menu{
+  display:block;
+}
+
+.modern-select-menu button{
+  width:100%;
+
+  display:flex;
+  align-items:center;
+
+  padding:11px 12px;
+  margin:0;
+
+  border:none;
+  border-radius:9px;
+
+  background:transparent;
+  color:#123c62;
+
+  font-family:inherit;
+  font-size:15px;
+  font-weight:700;
+
+  text-align:left;
+  cursor:pointer;
+
+  transition:
+    background .15s ease,
+    color .15s ease;
+}
+
+.modern-select-menu button:hover{
+  background:#edf6ff;
+  color:#1762a7;
+}
+
+.modern-select-menu button.selected{
+  background:#e4f1fc;
+  color:#1762a7;
+  font-weight:900;
 }
 
     .auth-login-btn{
@@ -595,20 +675,68 @@ Student learning tools open directly.
       </div>
 
       <div class="auth-field">
-        <label for="teacher-title">Title</label>
-       <select
-  id="teacher-title"
-  class="auth-input"
-  required>
-  <option value="" disabled selected>Select Title</option>
-  <option value="Sir">Sir</option>
-  <option value="Madam">Madam</option>
-  <option value="Mr.">Mr.</option>
-  <option value="Ms.">Ms.</option>
-  <option value="Mrs.">Mrs.</option>
-  <option value="Dr.">Dr.</option>
-</select>
-      </div>
+  <label>Title</label>
+
+  <div class="modern-select" id="teacher-title-select">
+
+    <button
+      type="button"
+      class="modern-select-button"
+      id="teacher-title-button">
+      <span id="teacher-title-text">Select Title</span>
+
+      <span class="modern-select-arrow">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      </span>
+    </button>
+
+    <div
+      class="modern-select-menu"
+      id="teacher-title-menu">
+
+      <button type="button" data-value="Sir">
+        Sir
+      </button>
+
+      <button type="button" data-value="Madam">
+        Madam
+      </button>
+
+      <button type="button" data-value="Mr.">
+        Mr.
+      </button>
+
+      <button type="button" data-value="Ms.">
+        Ms.
+      </button>
+
+      <button type="button" data-value="Mrs.">
+        Mrs.
+      </button>
+
+      <button type="button" data-value="Dr.">
+        Dr.
+      </button>
+
+    </div>
+
+  </div>
+
+  <input
+    type="hidden"
+    id="teacher-title"
+    value="">
+</div>
 
       <div class="auth-field">
         <label for="school-email">Email</label>
@@ -975,8 +1103,98 @@ const schoolBrandName =
   const teacherName =
     document.getElementById("teacher-name");
 
-  const teacherTitle =
+   const teacherTitle =
     document.getElementById("teacher-title");
+
+  const teacherTitleSelect =
+    document.getElementById(
+      "teacher-title-select"
+    );
+
+  const teacherTitleButton =
+    document.getElementById(
+      "teacher-title-button"
+    );
+
+  const teacherTitleText =
+    document.getElementById(
+      "teacher-title-text"
+    );
+
+  const teacherTitleMenu =
+    document.getElementById(
+      "teacher-title-menu"
+    );
+
+  teacherTitleButton.addEventListener(
+    "click",
+    () => {
+
+      teacherTitleSelect.classList.toggle(
+        "open"
+      );
+
+    }
+  );
+
+  teacherTitleMenu
+    .querySelectorAll("button")
+    .forEach(option => {
+
+      option.addEventListener(
+        "click",
+        () => {
+
+          const value =
+            option.dataset.value;
+
+          teacherTitle.value =
+            value;
+
+          teacherTitleText.textContent =
+            value;
+
+          teacherTitleMenu
+            .querySelectorAll("button")
+            .forEach(item => {
+
+              item.classList.remove(
+                "selected"
+              );
+
+            });
+
+          option.classList.add(
+            "selected"
+          );
+
+          teacherTitleSelect.classList.remove(
+            "open"
+          );
+
+        }
+      );
+
+    });
+
+  document.addEventListener(
+    "click",
+    event => {
+
+      if (
+        !teacherTitleSelect.contains(
+          event.target
+        )
+      ) {
+
+        teacherTitleSelect.classList.remove(
+          "open"
+        );
+
+      }
+
+    }
+  );
 
   const schoolEmail =
     document.getElementById("school-email");
@@ -1069,24 +1287,27 @@ const schoolBrandName =
       String(savedTeacherProfile.name || "").trim();
   }
 
-  if (!currentTeacherTitle) {
+    if (!currentTeacherTitle) {
     currentTeacherTitle =
-      String(savedTeacherProfile.title || "Sir").trim();
+      String(savedTeacherProfile.title || "").trim();
   }
 
-  if (!currentTeacherName) {
+   if (
+    !currentTeacherName ||
+    !currentTeacherTitle
+  ) {
+
     await questionsAuth.signOut();
 
     authGate.style.display = "flex";
 
     authError.textContent =
-      "Please enter your teacher name before login.";
+      "Please enter your teacher name and select a title before login.";
 
     authError.style.display = "block";
 
     return;
   }
-
   localStorage.setItem(
     teacherProfileKey,
     JSON.stringify({
@@ -1098,8 +1319,23 @@ const schoolBrandName =
   teacherName.value =
     currentTeacherName;
 
-  teacherTitle.value =
+    teacherTitle.value =
     currentTeacherTitle;
+
+  teacherTitleText.textContent =
+    currentTeacherTitle || "Select Title";
+
+  teacherTitleMenu
+    .querySelectorAll("button")
+    .forEach(option => {
+
+      option.classList.toggle(
+        "selected",
+        option.dataset.value ===
+          currentTeacherTitle
+      );
+
+    });
 
   schoolBrandName.textContent =
     schoolName;
@@ -1217,11 +1453,37 @@ const schoolBrandName =
 
             event.preventDefault();
 
-      currentTeacherName =
+           currentTeacherName =
         teacherName.value.trim();
 
       currentTeacherTitle =
         teacherTitle.value.trim();
+
+      if (!currentTeacherName) {
+
+        authError.textContent =
+          "Please enter your teacher name.";
+
+        authError.style.display =
+          "block";
+
+        return;
+      }
+
+      if (!currentTeacherTitle) {
+
+        authError.textContent =
+          "Please select your title.";
+
+        authError.style.display =
+          "block";
+
+        teacherTitleSelect.classList.add(
+          "open"
+        );
+
+        return;
+      }
 
       const email =
         schoolEmail.value.trim();
