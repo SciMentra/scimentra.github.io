@@ -97,13 +97,35 @@
     }
 
     .subtitle {
-      max-width: 640px;
-      margin: 8px auto 18px;
-      text-align: center;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 14px;
-    }
+  max-width: 640px;
+  margin: 8px auto 18px;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.quiz-creator {
+  width: fit-content;
+  max-width: 100%;
+  margin: 8px auto 10px;
+  padding: 7px 13px;
+
+  border: 1px solid #cfe2f4;
+  border-radius: 999px;
+
+  background: #eef6fd;
+  color: var(--blue);
+
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+#quiz-creator-name {
+  color: var(--navy);
+  font-weight: 900;
+}
 
     .book-info {
       display: grid;
@@ -340,16 +362,21 @@
 <body>
 <div class="page">
   <header>
-    <h1 class="brand">SciMentra</h1>
-    <div class="brand-sub">IIT &amp; NEET FOUNDATION</div>
-  </header>
+  <h1 class="brand" id="school-brand-name">School</h1>
+  <div class="brand-sub">IIT &amp; NEET FOUNDATION</div>
+</header>
 
   <main>
     <section class="panel">
       <h2 class="page-title">Interactive Quiz</h2>
-      <p class="subtitle">
-        Choose the number of questions for each Foundation level. Your class, subject and chapter are taken automatically from Book Learning Support.
-      </p>
+
+<div class="quiz-creator" id="quiz-creator" style="display:none;">
+  Created by: <span id="quiz-creator-name"></span>
+</div>
+
+<p class="subtitle">
+  Choose the number of questions for each Foundation level. Your class, subject and chapter are taken automatically from Book Learning Support.
+</p>
 
       <div class="book-info">
         <div class="info-item"><span class="info-label">Class</span><span class="info-value" id="info-class">—</span></div>
@@ -447,10 +474,26 @@
   teacherTitle: firstParam(["teacherTitle"])
 };
 
-  const infoClass = document.getElementById("info-class");
-  const infoBoard = document.getElementById("info-board");
-  const infoSubject = document.getElementById("info-subject");
-  const infoChapter = document.getElementById("info-chapter");
+  const schoolBrandName =
+  document.getElementById("school-brand-name");
+
+const quizCreator =
+  document.getElementById("quiz-creator");
+
+const quizCreatorName =
+  document.getElementById("quiz-creator-name");
+
+const infoClass =
+  document.getElementById("info-class");
+
+const infoBoard =
+  document.getElementById("info-board");
+
+const infoSubject =
+  document.getElementById("info-subject");
+
+const infoChapter =
+  document.getElementById("info-chapter");
 
   const conceptsInput = document.getElementById("concepts-count");
   const mainsInput = document.getElementById("mains-count");
@@ -465,10 +508,40 @@
   const promptPreview = document.getElementById("prompt-preview");
   const promptBox = document.getElementById("prompt-box");
 
-  infoClass.textContent = QUIZ_CONTEXT.className || "Not provided";
-  infoBoard.textContent = QUIZ_CONTEXT.board || "Not provided";
-  infoSubject.textContent = QUIZ_CONTEXT.subject || "Not provided";
-  infoChapter.textContent = QUIZ_CONTEXT.chapter || "Not provided";
+  schoolBrandName.textContent =
+  QUIZ_CONTEXT.schoolName || "School";
+
+const teacherDisplayName =
+  [
+    QUIZ_CONTEXT.teacherName,
+    QUIZ_CONTEXT.teacherTitle
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+if (teacherDisplayName) {
+  quizCreatorName.textContent =
+    teacherDisplayName;
+
+  quizCreator.style.display =
+    "block";
+} else {
+  quizCreator.style.display =
+    "none";
+}
+
+infoClass.textContent =
+  QUIZ_CONTEXT.className || "Not provided";
+
+infoBoard.textContent =
+  QUIZ_CONTEXT.board || "Not provided";
+
+infoSubject.textContent =
+  QUIZ_CONTEXT.subject || "Not provided";
+
+infoChapter.textContent =
+  QUIZ_CONTEXT.chapter || "Not provided";
 
   const missingFields = [];
   if (!QUIZ_CONTEXT.className) missingFields.push("Class");
