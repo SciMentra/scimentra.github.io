@@ -606,10 +606,21 @@ QUIZ CREATOR:
 Teacher: ${creatorName}
 School: ${QUIZ_CONTEXT.schoolName}
 
-CREATOR DISPLAY RULE:
-- Show "Created by: ${creatorName}" directly below the quiz title or in the quiz information area, if the Gemini Interactive Quiz feature supports creator information.
-- Use exactly the teacher name and title given above.
-- Use exactly the School Name given above wherever school identity is appropriate.
+QUIZ TITLE AND CREATOR DISPLAY RULE:
+- The quiz title must contain ONLY the Chapter Name.
+- Do NOT add Class, Subject, Teacher Name, School Name, Board or any other information to the quiz title.
+- Display the details separately below the title, each on its own line.
+- Use this exact order:
+
+Chapter Title
+Class: ${QUIZ_CONTEXT.className}
+Subject: ${QUIZ_CONTEXT.subject}
+Created by: ${creatorName}
+School: ${QUIZ_CONTEXT.schoolName}
+
+- Never combine these details into one sentence, paragraph or title.
+- Never place the Teacher Name or School Name inside the quiz title.
+- Use exactly the teacher name, title and school name supplied above.
 - Do not invent or substitute another teacher or school name.
 `
       : "";
@@ -706,9 +717,14 @@ INTERACTIVE QUIZ REQUIREMENTS:
 14. Allow the student to review incorrect answers.
 15. Allow additional practice after completion.
 16. For Mathematics, render mathematical notation clearly and correctly.
-17. If supported by Gemini's Interactive Quiz interface, show question navigation as numbered circular selectors such as 1, 2, 3, 4, 5 instead of anonymous progress dashes.
-18. If supported, allow the student to tap a question number to move directly to that question.
-19. Clearly distinguish the current question, answered questions and unanswered questions in the question navigator.
+17. Use NUMBERED CIRCULAR QUESTION NAVIGATION instead of anonymous progress bars or dashes.
+18. Display one circle for each question, with the question number inside the circle: 1, 2, 3, 4, 5 and so on.
+19. Each numbered circle must be selectable so the student can jump directly to that question.
+20. Clearly distinguish:
+    - Current question
+    - Answered questions
+    - Unanswered questions
+21. Do NOT use an anonymous horizontal progress bar or dash-only question navigator.
 
 Do not begin by displaying Question 1 in the chat.
 
