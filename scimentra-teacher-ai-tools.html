@@ -1013,21 +1013,38 @@ Student learning tools open directly.
 
 
         <article class="tool-card" id="tool-card-9">
-          <div class="tool-icon" id="tool-icon-9">🎯</div>
-          <div class="tool-name" id="tool-name-9">
-            Interactive Quiz
-          </div>
-          <div class="tool-desc" id="tool-desc-9">
-            Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.
-          </div>
-          <button
-            type="button"
-            class="tool-btn"
-            id="tool-btn-9"
-            data-tool="interactive-quiz">
-            Create Interactive Quiz
-          </button>
-        </article>
+  <div class="tool-icon" id="tool-icon-9">🎯</div>
+  <div class="tool-name" id="tool-name-9">
+    Interactive Quiz
+  </div>
+  <div class="tool-desc" id="tool-desc-9">
+    Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.
+  </div>
+  <button
+    type="button"
+    class="tool-btn"
+    id="tool-btn-9"
+    data-tool="interactive-quiz">
+    Create Interactive Quiz
+  </button>
+</article>
+
+<article class="tool-card" id="tool-card-10">
+  <div class="tool-icon" id="tool-icon-10">📋</div>
+  <div class="tool-name" id="tool-name-10">
+    Visual Revision Sheet
+  </div>
+  <div class="tool-desc" id="tool-desc-10">
+    Create an A4 visual quick-revision sheet with key concepts, formulas, diagrams and high-value chapter points.
+  </div>
+  <button
+    type="button"
+    class="tool-btn"
+    id="tool-btn-10"
+    data-tool="visual-revision-sheet">
+    Generate Revision Sheet
+  </button>
+</article>
 
       </div>
       <p class="footer-note" id="footer-note">
@@ -1662,7 +1679,7 @@ const schoolBrandName =
     );
 
 
-   const toolUI = [1,2,3,4,5,6,7,8,9].map(
+   const toolUI = [1,2,3,4,5,6,7,8,9,10].map(
     number => ({
 
       card:
@@ -1841,12 +1858,20 @@ const schoolBrandName =
         },
 
         {
-          icon:"🎯",
-          name:"Remedial Teaching",
-          desc:"Prepare a simple reteaching plan for students who are weak in the lesson, with easier explanations and practice.",
-          button:"Create Remedial Plan",
-          tool:"remedial"
-        },
+  icon:"🎯",
+  name:"Interactive Quiz",
+  desc:"Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.",
+  button:"Create Interactive Quiz",
+  tool:"interactive-quiz"
+},
+
+{
+  icon:"📋",
+  name:"Visual Revision Sheet",
+  desc:"Create an A4 visual quick-revision sheet with key concepts, formulas, diagrams and high-value chapter points.",
+  button:"Generate Revision Sheet",
+  tool:"visual-revision-sheet"
+}
 
         {
           icon:"💡",
@@ -2652,9 +2677,149 @@ Otherwise provide the complete slide-by-slide deck content.`;
   }
 
 
-  function buildInfographicPrompt() {
+  function buildVisualRevisionSheetPrompt() {
 
-    return `You are creating a VISUAL EDUCATIONAL INFOGRAPHIC.
+  return `You are creating a PROFESSIONAL VISUAL REVISION SHEET for classroom teaching and student revision.
+
+${getLessonContext()}
+
+Create the FINAL RESULT as a HIGH-QUALITY A4 EDUCATIONAL REVISION SHEET IMAGE.
+
+PURPOSE:
+Create a one-page visual study sheet that allows a student to revise the most important content of the selected chapter or topic quickly.
+
+This is NOT a mind map.
+This is NOT a poster with decorative text.
+This is NOT a long textbook page.
+This is NOT a generic infographic.
+
+It should look like a professionally designed textbook QUICK REVISION / FORMULA / CONCEPT SHEET.
+
+PAGE FORMAT:
+- A4 portrait orientation.
+- High resolution.
+- Suitable for printing, classroom projection, PPT use and student sharing.
+- Clean light background.
+- Keep all important content safely inside page margins.
+- Use the available page space efficiently.
+- Avoid large empty areas.
+- Avoid overcrowding.
+- All text must be clearly readable.
+
+VISUAL STRUCTURE:
+- Put the Chapter / Topic title prominently at the top.
+- Organise content into clear rectangular or softly rounded sections.
+- Use logical section headings.
+- Use a balanced grid layout where appropriate.
+- Use diagrams, arrows, tables, mini-illustrations and visual representations wherever they genuinely improve understanding.
+- Keep related formulas and concepts together.
+- Make important formulas, laws, definitions and relationships visually prominent.
+- Use professional educational colours.
+- Do not make the design childish.
+- Do not add unnecessary decoration.
+
+CONTENT SELECTION:
+First analyse the selected Class, Subject, Chapter and Topic.
+
+Then select ONLY the highest-value revision content genuinely needed for that chapter.
+
+Do NOT force every category below if it is not relevant.
+
+SUBJECT-ADAPTIVE RULE:
+
+For MATHEMATICS:
+- Important formulas
+- Definitions
+- Rules and properties
+- Standard relationships
+- Useful diagrams / graphs / geometric figures
+- Short representative examples
+- Common mistakes or special conditions
+
+For PHYSICS:
+- Important laws
+- Formulae
+- Meaning of symbols
+- SI units where useful
+- Important conditions
+- Constants where relevant
+- Graphs and labelled physical diagrams
+- Key relationships between quantities
+- Short conceptual reminders
+
+For CHEMISTRY:
+- Important laws and formulae
+- Chemical equations / reactions
+- Definitions
+- Trends and relationships
+- Important conditions
+- Tables or comparisons
+- Structure / apparatus / particle diagrams where relevant
+- Key exceptions or cautions
+
+For BIOLOGY:
+- Important definitions and terminology
+- Labelled diagrams
+- Processes and sequences
+- Flow diagrams
+- Functions
+- Comparisons
+- Important structures and relationships
+- High-value recall points
+
+For SOCIAL SCIENCE:
+- Key facts
+- Important dates only where relevant
+- Timelines
+- Cause-and-effect relationships
+- Comparisons
+- Maps / schematic diagrams where useful
+- Important terms
+- People / places / events essential to the chapter
+
+For ENGLISH / LANGUAGE:
+- Important grammar rules or structures
+- Definitions
+- Patterns
+- Examples
+- Comparison tables
+- Common errors
+- Usage reminders
+- Literary elements only when relevant to the selected chapter
+
+QUALITY RULES:
+- Use only content appropriate to the selected class and chapter.
+- Do not introduce unnecessary higher-class material.
+- Use correct mathematical and scientific notation.
+- Check every formula, unit, equation, definition, label and example carefully.
+- Never invent facts merely to fill space.
+- Keep explanations short and revision-friendly.
+- Prefer visual explanation over long paragraphs.
+- Use diagrams only when they are educationally meaningful.
+- Make diagram labels clear and accurate.
+- Give enough information for useful revision without turning the sheet into a textbook page.
+
+FOUNDATION LEVEL:
+Where genuinely relevant, include a small section for important IIT & NEET Foundation connections, relationships, shortcuts or deeper observations appropriate to this class.
+
+Do NOT force advanced material if the selected chapter does not require it.
+
+SCHOOL IDENTITY:
+- Use exactly the School Name provided above if a school identity is shown.
+- Do not invent or substitute another school name.
+- Keep school identity small and professional so the academic content remains dominant.
+
+FINAL OUTPUT RULE:
+Generate the actual A4 VISUAL REVISION SHEET IMAGE.
+Do not respond with a long textual explanation of how to design it.
+Do not merely describe the sheet.
+Produce the finished visual revision sheet.`;
+}
+
+
+function buildInfographicPrompt() {
+
+  return `You are creating a VISUAL EDUCATIONAL INFOGRAPHIC.
 
 ${getLessonContext()}
 
@@ -2722,12 +2887,15 @@ The final response should be the generated INFOGRAPHIC IMAGE, not a long textual
           return buildMindMapPrompt();
 
         case "infographic":
-          return buildInfographicPrompt();
+  return buildInfographicPrompt();
 
-        default:
-          throw new Error(
-            "Unknown student learning tool."
-          );
+case "visual-revision-sheet":
+  return buildVisualRevisionSheetPrompt();
+
+default:
+  throw new Error(
+    "Unknown teacher tool."
+  );
       }
     }
 
