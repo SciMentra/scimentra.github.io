@@ -1841,86 +1841,87 @@ const schoolBrandName =
 
             const teacherTools = [
 
-        {
-          icon:"📝",
-          name:"Board Work Generator",
-          desc:"Prepare concise, classroom-ready board work in a clear teaching sequence with definitions, examples and recap.",
-          button:"Create Board Work",
-          tool:"board-work"
-        },
+  {
+    icon:"📝",
+    name:"Board Work Generator",
+    desc:"Prepare concise, classroom-ready board work in a clear teaching sequence with definitions, examples and recap.",
+    button:"Create Board Work",
+    tool:"board-work"
+  },
 
-        {
-          icon:"✅",
-          name:"Exit Ticket Generator",
-          desc:"Create a short end-of-class assessment to quickly check concept understanding, application and reasoning.",
-          button:"Create Exit Ticket",
-          tool:"exit-ticket"
-        },
+  {
+    icon:"✅",
+    name:"Exit Ticket Generator",
+    desc:"Create a short end-of-class assessment to quickly check concept understanding, application and reasoning.",
+    button:"Create Exit Ticket",
+    tool:"exit-ticket"
+  },
 
-        {
-  icon:"🎯",
-  name:"Interactive Quiz",
-  desc:"Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.",
-  button:"Create Interactive Quiz",
-  tool:"interactive-quiz"
-},
+  {
+    icon:"🎯",
+    name:"Remedial Teaching",
+    desc:"Prepare a simple reteaching plan for students who are weak in the lesson, with easier explanations and practice.",
+    button:"Create Remedial Plan",
+    tool:"remedial"
+  },
 
-{
-  icon:"📋",
-  name:"Visual Revision Sheet",
-  desc:"Create an A4 visual quick-revision sheet with key concepts, formulas, diagrams and high-value chapter points.",
-  button:"Generate Revision Sheet",
-  tool:"visual-revision-sheet"
-}
+  {
+    icon:"💡",
+    name:"Teaching Support",
+    desc:"Get concept sequence, prerequisites, common misconceptions, teaching tips, oral checks and classroom guidance.",
+    button:"Get Teaching Support",
+    tool:"teaching-support"
+  },
 
-        {
-          icon:"💡",
-          name:"Teaching Support",
-          desc:"Get concept sequence, prerequisites, common misconceptions, teaching tips, oral checks and classroom guidance.",
-          button:"Get Teaching Support",
-          tool:"teaching-support"
-        },
+  {
+    icon:"🗺️",
+    name:"Mind Map",
+    desc:"Generate a clear visual mind map for the selected chapter or topic.",
+    button:"Generate Mind Map",
+    tool:"mind-map"
+  },
 
-               {
-          icon:"🗺️",
-          name:"Mind Map",
-          desc:"Generate a clear visual mind map for the selected chapter or topic.",
-          button:"Generate Mind Map",
-          tool:"mind-map"
-        },
+  {
+    icon:"🧠",
+    name:"Flashcards",
+    desc:"Create concise study flashcards from the selected chapter or topic.",
+    button:"Create Flashcards",
+    tool:"flashcards"
+  },
 
-        {
-          icon:"🧠",
-          name:"Flashcards",
-          desc:"Create concise study flashcards from the selected chapter or topic.",
-          button:"Create Flashcards",
-          tool:"flashcards"
-        },
+  {
+    icon:"📊",
+    name:"Slide Deck",
+    desc:"Prepare a classroom-ready slide deck for the selected chapter or topic.",
+    button:"Create Slide Deck",
+    tool:"slide-deck"
+  },
 
-        {
-          icon:"📊",
-          name:"Slide Deck",
-          desc:"Prepare a classroom-ready slide deck for the selected chapter or topic.",
-          button:"Create Slide Deck",
-          tool:"slide-deck"
-        },
+  {
+    icon:"🎨",
+    name:"Infographic",
+    desc:"Generate a visual educational infographic for the selected chapter or topic.",
+    button:"Generate Infographic",
+    tool:"infographic"
+  },
 
-        {
-          icon:"🎨",
-          name:"Infographic",
-          desc:"Generate a visual educational infographic for the selected chapter or topic.",
-          button:"Generate Infographic",
-          tool:"infographic"
-        },
+  {
+    icon:"🎯",
+    name:"Interactive Quiz",
+    desc:"Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.",
+    button:"Create Interactive Quiz",
+    tool:"interactive-quiz"
+  },
 
-          {
-          icon:"🎯",
-          name:"Interactive Quiz",
-          desc:"Create a Foundation Concepts, Mains and Advanced interactive quiz with Gemini.",
-          button:"Create Interactive Quiz",
-          tool:"interactive-quiz"
-        }
-      ];
+  {
+    icon:"📋",
+    name:"Visual Revision Sheet",
+    desc:"Create an A4 visual quick-revision sheet with key concepts, formulas, diagrams and high-value chapter points.",
+    button:"Generate Revision Sheet",
+    tool:"visual-revision-sheet"
+  }
+
+];
 
            toolUI.forEach((ui,index) => {
 
@@ -2889,12 +2890,9 @@ The final response should be the generated INFOGRAPHIC IMAGE, not a long textual
         case "infographic":
   return buildInfographicPrompt();
 
-case "visual-revision-sheet":
-  return buildVisualRevisionSheetPrompt();
-
 default:
   throw new Error(
-    "Unknown teacher tool."
+    "Unknown student learning tool."
   );
       }
     }
@@ -2924,12 +2922,15 @@ default:
         return buildSlideDeckPrompt();
 
       case "infographic":
-        return buildInfographicPrompt();
+  return buildInfographicPrompt();
 
-      default:
-        throw new Error(
-          "Unknown teacher tool."
-        );
+case "visual-revision-sheet":
+  return buildVisualRevisionSheetPrompt();
+
+default:
+  throw new Error(
+    "Unknown teacher tool."
+  );
     }
   }
 function openChatGPT(promptText) {
