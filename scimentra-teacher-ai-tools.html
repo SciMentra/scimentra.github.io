@@ -9,6 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="scimentra-free-chapters.js"></script>
 
   <style>
     :root{
@@ -641,8 +642,9 @@
     </button>
 
     <div class="auth-footer">
-      Teacher access requires the school login.
-Student learning tools open directly.
+      Chapter 1 includes complimentary Teacher access.<br>
+      Other chapters require the school login.<br>
+      Student learning tools open directly.
     </div>
 
   </div>
@@ -1233,13 +1235,48 @@ const schoolBrandName =
 
 
      let selectedRole = "";
+  let isFreeTeacherAccess = false;
   let currentSchoolName = "";
   let currentTeacherName = "";
   let currentTeacherTitle = "";
 
 
-  async function handleTeacherAccess(user) {
+  function openFreeTeacherAccess() {
 
+    isFreeTeacherAccess = true;
+    selectedRole = "teacher";
+
+    currentSchoolName = "SciMentra Foundation";
+    currentTeacherName = "Teacher";
+    currentTeacherTitle = "";
+
+    schoolBrandName.textContent =
+      "SciMentra Foundation";
+
+    document.body.setAttribute(
+      "data-school-name",
+      "SciMentra Foundation"
+    );
+
+    document.title =
+      "SciMentra Foundation | Teacher AI Tools";
+
+    roleGate.style.display = "none";
+    authGate.style.display = "none";
+
+    applyRoleUI("teacher");
+
+    modeBadgeText.textContent =
+      "👨‍🏫 Complimentary Teacher Access";
+
+    teacherLogoutBtn.textContent =
+      "School Login";
+
+    mainPage.style.display = "block";
+  }
+
+
+  async function handleTeacherAccess(user) {
     mainPage.style.display = "none";
 
     authError.style.display = "none";
@@ -1289,7 +1326,11 @@ const schoolBrandName =
   }
 
     selectedRole = "teacher";
+  isFreeTeacherAccess = false;
   currentSchoolName = schoolName;
+
+  teacherLogoutBtn.textContent =
+    "Logout";
 
   const teacherProfileKey =
     "scimentraTeacherProfile_" + user.uid;
@@ -1404,14 +1445,30 @@ const schoolBrandName =
   }
 
 
-  teacherRoleBtn.addEventListener(
+ teacherRoleBtn.addEventListener(
     "click",
     async () => {
 
       selectedRole = "teacher";
+      isFreeTeacherAccess = false;
 
       roleGate.style.display = "none";
       mainPage.style.display = "none";
+
+      const isFreeChapter =
+        !questionsAuth.currentUser &&
+        window.SCIMENTRA_FREE_ACCESS &&
+        typeof window.SCIMENTRA_FREE_ACCESS
+          .isTeacherChapterFree === "function" &&
+        window.SCIMENTRA_FREE_ACCESS
+          .isTeacherChapterFree(
+            TEACHER_CONTEXT
+          );
+
+      if (isFreeChapter) {
+        openFreeTeacherAccess();
+        return;
+      }
 
       await handleTeacherAccess(
         questionsAuth.currentUser
@@ -1440,7 +1497,11 @@ const schoolBrandName =
     "click",
     () => {
 
-      selectedRole = "";
+     selectedRole = "";
+      isFreeTeacherAccess = false;
+
+      teacherLogoutBtn.textContent =
+        "Logout";
 
       authGate.style.display = "none";
       mainPage.style.display = "none";
@@ -1454,10 +1515,13 @@ const schoolBrandName =
   );
 
 
-  questionsAuth.onAuthStateChanged(
+ questionsAuth.onAuthStateChanged(
     user => {
 
-      if (selectedRole === "teacher") {
+      if (
+        selectedRole === "teacher" &&
+        !isFreeTeacherAccess
+      ) {
         handleTeacherAccess(user);
       }
     }
@@ -1556,6 +1620,40 @@ const schoolBrandName =
   teacherLogoutBtn.addEventListener(
     "click",
     async () => {
+
+      if (isFreeTeacherAccess) {
+
+        isFreeTeacherAccess = false;
+        selectedRole = "teacher";
+
+        currentSchoolName = "";
+        currentTeacherName = "";
+        currentTeacherTitle = "";
+
+        teacherLogoutBtn.textContent =
+          "Logout";
+
+        teacherLogoutBtn.style.display =
+          "none";
+
+        teacherName.value = "";
+        teacherTitle.value = "";
+
+        teacherTitleText.textContent =
+          "Select Title";
+
+        mainPage.style.display = "none";
+        roleGate.style.display = "none";
+        authGate.style.display = "flex";
+
+        schoolEmail.value = "";
+        schoolPassword.value = "";
+
+        authError.style.display = "none";
+        authError.textContent = "";
+
+        return;
+      }
 
       try {
 
