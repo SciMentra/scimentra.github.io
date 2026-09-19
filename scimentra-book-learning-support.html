@@ -753,8 +753,9 @@
     </button>
 
     <div class="auth-footer">
-      Teacher access requires the school login.
-Student access opens directly.
+      Chapter 1 includes complimentary Teacher access.<br>
+      Other chapters require the school login.<br>
+      Student access opens directly.
     </div>
 
   </div>
@@ -1033,6 +1034,7 @@ Student access opens directly.
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="scimentra-free-chapters.js"></script>
 
 <script>
   // ============================================================
@@ -1103,10 +1105,45 @@ const authError =
   document.getElementById("auth-error");
 
 let selectedRole = "";
+let isFreeTeacherAccess = false;
 
 let currentSchoolName = "";
 let currentTeacherName = "";
 let currentTeacherTitle = "";
+
+
+function openFreeTeacherAccess() {
+
+  isFreeTeacherAccess = true;
+  selectedRole = "teacher";
+
+  currentSchoolName = "SciMentra Foundation";
+  currentTeacherName = "Teacher";
+  currentTeacherTitle = "";
+
+  schoolBrandName.textContent =
+    "SciMentra Foundation";
+
+  document.title =
+    "SciMentra Foundation | Book Learning Support";
+
+  roleGate.style.display = "none";
+  authGate.style.display = "none";
+  mainPage.style.display = "block";
+
+  const freeAccessButton =
+    document.getElementById(
+      "teacher-logout-btn"
+    );
+
+  if (freeAccessButton) {
+    freeAccessButton.textContent =
+      "School Login";
+
+    freeAccessButton.style.display =
+      "inline-block";
+  }
+}
 
 
 async function handleTeacherAccess(user) {
@@ -1157,6 +1194,7 @@ async function handleTeacherAccess(user) {
   }
 
  selectedRole = "teacher";
+isFreeTeacherAccess = false;
 
 currentSchoolName =
   schoolName;
@@ -1245,6 +1283,7 @@ document.title =
     document.getElementById("teacher-logout-btn");
 
   if (teacherLogoutBtn) {
+    teacherLogoutBtn.textContent = "Logout";
     teacherLogoutBtn.style.display = "inline-block";
   }
 
@@ -1279,9 +1318,25 @@ document.title =
 teacherRoleBtn.addEventListener("click", async () => {
 
   selectedRole = "teacher";
+  isFreeTeacherAccess = false;
 
   roleGate.style.display = "none";
   mainPage.style.display = "none";
+
+  const isFreeChapter =
+    !questionsAuth.currentUser &&
+    window.SCIMENTRA_FREE_ACCESS &&
+    typeof window.SCIMENTRA_FREE_ACCESS
+      .isTeacherChapterFree === "function" &&
+    window.SCIMENTRA_FREE_ACCESS
+      .isTeacherChapterFree(
+        BOOK_CONTEXT
+      );
+
+  if (isFreeChapter) {
+    openFreeTeacherAccess();
+    return;
+  }
 
   await handleTeacherAccess(
     questionsAuth.currentUser
@@ -1309,7 +1364,10 @@ studentRoleBtn.addEventListener("click", () => {
 
 questionsAuth.onAuthStateChanged(user => {
 
-  if (selectedRole === "teacher") {
+  if (
+    selectedRole === "teacher" &&
+    !isFreeTeacherAccess
+  ) {
     handleTeacherAccess(user);
   }
 
@@ -1322,20 +1380,61 @@ if (teacherLogoutBtn) {
 
   teacherLogoutBtn.addEventListener("click", async () => {
 
+    if (isFreeTeacherAccess) {
+
+      isFreeTeacherAccess = false;
+      selectedRole = "teacher";
+
+      currentSchoolName = "";
+      currentTeacherName = "";
+      currentTeacherTitle = "";
+
+      teacherLogoutBtn.textContent =
+        "Logout";
+
+      teacherLogoutBtn.style.display =
+        "none";
+
+      teacherName.value = "";
+      teacherTitle.value = "";
+      schoolEmail.value = "";
+      schoolPassword.value = "";
+
+      mainPage.style.display = "none";
+      roleGate.style.display = "none";
+      authGate.style.display = "flex";
+
+      authError.style.display = "none";
+      authError.textContent = "";
+
+      return;
+    }
+
     try {
 
       selectedRole = "";
+      isFreeTeacherAccess = false;
+
+      currentSchoolName = "";
+      currentTeacherName = "";
+      currentTeacherTitle = "";
 
       await questionsAuth.signOut();
 
-      teacherLogoutBtn.style.display = "none";
+      teacherLogoutBtn.textContent =
+        "Logout";
+
+      teacherLogoutBtn.style.display =
+        "none";
+
+      teacherName.value = "";
+      teacherTitle.value = "";
+      schoolEmail.value = "";
+      schoolPassword.value = "";
 
       mainPage.style.display = "none";
       authGate.style.display = "none";
       roleGate.style.display = "flex";
-
-      schoolEmail.value = "";
-      schoolPassword.value = "";
 
       authError.style.display = "none";
       authError.textContent = "";
