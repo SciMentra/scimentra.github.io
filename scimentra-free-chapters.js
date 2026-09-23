@@ -13,6 +13,13 @@ window.SCIMENTRA_FREE_ACCESS = (() => {
       "IIT & NEET Foundation",
       "Math IIT",
       "Number System"
+    ].join("|"),
+
+    [
+      "8th Class",
+      "IIT & NEET Foundation",
+      "Math IIT",
+      "Exponents & Powers; Square Roots & Cube Roots"
     ].join("|")
   ]);
 
