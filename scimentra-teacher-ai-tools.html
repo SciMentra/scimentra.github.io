@@ -773,7 +773,7 @@
 
     </form>
 
-    <button
+        <button
       type="button"
       id="back-to-role-btn"
       class="auth-back-btn">
@@ -784,8 +784,61 @@
 </div>
 
 
-<div class="page" id="main-page" style="display:none;">
+<div id="student-profile-gate" class="auth-gate" style="display:none;">
+  <div class="auth-card">
 
+    <div class="auth-brand">IIT &amp; NEET FOUNDATION</div>
+    <div class="auth-sub">STUDENT LEARNING</div>
+
+    <h2 class="auth-title">Student Details</h2>
+
+    <p class="auth-description">
+      Enter your name once. It will be remembered on this device for future chapter learning.
+    </p>
+
+    <form id="student-profile-form">
+
+      <div class="auth-field">
+        <label for="student-name">Student Name</label>
+
+        <input
+          type="text"
+          id="student-name"
+          class="auth-input"
+          placeholder="Enter your name"
+          autocomplete="name"
+          required>
+      </div>
+
+      <button
+        type="submit"
+        class="auth-login-btn">
+        Continue
+      </button>
+
+      <div
+        id="student-profile-error"
+        class="auth-error">
+      </div>
+
+    </form>
+
+    <button
+      type="button"
+      id="student-back-to-role-btn"
+      class="auth-back-btn">
+      ← Back
+    </button>
+
+    <div class="auth-footer">
+      Your name is stored only in this browser on this device.
+    </div>
+
+  </div>
+</div>
+
+
+<div class="page" id="main-page" style="display:none;">
   <header>
   <h1
   class="brand"
@@ -1114,11 +1167,26 @@
   const studentRoleBtn =
     document.getElementById("role-student-btn");
 
-  const authGate =
+   const authGate =
     document.getElementById("auth-gate");
 
+  const studentProfileGate =
+    document.getElementById("student-profile-gate");
+
+  const studentProfileForm =
+    document.getElementById("student-profile-form");
+
+  const studentNameInput =
+    document.getElementById("student-name");
+
+  const studentProfileError =
+    document.getElementById("student-profile-error");
+
+  const studentBackToRoleBtn =
+    document.getElementById("student-back-to-role-btn");
+
   const mainPage =
-  document.getElementById("main-page");
+    document.getElementById("main-page");
 
 const schoolBrandName =
   document.getElementById("school-brand-name");
@@ -1241,11 +1309,44 @@ const schoolBrandName =
     document.getElementById("teacher-logout-btn");
 
 
-     let selectedRole = "";
-  let isFreeTeacherAccess = false;
-  let currentSchoolName = "";
-  let currentTeacherName = "";
-  let currentTeacherTitle = "";
+       let selectedRole = "";
+   let isFreeTeacherAccess = false;
+   let currentSchoolName = "";
+   let currentTeacherName = "";
+   let currentTeacherTitle = "";
+
+   const STUDENT_PROFILE_KEY =
+     "scimentraStudentProfile";
+
+   let currentStudentName = "";
+
+   try {
+
+     const savedStudentProfile =
+       JSON.parse(
+         localStorage.getItem(
+           STUDENT_PROFILE_KEY
+         ) || "{}"
+       );
+
+     currentStudentName =
+       String(
+         savedStudentProfile.name || ""
+       ).trim();
+
+   } catch (error) {
+
+     console.error(
+       "Student profile could not be read:",
+       error
+     );
+
+     localStorage.removeItem(
+       STUDENT_PROFILE_KEY
+     );
+
+     currentStudentName = "";
+   }
 
 
   function openFreeTeacherAccess() {
@@ -1484,7 +1585,7 @@ const schoolBrandName =
   );
 
 
-  studentRoleBtn.addEventListener(
+    studentRoleBtn.addEventListener(
     "click",
     () => {
 
@@ -1492,13 +1593,109 @@ const schoolBrandName =
 
       roleGate.style.display = "none";
       authGate.style.display = "none";
+      mainPage.style.display = "none";
 
-      applyRoleUI("student");
+      if (currentStudentName) {
 
-      mainPage.style.display = "block";
+        studentProfileGate.style.display =
+          "none";
+
+        applyRoleUI("student");
+
+        mainPage.style.display =
+          "block";
+
+        return;
+      }
+
+      studentProfileError.style.display =
+        "none";
+
+      studentProfileError.textContent =
+        "";
+
+      studentNameInput.value = "";
+
+      studentProfileGate.style.display =
+        "flex";
+
+      setTimeout(() => {
+        studentNameInput.focus();
+      }, 50);
     }
   );
 
+
+  studentProfileForm.addEventListener(
+    "submit",
+    event => {
+
+      event.preventDefault();
+
+      const enteredName =
+        String(
+          studentNameInput.value || ""
+        ).trim();
+
+      if (!enteredName) {
+
+        studentProfileError.textContent =
+          "Please enter your name.";
+
+        studentProfileError.style.display =
+          "block";
+
+        return;
+      }
+
+      currentStudentName = enteredName;
+
+      localStorage.setItem(
+        STUDENT_PROFILE_KEY,
+        JSON.stringify({
+          name: currentStudentName
+        })
+      );
+
+      studentProfileError.style.display =
+        "none";
+
+      studentProfileError.textContent =
+        "";
+
+      studentProfileGate.style.display =
+        "none";
+
+      applyRoleUI("student");
+
+      mainPage.style.display =
+        "block";
+    }
+  );
+
+
+  studentBackToRoleBtn.addEventListener(
+    "click",
+    () => {
+
+      selectedRole = "";
+
+      studentProfileGate.style.display =
+        "none";
+
+      mainPage.style.display =
+        "none";
+
+      studentProfileError.style.display =
+        "none";
+
+      studentProfileError.textContent =
+        "";
+
+      roleGate.style.display =
+        "flex";
+    }
+  );
 
   backToRoleBtn.addEventListener(
     "click",
@@ -1624,9 +1821,47 @@ const schoolBrandName =
   );
 
 
-  teacherLogoutBtn.addEventListener(
+   teacherLogoutBtn.addEventListener(
     "click",
     async () => {
+
+      if (selectedRole === "student") {
+
+        localStorage.removeItem(
+          STUDENT_PROFILE_KEY
+        );
+
+        currentStudentName = "";
+
+        mainPage.style.display =
+          "none";
+
+        roleGate.style.display =
+          "none";
+
+        authGate.style.display =
+          "none";
+
+        teacherLogoutBtn.style.display =
+          "none";
+
+        studentNameInput.value = "";
+
+        studentProfileError.style.display =
+          "none";
+
+        studentProfileError.textContent =
+          "";
+
+        studentProfileGate.style.display =
+          "flex";
+
+        setTimeout(() => {
+          studentNameInput.focus();
+        }, 50);
+
+        return;
+      }
 
       if (isFreeTeacherAccess) {
 
@@ -1864,7 +2099,7 @@ const schoolBrandName =
           `Address Teacher As: ${teacherDisplayName}\n`;
       }
 
-      text +=
+           text +=
         `\nPERSONALISATION RULE:\n` +
         `- You are assisting the teacher identified above.\n` +
         `- Address the teacher naturally using the exact value given in "Address Teacher As".\n` +
@@ -1872,6 +2107,19 @@ const schoolBrandName =
         `- Do not repeat the teacher's name unnecessarily.\n` +
         `- Use only the provided Teacher Name, Teacher Title and School Name.\n` +
         `- Never invent or substitute another teacher name or school name.\n\n`;
+    }
+
+    if (
+      selectedRole === "student" &&
+      currentStudentName
+    ) {
+
+      text +=
+        `Student Name: ${currentStudentName}\n` +
+        `\nSTUDENT PERSONALISATION RULE:\n` +
+        `- The student's name is provided above.\n` +
+        `- Use the student's exact name naturally when appropriate.\n` +
+        `- Do not invent, change or replace the student's name.\n\n`;
     }
 
     text +=
@@ -2052,8 +2300,10 @@ const schoolBrandName =
 
 
 
-    modeBadgeText.textContent =
-      "🎓 Student Learning";
+       modeBadgeText.textContent =
+      currentStudentName
+        ? `🎓 ${currentStudentName}`
+        : "🎓 Student Learning";
 
     pageTitle.textContent =
       "Student AI Learning Tools";
@@ -2075,12 +2325,14 @@ const schoolBrandName =
 
        toolsNote.textContent =
       "Choose a learning tool for this chapter.";
-
     footerNote.textContent =
       "These tools are designed to help you understand and practise independently.";
 
+    teacherLogoutBtn.textContent =
+      "Change Student";
+
     teacherLogoutBtn.style.display =
-      "none";
+      "inline-block";
 
 
     const studentTools = [
@@ -2304,47 +2556,494 @@ ${getStudentLearningRules()}`;
 
 
 
-  function buildChapterChallengePrompt() {
+   function buildChapterChallengePrompt() {
 
-    return `You are conducting a CHAPTER CHALLENGE for a student.
+    return `You are conducting an INTERACTIVE MCQ CHAPTER CHALLENGE for a student.
 
 ${getLessonContext()}
 
-Create an interactive 4-stage chapter challenge.
-
-The stages are:
+This is a progressive learning challenge with FOUR locked stages.
 
 STAGE 1 - CONCEPT CHECK
 STAGE 2 - APPLICATION
 STAGE 3 - FOUNDATION REASONING
 STAGE 4 - CHALLENGE
 
+
+==================================================
+CORE QUESTION RULES
+==================================================
+
+- EVERY challenge question must be an MCQ.
+- Every MCQ must have exactly FOUR options:
+  A)
+  B)
+  C)
+  D)
+- There must be one clearly correct option.
+- Show ONLY ONE question at a time.
+- NEVER display several questions together.
+- NEVER show future questions in advance.
+- NEVER reveal the answer before the student attempts the question.
+- Keep every question strictly within the given Class, Board, Subject, Chapter and selected Topic / Concept if one is provided.
+- Use fresh questions throughout the challenge.
+- Do not unnecessarily repeat the same numbers, examples or question structure.
+- Use correct mathematical or scientific notation wherever applicable.
+
+
+==================================================
+OFFICIAL CHALLENGE STRUCTURE
+==================================================
+
+There are exactly 12 OFFICIAL SCORED QUESTIONS.
+
+STAGE 1:
+3 official MCQs
+
+STAGE 2:
+3 official MCQs
+
+STAGE 3:
+3 official MCQs
+
+STAGE 4:
+3 official MCQs
+
+The 12 official questions are used to calculate the student's final CHAPTER POWER.
+
+Retry questions are NOT part of the 12-question official score.
+
+
+==================================================
+ANSWER CHECKING
+==================================================
+
+After the student answers the current question, evaluate the answer immediately.
+
+Accept an answer when the student gives:
+- the option letter,
+- the option text,
+- or a numerical / mathematical answer that clearly corresponds to one option.
+
+If the student's response is unclear or does not actually answer the MCQ:
+- do not count it as an attempt,
+- ask the student to choose or state the answer clearly.
+
+IF CORRECT:
+
+Say clearly:
+
+✅ Correct!
+
+Then:
+- state the correct option,
+- give a short student-friendly explanation,
+- update the reward display,
+- and automatically give the next question when appropriate.
+
+IF INCORRECT:
+
+Say clearly:
+
+❌ Incorrect.
+
+Then:
+- state the correct option,
+- state the correct answer,
+- briefly explain the student's mistake,
+- briefly explain the correct reasoning,
+- update the reward display,
+- and automatically give the next question when appropriate.
+
+Do NOT continue using hint-only rules for this Chapter Challenge.
+
+For this Chapter Challenge, AFTER the student has attempted a question, you MUST tell the student whether the answer is correct or incorrect and explain the correct answer.
+
+If the student asks for help BEFORE attempting the question:
+- give only one useful hint,
+- do not reveal the answer,
+- and do not score the question until the student gives an answer.
+
+
+==================================================
+STRICT STAGE PASSING RULE
+==================================================
+
+Each stage has a set of 3 questions.
+
+The student must get at least 2 out of 3 correct to PASS that stage.
+
 IMPORTANT:
 
-Show ONLY STAGE 1 first.
+- Ask ALL 3 questions in the current set, one at a time.
+- Do not declare the stage passed before all 3 questions in that set have been answered.
+- 2/3 or 3/3 = PASS.
+- 0/3 or 1/3 = NOT YET PASSED.
 
-Do not show later questions until the student has attempted the current stage.
+STRICTLY enforce this progression:
 
-Do not give:
-- the final answer,
-- the correct option,
-- an answer key,
-- or a complete solution.
+STAGE 1 must be passed before STAGE 2.
+STAGE 2 must be passed before STAGE 3.
+STAGE 3 must be passed before STAGE 4.
 
-If the student needs help, give only one hint at a time.
+NEVER unlock or show a later stage before the current stage has been passed.
 
-Keep every question strictly within the student's class syllabus and the selected chapter.
 
-Begin with:
+==================================================
+IF A STAGE IS PASSED
+==================================================
+
+After the third question of the current set:
+
+If the student scored 2/3 or 3/3:
+
+Clearly show:
+
+✅ STAGE PASSED!
+
+Then show the stage result.
+
+For example:
+
+Stage Score: 2/3
+⭐ Stage Star Earned
+🔓 Next Stage Unlocked
+
+Then announce the next stage and immediately give ONLY its first MCQ.
+
+
+==================================================
+IF A STAGE IS NOT PASSED
+==================================================
+
+If the student scored only 0/3 or 1/3:
+
+Clearly show:
+
+🔒 STAGE NOT YET PASSED
+
+Do NOT move to the next stage.
+
+Briefly identify the concept or concepts that need improvement.
+
+Then create a completely FRESH RETRY SET of 3 MCQs from the SAME STAGE.
+
+Show those retry questions ONE AT A TIME.
+
+The student must again score at least 2/3 in that fresh retry set.
+
+If the student again scores below 2/3:
+- keep the next stage locked,
+- generate another fresh retry set of 3 questions,
+- and continue until the student passes.
+
+Retry questions must remain at the current stage level.
+
+Do not make the student jump to a higher-stage concept merely because it is a retry.
+
+
+==================================================
+DIFFICULTY PROGRESSION
+==================================================
+
+STAGE 1 - CONCEPT CHECK
+
+Test:
+- definitions,
+- basic concepts,
+- rules,
+- formulas,
+- identification,
+- direct understanding.
+
+Difficulty:
+Easy to Moderate.
+
+
+STAGE 2 - APPLICATION
+
+Test:
+- direct use of concepts,
+- formula application,
+- short calculations,
+- standard applications.
+
+Difficulty:
+Moderate.
+
+
+STAGE 3 - FOUNDATION REASONING
+
+Test:
+- reasoning,
+- comparison,
+- inference,
+- connected concepts,
+- multi-step applications,
+- Foundation-level thinking.
+
+Difficulty:
+Difficult.
+
+
+STAGE 4 - CHALLENGE
+
+Test:
+- deeper reasoning,
+- multi-step thinking,
+- non-routine applications,
+- suitable IIT & NEET Foundation challenge questions.
+
+Difficulty:
+Challenging but STRICTLY appropriate to the student's class and selected chapter.
+
+Never introduce unnecessarily higher-class content.
+
+
+==================================================
+REWARD SYSTEM
+==================================================
+
+Maintain the student's running rewards throughout this Chapter Challenge.
+
+OFFICIAL QUESTION REWARD:
+
+For every correct OFFICIAL question:
+🪙 +10 Coins
+
+For an incorrect official answer:
+0 Coins
+
+Never deduct coins.
+
+
+STAGE REWARD:
+
+Every time a stage is successfully passed:
+⭐ +1 Stage Star
+
+
+PERFECT STAGE BONUS:
+
+If the student gets 3/3 correct in the ORIGINAL official set of that stage:
+
+⭐ +1 Bonus Star
+🪙 +10 Bonus Coins
+
+
+RETRY RULE:
+
+Retry questions do NOT earn the normal +10 question coins.
+
+When a student who initially failed a stage later successfully passes that stage through a retry set:
+
+🪙 +5 Comeback Bonus Coins
+
+Award this Comeback Bonus only ONCE for that stage.
+
+The normal Stage Star is still awarded when the stage is passed.
+
+
+MAXIMUM OFFICIAL REWARDS:
+
+12 correct official questions = 120 Coins
+
+4 perfect-stage bonuses = 40 additional Coins
+
+Maximum standard total = 160 Coins
+
+Maximum Stars:
+4 Stage Stars + 4 Perfect Stage Bonus Stars = 8 Stars
+
+
+==================================================
+LIVE SCOREBOARD
+==================================================
+
+After checking each answer, display a short scoreboard such as:
+
+⭐ Stars: 2
+🪙 Coins: 70
+🧠 Chapter Power so far: 83%
+
+Also display stage status in a compact form such as:
+
+Stage 1 ✅ | Stage 2 🔓 | Stage 3 🔒 | Stage 4 🔒
+
+Do not show a future stage as unlocked until the previous stage has actually been passed.
+
+
+==================================================
+CHAPTER POWER
+==================================================
+
+CHAPTER POWER measures performance in THIS CHAPTER only.
+
+It is NOT intelligence, IQ or general brain ability.
+
+Calculate final Chapter Power ONLY from the student's FIRST 3 OFFICIAL questions in each of the four stages.
+
+Total official questions = 12.
+
+Formula:
+
+Chapter Power =
+(Number of correct answers in the 12 official questions ÷ 12) × 100
+
+Round to the nearest whole percentage if necessary.
+
+Retry questions must NEVER alter the 12-question Chapter Power score.
+
+Always keep the original official results internally so the final calculation remains accurate.
+
+
+==================================================
+ACHIEVEMENT TITLE
+==================================================
+
+Use the final Chapter Power to assign ONE positive achievement title:
+
+90% to 100%:
+CHAPTER CHAMPION
+
+75% to 89%:
+FOUNDATION STAR
+
+60% to 74%:
+CONCEPT BUILDER
+
+Below 60%:
+DETERMINED LEARNER
+
+These titles describe performance in this challenge only.
+
+
+==================================================
+WHEN THE CHALLENGE ENDS
+==================================================
+
+The Chapter Challenge ends ONLY when STAGE 4 has been successfully PASSED.
+
+Passing Stage 1, Stage 2 or Stage 3 is NOT completion of the challenge.
+
+If a stage is not passed:
+- remain in that stage,
+- continue with fresh retry sets,
+- and do not end the challenge.
+
+After Stage 4 has been successfully passed:
+
+1. Check and explain the final answer normally.
+
+2. Clearly announce:
+
+🏆 CHAPTER CHALLENGE COMPLETED!
+
+3. Show the student's final results:
+
+- Student Name
+- Class
+- Subject
+- Chapter
+- Selected Topic / Concept, if one was provided
+- Official Score out of 12
+- Chapter Power %
+- Total Stars
+- Total Coins
+- Stage 1 status
+- Stage 2 status
+- Stage 3 status
+- Stage 4 status
+- Achievement Title
+
+4. Give one short, positive, performance-based message.
+
+5. Then GENERATE a final ACHIEVEMENT CARD IMAGE using the image generation capability.
+
+
+==================================================
+FINAL ACHIEVEMENT IMAGE
+==================================================
+
+After Stage 4 is passed, generate a polished educational achievement card image.
+
+The card must prominently show:
+
+SCIMENTRA
+CHAPTER CHALLENGE ACHIEVEMENT
+
+Student Name:
+Use the student's exact provided name.
+
+Class:
+Use the provided class.
+
+Subject:
+Use the provided subject.
+
+Chapter:
+Use the exact provided chapter.
+
+If a Selected Topic / Concept was provided, also show:
+Focus Topic: [selected topic]
+
+Show prominently:
+
+⭐ Stars Earned
+🪙 Coins Earned
+🧠 Chapter Power: [percentage]
+🏆 Achievement Title
+
+Also show:
+
+Stage 1 ✓
+Stage 2 ✓
+Stage 3 ✓
+Stage 4 ✓
+
+Include:
+
+Official Score: [correct]/12
+
+Use a modern, premium, student-friendly educational design.
+
+The image should feel like a genuine achievement reward that a student would be proud to save or share.
+
+Keep the student's name large and clearly readable.
+
+Do not invent a different student name.
+
+Do not call Chapter Power IQ or intelligence.
+
+Do not merely describe the achievement card.
+
+At the end of the completed challenge, actually GENERATE the achievement image.
+
+
+==================================================
+START NOW
+==================================================
+
+Begin exactly with:
 
 CHAPTER CHALLENGE
 STAGE 1 - CONCEPT CHECK
 
-Then give only the first question.
+Greet the student briefly using the provided Student Name.
 
-${getStudentLearningRules()}`;
+Then give ONLY:
+
+Question 1
+
+with four options:
+
+A)
+B)
+C)
+D)
+
+Do not give the answer until the student attempts Question 1.`;
   }
-
 
 
   function buildBoardWorkPrompt() {
