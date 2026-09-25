@@ -790,10 +790,10 @@
     <div class="auth-brand">IIT &amp; NEET FOUNDATION</div>
     <div class="auth-sub">STUDENT LEARNING</div>
 
-    <h2 class="auth-title">Student Details</h2>
+       <h2 class="auth-title">Student Details</h2>
 
     <p class="auth-description">
-      Enter your name once. It will be remembered on this device for future chapter learning.
+      Enter your details once. They will be remembered on this device for future chapter learning.
     </p>
 
     <form id="student-profile-form">
@@ -805,8 +805,20 @@
           type="text"
           id="student-name"
           class="auth-input"
-          placeholder="Enter your name"
+          placeholder="Enter student name"
           autocomplete="name"
+          required>
+      </div>
+
+      <div class="auth-field">
+        <label for="student-school-name">School Name</label>
+
+        <input
+          type="text"
+          id="student-school-name"
+          class="auth-input"
+          placeholder="Enter school name"
+          autocomplete="organization"
           required>
       </div>
 
@@ -831,9 +843,8 @@
     </button>
 
     <div class="auth-footer">
-      Your name is stored only in this browser on this device.
+      Your student and school details are stored only in this browser on this device.
     </div>
-
   </div>
 </div>
 
@@ -1176,15 +1187,17 @@
   const studentProfileForm =
     document.getElementById("student-profile-form");
 
-  const studentNameInput =
+    const studentNameInput =
     document.getElementById("student-name");
+
+  const studentSchoolNameInput =
+    document.getElementById("student-school-name");
 
   const studentProfileError =
     document.getElementById("student-profile-error");
 
   const studentBackToRoleBtn =
     document.getElementById("student-back-to-role-btn");
-
   const mainPage =
     document.getElementById("main-page");
 
@@ -1309,7 +1322,7 @@ const schoolBrandName =
     document.getElementById("teacher-logout-btn");
 
 
-       let selectedRole = "";
+             let selectedRole = "";
    let isFreeTeacherAccess = false;
    let currentSchoolName = "";
    let currentTeacherName = "";
@@ -1319,6 +1332,7 @@ const schoolBrandName =
      "scimentraStudentProfile";
 
    let currentStudentName = "";
+   let currentStudentSchoolName = "";
 
    try {
 
@@ -1334,6 +1348,11 @@ const schoolBrandName =
          savedStudentProfile.name || ""
        ).trim();
 
+     currentStudentSchoolName =
+       String(
+         savedStudentProfile.schoolName || ""
+       ).trim();
+
    } catch (error) {
 
      console.error(
@@ -1346,8 +1365,8 @@ const schoolBrandName =
      );
 
      currentStudentName = "";
+     currentStudentSchoolName = "";
    }
-
 
   function openFreeTeacherAccess() {
 
@@ -1585,7 +1604,7 @@ const schoolBrandName =
   );
 
 
-    studentRoleBtn.addEventListener(
+       studentRoleBtn.addEventListener(
     "click",
     () => {
 
@@ -1595,7 +1614,10 @@ const schoolBrandName =
       authGate.style.display = "none";
       mainPage.style.display = "none";
 
-      if (currentStudentName) {
+      if (
+        currentStudentName &&
+        currentStudentSchoolName
+      ) {
 
         studentProfileGate.style.display =
           "none";
@@ -1614,13 +1636,23 @@ const schoolBrandName =
       studentProfileError.textContent =
         "";
 
-      studentNameInput.value = "";
+      studentNameInput.value =
+        currentStudentName || "";
+
+      studentSchoolNameInput.value =
+        currentStudentSchoolName || "";
 
       studentProfileGate.style.display =
         "flex";
 
       setTimeout(() => {
-        studentNameInput.focus();
+
+        if (!studentNameInput.value) {
+          studentNameInput.focus();
+        } else {
+          studentSchoolNameInput.focus();
+        }
+
       }, 50);
     }
   );
@@ -1637,23 +1669,49 @@ const schoolBrandName =
           studentNameInput.value || ""
         ).trim();
 
+      const enteredSchoolName =
+        String(
+          studentSchoolNameInput.value || ""
+        ).trim();
+
       if (!enteredName) {
 
         studentProfileError.textContent =
-          "Please enter your name.";
+          "Please enter the student name.";
 
         studentProfileError.style.display =
           "block";
 
+        studentNameInput.focus();
+
         return;
       }
 
-      currentStudentName = enteredName;
+      if (!enteredSchoolName) {
+
+        studentProfileError.textContent =
+          "Please enter the school name.";
+
+        studentProfileError.style.display =
+          "block";
+
+        studentSchoolNameInput.focus();
+
+        return;
+      }
+
+      currentStudentName =
+        enteredName;
+
+      currentStudentSchoolName =
+        enteredSchoolName;
 
       localStorage.setItem(
         STUDENT_PROFILE_KEY,
         JSON.stringify({
-          name: currentStudentName
+          name: currentStudentName,
+          schoolName:
+            currentStudentSchoolName
         })
       );
 
@@ -1672,7 +1730,6 @@ const schoolBrandName =
         "block";
     }
   );
-
 
   studentBackToRoleBtn.addEventListener(
     "click",
@@ -1825,13 +1882,14 @@ const schoolBrandName =
     "click",
     async () => {
 
-      if (selectedRole === "student") {
+           if (selectedRole === "student") {
 
         localStorage.removeItem(
           STUDENT_PROFILE_KEY
         );
 
         currentStudentName = "";
+        currentStudentSchoolName = "";
 
         mainPage.style.display =
           "none";
@@ -1846,6 +1904,7 @@ const schoolBrandName =
           "none";
 
         studentNameInput.value = "";
+        studentSchoolNameInput.value = "";
 
         studentProfileError.style.display =
           "none";
@@ -2109,17 +2168,19 @@ const schoolBrandName =
         `- Never invent or substitute another teacher name or school name.\n\n`;
     }
 
-    if (
+        if (
       selectedRole === "student" &&
       currentStudentName
     ) {
 
       text +=
         `Student Name: ${currentStudentName}\n` +
+        `School Name: ${currentStudentSchoolName}\n` +
         `\nSTUDENT PERSONALISATION RULE:\n` +
-        `- The student's name is provided above.\n` +
+        `- The student's name and school name are provided above.\n` +
         `- Use the student's exact name naturally when appropriate.\n` +
-        `- Do not invent, change or replace the student's name.\n\n`;
+        `- Use the exact School Name wherever the school name is required.\n` +
+        `- Do not invent, change or replace the student's name or school name.\n\n`;
     }
 
     text +=
@@ -2328,8 +2389,8 @@ const schoolBrandName =
     footerNote.textContent =
       "These tools are designed to help you understand and practise independently.";
 
-    teacherLogoutBtn.textContent =
-      "Change Student";
+        teacherLogoutBtn.textContent =
+      "Change Details";
 
     teacherLogoutBtn.style.display =
       "inline-block";
@@ -2361,10 +2422,10 @@ const schoolBrandName =
         tool:"practice-me"
       },
 
-      {
+           {
         icon:"🏆",
         name:"Chapter Challenge",
-        desc:"Challenge yourself with questions that gradually move from basic understanding to Foundation reasoning.",
+        desc:"Take a 4-stage IIT & NEET Foundation challenge progressing from Foundation Concepts to Foundation Advanced.",
         button:"Start Challenge",
         tool:"chapter-challenge"
       }
@@ -2556,19 +2617,22 @@ ${getStudentLearningRules()}`;
 
 
 
-   function buildChapterChallengePrompt() {
+      function buildChapterChallengePrompt() {
 
-    return `You are conducting an INTERACTIVE MCQ CHAPTER CHALLENGE for a student.
+    return `You are conducting an INTERACTIVE IIT & NEET FOUNDATION MCQ CHAPTER CHALLENGE for a student.
 
 ${getLessonContext()}
 
-This is a progressive learning challenge with FOUR locked stages.
+This is a progressive FOUR-STAGE IIT & NEET FOUNDATION challenge.
 
-STAGE 1 - CONCEPT CHECK
-STAGE 2 - APPLICATION
-STAGE 3 - FOUNDATION REASONING
-STAGE 4 - CHALLENGE
+Every question must be appropriate to the student's given class and selected chapter, but the standard must be stronger than ordinary school-level recall.
 
+The stages are:
+
+STAGE 1 - FOUNDATION CONCEPTS
+STAGE 2 - FOUNDATION APPLICATION
+STAGE 3 - FOUNDATION MAINS REASONING
+STAGE 4 - FOUNDATION ADVANCED CHALLENGE
 
 ==================================================
 CORE QUESTION RULES
@@ -2743,62 +2807,78 @@ Do not make the student jump to a higher-stage concept merely because it is a re
 
 
 ==================================================
-DIFFICULTY PROGRESSION
+IIT & NEET FOUNDATION DIFFICULTY PROGRESSION
 ==================================================
 
-STAGE 1 - CONCEPT CHECK
+EVERY stage must maintain IIT & NEET Foundation quality appropriate to the student's class.
+
+Do not reduce the challenge to ordinary textbook recall.
+
+Do not use unnecessarily higher-class concepts merely to make questions difficult.
+
+
+STAGE 1 - FOUNDATION CONCEPTS
 
 Test:
-- definitions,
-- basic concepts,
-- rules,
-- formulas,
-- identification,
-- direct understanding.
+- strong conceptual clarity,
+- definitions and properties,
+- rules and relationships,
+- concept identification,
+- simple reasoning,
+- meaningful conceptual understanding.
+
+Questions may be direct, but they must test understanding rather than memorisation alone.
 
 Difficulty:
-Easy to Moderate.
+Foundation Basic to Moderate.
 
 
-STAGE 2 - APPLICATION
+STAGE 2 - FOUNDATION APPLICATION
 
 Test:
-- direct use of concepts,
-- formula application,
-- short calculations,
-- standard applications.
+- application of concepts,
+- formula or rule selection,
+- numerical application,
+- short multi-step problems,
+- interpretation,
+- less-direct applications.
 
 Difficulty:
-Moderate.
+Foundation Moderate.
 
 
-STAGE 3 - FOUNDATION REASONING
+STAGE 3 - FOUNDATION MAINS REASONING
 
 Test:
-- reasoning,
-- comparison,
-- inference,
 - connected concepts,
-- multi-step applications,
-- Foundation-level thinking.
+- analytical reasoning,
+- inference,
+- comparison,
+- multi-step calculations,
+- non-direct applications,
+- option analysis,
+- Foundation Mains style thinking.
 
 Difficulty:
-Difficult.
+Foundation Difficult.
 
 
-STAGE 4 - CHALLENGE
+STAGE 4 - FOUNDATION ADVANCED CHALLENGE
 
 Test:
 - deeper reasoning,
-- multi-step thinking,
 - non-routine applications,
-- suitable IIT & NEET Foundation challenge questions.
+- multiple connected ideas,
+- advanced option analysis,
+- challenging multi-step thinking,
+- Foundation Advanced style problems.
 
 Difficulty:
-Challenging but STRICTLY appropriate to the student's class and selected chapter.
+Foundation Advanced for the student's class.
 
-Never introduce unnecessarily higher-class content.
+The question must be challenging because of reasoning and concept depth, not because it uses out-of-syllabus material.
 
+Keep every question strictly within the selected Class, Subject, Chapter and Topic / Concept when provided.
 
 ==================================================
 REWARD SYSTEM
@@ -2942,7 +3022,9 @@ After Stage 4 has been successfully passed:
 3. Show the student's final results:
 
 - Student Name
+- School Name
 - Class
+- Board
 - Subject
 - Chapter
 - Selected Topic / Concept, if one was provided
@@ -2965,55 +3047,132 @@ After Stage 4 has been successfully passed:
 FINAL ACHIEVEMENT IMAGE
 ==================================================
 
-After Stage 4 is passed, generate a polished educational achievement card image.
+After Stage 4 has been successfully passed, actually GENERATE a polished educational achievement card image.
 
-The card must prominently show:
+IMAGE SIZE AND FORMAT:
 
+- Target canvas: 1080 × 1920 pixels.
+- Portrait orientation.
+- 9:16 aspect ratio.
+- Optimised for mobile viewing and sharing.
+- High-quality, premium educational achievement-card design.
+- Keep all text and important elements safely inside the image margins.
+- Use large, clear and highly readable typography.
+
+
+STRICT BRANDING RULE:
+
+DO NOT mention:
+
+SciMentra
 SCIMENTRA
-CHAPTER CHALLENGE ACHIEVEMENT
+Sci Mentra
+
+or any variation of that name anywhere on the achievement image.
+
+Do not add any invented brand name.
+
+Do not invent or add a school logo.
+
+
+TOP OF IMAGE:
+
+The FIRST and most prominent institutional text must be the exact:
+
+School Name
+
+Use the School Name supplied in the student details exactly as provided.
+
+Immediately below it show:
+
+IIT & NEET FOUNDATION
+
+Then show:
+
+CHAPTER CHALLENGE
+ACHIEVEMENT
+
+
+STUDENT DETAILS:
 
 Student Name:
 Use the student's exact provided name.
 
 Class:
-Use the provided class.
+Use the exact provided class.
+
+Board:
+Use the provided board.
 
 Subject:
-Use the provided subject.
+Use the exact provided subject.
 
 Chapter:
 Use the exact provided chapter.
 
 If a Selected Topic / Concept was provided, also show:
-Focus Topic: [selected topic]
+
+Focus Topic:
+[exact selected topic]
+
+
+PERFORMANCE SECTION:
 
 Show prominently:
 
-⭐ Stars Earned
-🪙 Coins Earned
+⭐ Stars Earned: [number]
+
+🪙 Coins Earned: [number]
+
 🧠 Chapter Power: [percentage]
-🏆 Achievement Title
 
-Also show:
+🏆 Achievement Title:
+[achievement title]
 
-Stage 1 ✓
-Stage 2 ✓
-Stage 3 ✓
-Stage 4 ✓
+Official Score:
+[correct]/12
 
-Include:
 
-Official Score: [correct]/12
+STAGE COMPLETION SECTION:
 
-Use a modern, premium, student-friendly educational design.
+Show all four stages as successfully completed:
 
-The image should feel like a genuine achievement reward that a student would be proud to save or share.
+STAGE 1
+FOUNDATION CONCEPTS
+✓
 
-Keep the student's name large and clearly readable.
+STAGE 2
+FOUNDATION APPLICATION
+✓
 
-Do not invent a different student name.
+STAGE 3
+FOUNDATION MAINS REASONING
+✓
 
-Do not call Chapter Power IQ or intelligence.
+STAGE 4
+FOUNDATION ADVANCED CHALLENGE
+✓
+
+
+DESIGN:
+
+- Modern and premium.
+- Professional rather than childish.
+- Strong educational achievement look.
+- Use trophy, star, medal or achievement-style visual elements.
+- Use visually distinct score panels for Stars, Coins and Chapter Power.
+- Keep the student's name prominent.
+- Keep the School Name prominent at the top.
+- Make IIT & NEET FOUNDATION clearly visible.
+- Use a clear four-stage completion section.
+- Avoid excessive decoration.
+- Avoid overcrowding.
+- Do not invent any student details.
+- Do not invent any school details.
+- Do not call Chapter Power IQ, intelligence or brain intelligence.
+- Chapter Power refers only to performance in this chapter challenge.
+
+Include one short positive message based on the student's actual performance.
 
 Do not merely describe the achievement card.
 
@@ -3027,9 +3186,9 @@ START NOW
 Begin exactly with:
 
 CHAPTER CHALLENGE
-STAGE 1 - CONCEPT CHECK
+STAGE 1 - FOUNDATION CONCEPTS
 
-Greet the student briefly using the provided Student Name.
+Greet the student briefly using the exact provided Student Name.
 
 Then give ONLY:
 
@@ -3042,9 +3201,9 @@ B)
 C)
 D)
 
-Do not give the answer until the student attempts Question 1.`;
-  }
+The first question must already be IIT & NEET Foundation quality appropriate to the student's class and chapter.
 
+Do not give the answer until the student attempts Question 1.`;
 
   function buildBoardWorkPrompt() {
     return `You are assisting a teacher in preparing classroom board work.
