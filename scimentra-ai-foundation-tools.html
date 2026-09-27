@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AI Foundation | Teacher & Student AI Tools</title>
+  <meta name="theme-color" content="#163d66">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- Optional: create this file later if you want chapter-wise complimentary teacher access. -->
+  <script src="ai-foundation-free-chapters.js"></script>
+
+  <style>
+    :root{
+      --blue:#1d5f9f;
+      --navy:#163d66;
+      --teal:#087f73;
+      --purple:#6b4cc2;
+      --ink:#163955;
+      --muted:#6d8092;
+      --line:#d7e5f1;
+      --soft:#f4f8fc;
+      --danger:#b42318;
+      --success:#157347;
+      --card:#ffffff;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:"Segoe UI",Arial,sans-serif;
+      background:var(--soft);
+      color:var(--ink);
+    }
+
+    body::after{
+      content:attr(data-school-name) "\A AI FOUNDATION";
+      white-space:pre;
+      position:fixed;
+      left:50%;
+      top:52%;
+      transform:translate(-50%,-50%);
+      text-align:center;
+      font-size:clamp(28px,5vw,72px);
+      font-weight:900;
+      line-height:1.15;
+      color:rgba(22,61,102,.035);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .page{
+      position:relative;
+      z-index:1;
+      min-height:100vh;
+    }
+
+    header{
+      position:relative;
+      background:linear-gradient(90deg,var(--blue),var(--navy));
+      color:#fff;
+      text-align:center;
+      padding:18px 14px 20px;
+      border-bottom-left-radius:28px;
+      border-bottom-right-radius:28px;
+      box-shadow:0 4px 14px rgba(15,61,107,.14);
+    }
+
+    .brand{
+      margin:0;
+      font-size:clamp(26px,4.5vw,34px);
+      font-weight:900;
+    }
+
+    .brand-sub{
+      margin-top:4px;
+      font-size:clamp(14px,2.6vw,17px);
+      font-weight:800;
+      color:#e8f3fb;
+      letter-spacing:.08em;
+    }
+
+    .header-logout{
+      display:none;
+      position:absolute;
+      right:14px;
+      top:16px;
+      border:1px solid rgba(255,255,255,.55);
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      border-radius:9px;
+      padding:7px 12px;
+      font-family:inherit;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    main{
+      width:min(960px,calc(100% - 24px));
+      margin:22px auto 40px;
+    }
+
+    .panel{
+      background:rgba(255,255,255,.98);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:0 4px 18px rgba(0,27,68,.08);
+      padding:18px;
+      margin-bottom:18px;
+    }
+
+    .mode-badge{
+      display:flex;
+      justify-content:center;
+      margin-bottom:14px;
+    }
+
+    .mode-badge span{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#eaf3fc;
+      border:1px solid #cfe2f4;
+      color:var(--blue);
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+    }
+
+    .page-title{
+      margin:0;
+      text-align:center;
+      color:var(--navy);
+      font-size:clamp(22px,4vw,29px);
+      font-weight:900;
+    }
+
+    .subtitle{
+      max-width:720px;
+      margin:8px auto 18px;
+      text-align:center;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+    }
+
+    .book-info{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .info-item{
+      min-width:0;
+      background:#f8fbfe;
+      border:1px solid #cfe1f2;
+      border-radius:12px;
+      padding:10px 12px;
+    }
+
+    .info-label{
+      display:block;
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      margin-bottom:4px;
+    }
+
+    .info-value{
+      display:block;
+      font-size:15px;
+      font-weight:800;
+      color:var(--navy);
+      overflow-wrap:anywhere;
+    }
+
+    .topic-wrap{margin-top:16px}
+
+    .topic-label{
+      display:block;
+      margin-bottom:7px;
+      color:var(--blue);
+      font-size:14px;
+      font-weight:900;
+    }
+
+    .topic-input{
+      width:100%;
+      min-height:50px;
+      padding:11px 13px;
+      border:1.5px solid #bcd6ef;
+      border-radius:12px;
+      background:#fff;
+      color:var(--navy);
+      font-family:inherit;
+      font-size:15px;
+      font-weight:700;
+      outline:none;
+    }
+
+    .topic-input:focus{
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(29,95,159,.12);
+    }
+
+    .topic-note{
+      margin:7px 0 0;
+      color:var(--muted);
+      font-size:12.5px;
+      line-height:1.45;
+    }
+
+    .status{
+      display:none;
+      margin-top:14px;
+      padding:11px 12px;
+      border-radius:11px;
+      font-size:13px;
+      line-height:1.5;
+      font-weight:700;
+    }
+
+    .status.show{display:block}
+    .status.error{
+      color:var(--danger);
+      background:#fff5f4;
+      border:1px solid #ffd7d2;
+    }
+
+    .section-title{
+      margin:0 0 5px;
+      color:var(--navy);
+      font-size:20px;
+      font-weight:900;
+      text-align:center;
+    }
+
+    .section-note{
+      margin:0 0 15px;
+      color:var(--muted);
+      text-align:center;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .tools-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:13px;
+    }
+
+    .tool-card{
+      display:flex;
+      flex-direction:column;
+      min-height:190px;
+      padding:16px;
+      border:1.4px solid #d7e7f5;
+      border-radius:15px;
+      background:#fbfdff;
+      box-shadow:0 2px 10px rgba(0,27,68,.04);
+    }
+
+    .tool-icon{
+      font-size:29px;
+      line-height:1;
+      margin-bottom:10px;
+    }
+
+    .tool-name{
+      color:var(--navy);
+      font-size:17px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .tool-desc{
+      flex:1;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      margin-bottom:13px;
+    }
+
+    .tool-btn{
+      width:100%;
+      min-height:44px;
+      padding:10px 13px;
+      border:none;
+      border-radius:11px;
+      background:linear-gradient(90deg,var(--blue),var(--navy));
+      color:#fff;
+      font-family:inherit;
+      font-size:14px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 3px 10px rgba(15,61,107,.16);
+    }
+
+    .tool-btn:hover{filter:brightness(1.04)}
+    .tool-btn:active{transform:translateY(1px)}
+    .tool-btn:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+
+    .footer-note{
+      margin:14px 0 0;
+      text-align:center;
+      color:var(--muted);
+      font-size:12.5px;
+      line-height:1.5;
+    }
+
+    .auth-gate{
+      position:fixed;
+      inset:0;
+      z-index:200000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:linear-gradient(135deg,#f3f8fd,#e8f2fb);
+    }
+
+    .auth-card{
+      width:min(430px,100%);
+      background:#fff;
+      border:1px solid #d8e7f5;
+      border-radius:22px;
+      padding:30px 24px;
+      box-shadow:0 12px 40px rgba(15,61,107,.16);
+    }
+
+    .auth-brand{
+      text-align:center;
+      font-size:30px;
+      font-weight:900;
+      color:var(--blue);
+      margin-bottom:4px;
+    }
+
+    .auth-sub{
+      text-align:center;
+      color:var(--navy);
+      font-size:14px;
+      font-weight:800;
+      letter-spacing:.06em;
+      margin-bottom:26px;
+    }
+
+    .auth-title{
+      text-align:center;
+      margin:0 0 6px;
+      color:var(--navy);
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .auth-description{
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+      margin:0 0 22px;
+    }
+
+    .auth-field{margin-bottom:16px}
+
+    .auth-field label{
+      display:block;
+      margin-bottom:7px;
+      color:var(--blue);
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .auth-input{
+      width:100%;
+      min-height:50px;
+      border:1.5px solid #bcd6ef;
+      border-radius:12px;
+      padding:11px 13px;
+      font-family:inherit;
+      font-size:16px;
+      color:var(--ink);
+      background:#fff;
+    }
+
+    .auth-input:focus{
+      outline:none;
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(29,95,159,.12);
+    }
+
+    .modern-select{position:relative;width:100%}
+
+    .modern-select-button{
+      width:100%;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:11px 14px;
+      border:1.5px solid #bcd6ef;
+      border-radius:12px;
+      background:#fff;
+      color:var(--ink);
+      font-family:inherit;
+      font-size:16px;
+      font-weight:700;
+      text-align:left;
+      cursor:pointer;
+    }
+
+    .modern-select.open .modern-select-button{
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(29,95,159,.12);
+    }
+
+    .modern-select-arrow{transition:transform .2s ease;color:var(--blue)}
+    .modern-select.open .modern-select-arrow{transform:rotate(180deg)}
+
+    .modern-select-menu{
+      position:absolute;
+      left:0;
+      right:0;
+      top:calc(100% + 7px);
+      display:none;
+      padding:7px;
+      background:#fff;
+      border:1px solid #d7e7f5;
+      border-radius:14px;
+      box-shadow:0 14px 35px rgba(15,61,107,.18);
+      z-index:5000;
+    }
+
+    .modern-select.open .modern-select-menu{display:block}
+
+    .modern-select-menu button{
+      width:100%;
+      display:flex;
+      align-items:center;
+      padding:11px 12px;
+      border:none;
+      border-radius:9px;
+      background:transparent;
+      color:var(--ink);
+      font-family:inherit;
+      font-size:15px;
+      font-weight:700;
+      text-align:left;
+      cursor:pointer;
+    }
+
+    .modern-select-menu button:hover{background:#edf6ff;color:var(--blue)}
+    .modern-select-menu button.selected{background:#e4f1fc;color:var(--blue);font-weight:900}
+
+    .auth-login-btn{
+      width:100%;
+      min-height:52px;
+      border:none;
+      border-radius:12px;
+      margin-top:5px;
+      background:linear-gradient(90deg,var(--blue),var(--navy));
+      color:#fff;
+      font-family:inherit;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .auth-login-btn:disabled{opacity:.65;cursor:wait}
+    .student-role-btn{margin-top:12px;background:linear-gradient(90deg,var(--teal),#075e56)}
+
+    .auth-error{
+      display:none;
+      margin-top:15px;
+      padding:11px 12px;
+      border-radius:10px;
+      background:#fff5f4;
+      border:1px solid #ffd7d2;
+      color:var(--danger);
+      text-align:center;
+      font-size:13px;
+      font-weight:700;
+      line-height:1.4;
+    }
+
+    .auth-footer{
+      margin-top:20px;
+      text-align:center;
+      color:#7a8da0;
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    .auth-back-btn{
+      width:100%;
+      margin-top:12px;
+      border:none;
+      background:transparent;
+      color:var(--blue);
+      font-family:inherit;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    @media(max-width:680px){
+      main{width:min(100% - 16px,960px);margin-top:14px}
+      .panel{padding:14px;border-radius:15px}
+      .book-info,.tools-grid{grid-template-columns:1fr}
+      .tool-card{min-height:0}
+      .tool-btn{min-height:48px;font-size:15px}
+    }
+
+    @media(max-width:500px){
+      .header-logout{right:9px;top:14px;padding:6px 9px;font-size:11px}
+    }
+  </style>
+</head>
+
+<body data-school-name="">
+
+<div id="role-gate" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-brand">AI FOUNDATION</div>
+    <div class="auth-sub">SCHOOL LEARNING PORTAL</div>
+    <h2 class="auth-title">Choose Access</h2>
+    <p class="auth-description">Please select how you are using this book.</p>
+
+    <button type="button" id="role-teacher-btn" class="auth-login-btn">👨‍🏫 Teacher</button>
+    <button type="button" id="role-student-btn" class="auth-login-btn student-role-btn">🎓 Student</button>
+
+    <div class="auth-footer">
+      Complimentary Teacher access can be enabled chapter-wise.<br>
+      Other Teacher chapters use the school login.<br>
+      Student learning tools open directly.
+    </div>
+  </div>
+</div>
+
+<div id="auth-gate" class="auth-gate" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-brand">AI FOUNDATION</div>
+    <div class="auth-sub">TEACHER ACCESS</div>
+    <h2 class="auth-title">Teacher Login</h2>
+    <p class="auth-description">Sign in using the login provided to your school.</p>
+
+    <form id="school-login-form">
+      <div class="auth-field">
+        <label for="teacher-name">Teacher Name</label>
+        <input type="text" id="teacher-name" class="auth-input" placeholder="Enter teacher name" autocomplete="name" required>
+      </div>
+
+      <div class="auth-field">
+        <label>Title</label>
+        <div class="modern-select" id="teacher-title-select">
+          <button type="button" class="modern-select-button" id="teacher-title-button">
+            <span id="teacher-title-text">Select Title</span>
+            <span class="modern-select-arrow">⌄</span>
+          </button>
+          <div class="modern-select-menu" id="teacher-title-menu">
+            <button type="button" data-value="Sir">Sir</button>
+            <button type="button" data-value="Madam">Madam</button>
+            <button type="button" data-value="Mr.">Mr.</button>
+            <button type="button" data-value="Ms.">Ms.</button>
+            <button type="button" data-value="Mrs.">Mrs.</button>
+            <button type="button" data-value="Dr.">Dr.</button>
+          </div>
+        </div>
+        <input type="hidden" id="teacher-title" value="">
+      </div>
+
+      <div class="auth-field">
+        <label for="school-email">Email</label>
+        <input type="email" id="school-email" class="auth-input" placeholder="Enter school login email" autocomplete="username" required>
+      </div>
+
+      <div class="auth-field">
+        <label for="school-password">Password</label>
+        <input type="password" id="school-password" class="auth-input" placeholder="Enter password" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit" id="school-login-btn" class="auth-login-btn">Login</button>
+      <div id="auth-error" class="auth-error"></div>
+    </form>
+
+    <button type="button" id="back-to-role-btn" class="auth-back-btn">← Back</button>
+  </div>
+</div>
+
+<div id="student-profile-gate" class="auth-gate" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-brand">AI FOUNDATION</div>
+    <div class="auth-sub">STUDENT LEARNING</div>
+    <h2 class="auth-title">Student Details</h2>
+    <p class="auth-description">Enter your details once. They will be remembered on this device for future chapter learning.</p>
+
+    <form id="student-profile-form">
+      <div class="auth-field">
+        <label for="student-name">Student Name</label>
+        <input type="text" id="student-name" class="auth-input" placeholder="Enter student name" autocomplete="name" required>
+      </div>
+
+      <div class="auth-field">
+        <label for="student-school-name">School Name</label>
+        <input type="text" id="student-school-name" class="auth-input" placeholder="Enter school name" autocomplete="organization" required>
+      </div>
+
+      <button type="submit" class="auth-login-btn">Continue</button>
+      <div id="student-profile-error" class="auth-error"></div>
+    </form>
+
+    <button type="button" id="student-back-to-role-btn" class="auth-back-btn">← Back</button>
+    <div class="auth-footer">Your student and school details are stored only in this browser on this device.</div>
+  </div>
+</div>
+
+<div class="page" id="main-page" style="display:none;">
+  <header>
+    <h1 class="brand" id="school-brand-name" style="display:none;"></h1>
+    <div class="brand-sub">AI FOUNDATION</div>
+    <button type="button" id="teacher-logout-btn" class="header-logout">Logout</button>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="mode-badge"><span id="mode-badge-text">👨‍🏫 Teacher</span></div>
+      <h2 class="page-title" id="page-title">Teacher AI Tools</h2>
+      <p class="subtitle" id="page-subtitle">AI-assisted classroom preparation for this chapter.</p>
+
+      <div class="book-info">
+        <div class="info-item">
+          <span class="info-label">Class</span>
+          <span class="info-value" id="info-class">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Programme</span>
+          <span class="info-value" id="info-board">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Subject</span>
+          <span class="info-value" id="info-subject">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Chapter</span>
+          <span class="info-value" id="info-chapter">—</span>
+        </div>
+      </div>
+
+      <div class="topic-wrap">
+        <label class="topic-label" id="topic-label" for="topic-input">
+          Today's Topic / Concept <span style="font-weight:700;color:#6a7f94;">(Optional)</span>
+        </label>
+        <input id="topic-input" class="topic-input" type="text" placeholder="Example: How AI learns from data" autocomplete="off">
+        <p class="topic-note" id="topic-note">Leave this blank to use the whole chapter.</p>
+      </div>
+
+      <div id="configuration-error" class="status error"></div>
+    </section>
+
+    <section class="panel">
+      <h3 class="section-title" id="tools-title">Choose a Teacher Tool</h3>
+      <p class="section-note" id="tools-note">Choose a teaching tool for this chapter.</p>
+      <div class="tools-grid" id="tools-grid"></div>
+      <p class="footer-note" id="footer-note">AI output should be reviewed by the teacher before classroom use.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+  const questionsProjectConfig = {
+    apiKey: "AIzaSyAszVhWXUUOYLQ7VimKmPKf1yEu_CI9RCE",
+    authDomain: "stpatricks-questionbank.firebaseapp.com",
+    projectId: "stpatricks-questionbank",
+    storageBucket: "stpatricks-questionbank.appspot.com",
+    messagingSenderId: "917615322861",
+    appId: "1:917615322861:web:c6c890aa2184dd395b8ee4"
+  };
+
+  const questionsApp =
+    firebase.apps.find(app => app.name === "bookSupportQuestions") ||
+    firebase.initializeApp(questionsProjectConfig, "bookSupportQuestions");
+
+  const questionsDb = questionsApp.firestore();
+  const questionsAuth = questionsApp.auth();
+
+  questionsAuth
+    .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch(error => console.error("Auth persistence error:", error));
+
+  const roleGate = document.getElementById("role-gate");
+  const teacherRoleBtn = document.getElementById("role-teacher-btn");
+  const studentRoleBtn = document.getElementById("role-student-btn");
+  const authGate = document.getElementById("auth-gate");
+  const studentProfileGate = document.getElementById("student-profile-gate");
+  const studentProfileForm = document.getElementById("student-profile-form");
+  const studentNameInput = document.getElementById("student-name");
+  const studentSchoolNameInput = document.getElementById("student-school-name");
+  const studentProfileError = document.getElementById("student-profile-error");
+  const studentBackToRoleBtn = document.getElementById("student-back-to-role-btn");
+  const mainPage = document.getElementById("main-page");
+  const schoolBrandName = document.getElementById("school-brand-name");
+  const schoolLoginForm = document.getElementById("school-login-form");
+  const teacherName = document.getElementById("teacher-name");
+  const teacherTitle = document.getElementById("teacher-title");
+  const teacherTitleSelect = document.getElementById("teacher-title-select");
+  const teacherTitleButton = document.getElementById("teacher-title-button");
+  const teacherTitleText = document.getElementById("teacher-title-text");
+  const teacherTitleMenu = document.getElementById("teacher-title-menu");
+  const schoolEmail = document.getElementById("school-email");
+  const schoolPassword = document.getElementById("school-password");
+  const schoolLoginBtn = document.getElementById("school-login-btn");
+  const authError = document.getElementById("auth-error");
+  const backToRoleBtn = document.getElementById("back-to-role-btn");
+  const teacherLogoutBtn = document.getElementById("teacher-logout-btn");
+
+  const infoClass = document.getElementById("info-class");
+  const infoBoard = document.getElementById("info-board");
+  const infoSubject = document.getElementById("info-subject");
+  const infoChapter = document.getElementById("info-chapter");
+  const topicInput = document.getElementById("topic-input");
+  const topicLabel = document.getElementById("topic-label");
+  const topicNote = document.getElementById("topic-note");
+  const configError = document.getElementById("configuration-error");
+  const pageTitle = document.getElementById("page-title");
+  const pageSubtitle = document.getElementById("page-subtitle");
+  const modeBadgeText = document.getElementById("mode-badge-text");
+  const toolsTitle = document.getElementById("tools-title");
+  const toolsNote = document.getElementById("tools-note");
+  const footerNote = document.getElementById("footer-note");
+  const toolsGrid = document.getElementById("tools-grid");
+
+  const qs = new URLSearchParams(window.location.search);
+
+  function firstParam(names, fallback = "") {
+    for (const name of names) {
+      const value = qs.get(name);
+      if (value && String(value).trim()) return String(value).trim();
+    }
+    return fallback;
+  }
+
+  const BOOK_CONTEXT = {
+    className: firstParam(["class", "className", "c"]),
+    board: firstParam(["board", "programme", "program", "b"], "AI Foundation"),
+    subject: firstParam(["subject", "sub", "s"], "Artificial Intelligence"),
+    chapter: firstParam(["chapter", "ch"])
+  };
+
+  infoClass.textContent = BOOK_CONTEXT.className || "Not provided";
+  infoBoard.textContent = BOOK_CONTEXT.board || "AI Foundation";
+  infoSubject.textContent = BOOK_CONTEXT.subject || "Artificial Intelligence";
+  infoChapter.textContent = BOOK_CONTEXT.chapter || "Not provided";
+
+  const missingFields = [];
+  if (!BOOK_CONTEXT.className) missingFields.push("Class");
+  if (!BOOK_CONTEXT.chapter) missingFields.push("Chapter");
+
+  if (missingFields.length) {
+    configError.className = "status error show";
+    configError.textContent = "This QR link is incomplete. Missing: " + missingFields.join(", ") + ".";
+  }
+
+  let selectedRole = "";
+  let isFreeTeacherAccess = false;
+  let currentSchoolName = "";
+  let currentTeacherName = "";
+  let currentTeacherTitle = "";
+
+  const STUDENT_PROFILE_KEY = "aiFoundationStudentProfile";
+  let currentStudentName = "";
+  let currentStudentSchoolName = "";
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(STUDENT_PROFILE_KEY) || "{}");
+    currentStudentName = String(saved.name || "").trim();
+    currentStudentSchoolName = String(saved.schoolName || "").trim();
+  } catch (error) {
+    localStorage.removeItem(STUDENT_PROFILE_KEY);
+  }
+
+  teacherTitleButton.addEventListener("click", () => {
+    teacherTitleSelect.classList.toggle("open");
+  });
+
+  teacherTitleMenu.querySelectorAll("button").forEach(option => {
+    option.addEventListener("click", () => {
+      const value = option.dataset.value;
+      teacherTitle.value = value;
+      teacherTitleText.textContent = value;
+      teacherTitleMenu.querySelectorAll("button").forEach(item => item.classList.remove("selected"));
+      option.classList.add("selected");
+      teacherTitleSelect.classList.remove("open");
+    });
+  });
+
+  document.addEventListener("click", event => {
+    if (!teacherTitleSelect.contains(event.target)) teacherTitleSelect.classList.remove("open");
+  });
+
+  function isComplimentaryTeacherChapter() {
+    const providers = [
+      window.AI_FOUNDATION_FREE_ACCESS,
+      window.SCIMENTRA_FREE_ACCESS
+    ].filter(Boolean);
+
+    return providers.some(provider =>
+      typeof provider.isTeacherChapterFree === "function" &&
+      provider.isTeacherChapterFree({
+        className: BOOK_CONTEXT.className,
+        board: BOOK_CONTEXT.board,
+        subject: BOOK_CONTEXT.subject,
+        chapter: BOOK_CONTEXT.chapter
+      })
+    );
+  }
+
+  function openFreeTeacherAccess() {
+    isFreeTeacherAccess = true;
+    selectedRole = "teacher";
+    currentSchoolName = "";
+    currentTeacherName = "Teacher";
+    currentTeacherTitle = "";
+
+    schoolBrandName.textContent = "";
+    schoolBrandName.style.display = "none";
+    document.body.setAttribute("data-school-name", "");
+    document.title = "AI Foundation | Teacher AI Tools";
+
+    roleGate.style.display = "none";
+    authGate.style.display = "none";
+    applyRoleUI("teacher");
+    modeBadgeText.textContent = "👨‍🏫 Complimentary Teacher Access";
+    teacherLogoutBtn.textContent = "School Login";
+    mainPage.style.display = "block";
+  }
+
+  async function handleTeacherAccess(user) {
+    mainPage.style.display = "none";
+    authError.style.display = "none";
+    authError.textContent = "";
+
+    if (!user) {
+      authGate.style.display = "flex";
+      return;
+    }
+
+    try {
+      const schoolDoc = await questionsDb.collection("scimentraSchools").doc(user.uid).get();
+
+      if (schoolDoc.exists && schoolDoc.data() && schoolDoc.data().active === true) {
+        const schoolData = schoolDoc.data();
+        const schoolName = String(schoolData.schoolName || "").trim();
+
+        if (!schoolName) {
+          await questionsAuth.signOut();
+          authGate.style.display = "flex";
+          authError.textContent = "School name is not configured for this account. Please contact the administrator.";
+          authError.style.display = "block";
+          return;
+        }
+
+        selectedRole = "teacher";
+        isFreeTeacherAccess = false;
+        currentSchoolName = schoolName;
+        teacherLogoutBtn.textContent = "Logout";
+
+        const teacherProfileKey = "aiFoundationTeacherProfile_" + user.uid;
+        const savedTeacherProfile = JSON.parse(localStorage.getItem(teacherProfileKey) || "{}");
+
+        if (!currentTeacherName) currentTeacherName = String(savedTeacherProfile.name || "").trim();
+        if (!currentTeacherTitle) currentTeacherTitle = String(savedTeacherProfile.title || "").trim();
+
+        if (!currentTeacherName || !currentTeacherTitle) {
+          await questionsAuth.signOut();
+          authGate.style.display = "flex";
+          authError.textContent = "Please enter your teacher name and select a title before login.";
+          authError.style.display = "block";
+          return;
+        }
+
+        localStorage.setItem(
+          teacherProfileKey,
+          JSON.stringify({name:currentTeacherName,title:currentTeacherTitle})
+        );
+
+        teacherName.value = currentTeacherName;
+        teacherTitle.value = currentTeacherTitle;
+        teacherTitleText.textContent = currentTeacherTitle || "Select Title";
+        teacherTitleMenu.querySelectorAll("button").forEach(option => {
+          option.classList.toggle("selected", option.dataset.value === currentTeacherTitle);
+        });
+
+        schoolBrandName.textContent = schoolName;
+        schoolBrandName.style.display = "block";
+        document.body.setAttribute("data-school-name", schoolName);
+        document.title = schoolName + " | AI Foundation Teacher Tools";
+
+        roleGate.style.display = "none";
+        authGate.style.display = "none";
+        applyRoleUI("teacher");
+        mainPage.style.display = "block";
+        return;
+      }
+
+      await questionsAuth.signOut();
+      authGate.style.display = "flex";
+      authError.textContent = "This school account is not authorised. Please contact the administrator.";
+      authError.style.display = "block";
+
+    } catch (error) {
+      console.error("School approval check failed:", error);
+      mainPage.style.display = "none";
+      authGate.style.display = "flex";
+      authError.textContent = "Unable to verify school access. Please try again.";
+      authError.style.display = "block";
+    }
+  }
+
+  teacherRoleBtn.addEventListener("click", async () => {
+    selectedRole = "teacher";
+    isFreeTeacherAccess = false;
+    roleGate.style.display = "none";
+    mainPage.style.display = "none";
+
+    if (!questionsAuth.currentUser && isComplimentaryTeacherChapter()) {
+      openFreeTeacherAccess();
+      return;
+    }
+
+    await handleTeacherAccess(questionsAuth.currentUser);
+  });
+
+  studentRoleBtn.addEventListener("click", () => {
+    selectedRole = "student";
+    roleGate.style.display = "none";
+    authGate.style.display = "none";
+    mainPage.style.display = "none";
+
+    if (currentStudentName && currentStudentSchoolName) {
+      studentProfileGate.style.display = "none";
+      applyRoleUI("student");
+      mainPage.style.display = "block";
+      return;
+    }
+
+    studentProfileError.style.display = "none";
+    studentNameInput.value = currentStudentName || "";
+    studentSchoolNameInput.value = currentStudentSchoolName || "";
+    studentProfileGate.style.display = "flex";
+  });
+
+  studentProfileForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const enteredName = String(studentNameInput.value || "").trim();
+    const enteredSchoolName = String(studentSchoolNameInput.value || "").trim();
+
+    if (!enteredName || !enteredSchoolName) {
+      studentProfileError.textContent = !enteredName ? "Please enter the student name." : "Please enter the school name.";
+      studentProfileError.style.display = "block";
+      return;
+    }
+
+    currentStudentName = enteredName;
+    currentStudentSchoolName = enteredSchoolName;
+    localStorage.setItem(STUDENT_PROFILE_KEY, JSON.stringify({name:currentStudentName,schoolName:currentStudentSchoolName}));
+
+    studentProfileError.style.display = "none";
+    studentProfileGate.style.display = "none";
+    applyRoleUI("student");
+    mainPage.style.display = "block";
+  });
+
+  studentBackToRoleBtn.addEventListener("click", () => {
+    selectedRole = "";
+    studentProfileGate.style.display = "none";
+    mainPage.style.display = "none";
+    roleGate.style.display = "flex";
+  });
+
+  backToRoleBtn.addEventListener("click", () => {
+    selectedRole = "";
+    isFreeTeacherAccess = false;
+    authGate.style.display = "none";
+    mainPage.style.display = "none";
+    roleGate.style.display = "flex";
+    schoolPassword.value = "";
+    authError.style.display = "none";
+  });
+
+  questionsAuth.onAuthStateChanged(user => {
+    if (selectedRole === "teacher" && !isFreeTeacherAccess) handleTeacherAccess(user);
+  });
+
+  schoolLoginForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    currentTeacherName = teacherName.value.trim();
+    currentTeacherTitle = teacherTitle.value.trim();
+
+    if (!currentTeacherName) {
+      authError.textContent = "Please enter your teacher name.";
+      authError.style.display = "block";
+      return;
+    }
+
+    if (!currentTeacherTitle) {
+      authError.textContent = "Please select your title.";
+      authError.style.display = "block";
+      teacherTitleSelect.classList.add("open");
+      return;
+    }
+
+    schoolLoginBtn.disabled = true;
+    schoolLoginBtn.textContent = "Checking...";
+    authError.style.display = "none";
+
+    try {
+      await questionsAuth.signInWithEmailAndPassword(schoolEmail.value.trim(), schoolPassword.value);
+      schoolPassword.value = "";
+    } catch (error) {
+      console.error("Login failed:", error);
+      authError.textContent = "Invalid email or password. Please check the login provided to your school.";
+      authError.style.display = "block";
+    } finally {
+      schoolLoginBtn.disabled = false;
+      schoolLoginBtn.textContent = "Login";
+    }
+  });
+
+  teacherLogoutBtn.addEventListener("click", async () => {
+    if (selectedRole === "student") {
+      localStorage.removeItem(STUDENT_PROFILE_KEY);
+      currentStudentName = "";
+      currentStudentSchoolName = "";
+      mainPage.style.display = "none";
+      studentNameInput.value = "";
+      studentSchoolNameInput.value = "";
+      studentProfileGate.style.display = "flex";
+      return;
+    }
+
+    if (isFreeTeacherAccess) {
+      isFreeTeacherAccess = false;
+      selectedRole = "teacher";
+      currentTeacherName = "";
+      currentTeacherTitle = "";
+      mainPage.style.display = "none";
+      teacherLogoutBtn.style.display = "none";
+      authGate.style.display = "flex";
+      return;
+    }
+
+    selectedRole = "";
+    currentSchoolName = "";
+    currentTeacherName = "";
+    currentTeacherTitle = "";
+    await questionsAuth.signOut();
+    teacherLogoutBtn.style.display = "none";
+    mainPage.style.display = "none";
+    authGate.style.display = "none";
+    roleGate.style.display = "flex";
+  });
+
+  const teacherTools = [
+    {icon:"📝",name:"Board Work Generator",desc:"Prepare period-wise classroom board work for AI concepts, examples, demonstrations and recap.",button:"Create Board Work",tool:"board-work"},
+    {icon:"💡",name:"Teaching Support",desc:"Get concept sequence, prerequisites, explanations, misconceptions, teaching tips and classroom checks.",button:"Get Teaching Support",tool:"teaching-support"},
+    {icon:"🧪",name:"Classroom Activity",desc:"Create age-appropriate hands-on, no-code or discussion-based AI activities for the selected lesson.",button:"Create Activity",tool:"classroom-activity"},
+    {icon:"🤖",name:"AI Demonstration",desc:"Plan a safe live demonstration that helps students see the selected AI concept in action.",button:"Plan Demonstration",tool:"ai-demonstration"},
+    {icon:"✨",name:"Prompt Lab",desc:"Teach students how to write, test and improve prompts through guided classroom examples.",button:"Open Prompt Lab",tool:"prompt-lab"},
+    {icon:"✅",name:"Exit Ticket Generator",desc:"Create a short end-of-class assessment covering understanding, application and responsible AI use.",button:"Create Exit Ticket",tool:"exit-ticket"},
+    {icon:"🎯",name:"Remedial Teaching",desc:"Prepare simpler reteaching support for students who need more help with the selected AI concept.",button:"Create Remedial Plan",tool:"remedial"},
+    {icon:"🗺️",name:"Mind Map",desc:"Generate a clear visual mind map connecting the important ideas, examples and applications.",button:"Generate Mind Map",tool:"mind-map"},
+    {icon:"📊",name:"Slide Deck",desc:"Prepare a classroom-ready slide deck with explanations, examples, activities and checks for understanding.",button:"Create Slide Deck",tool:"slide-deck"},
+    {icon:"📋",name:"Visual Revision Sheet",desc:"Create a one-page visual revision sheet with key ideas, examples, vocabulary and safety reminders.",button:"Generate Revision Sheet",tool:"visual-revision-sheet"},
+    {icon:"🚀",name:"Mini Project",desc:"Design a practical chapter-based AI mini project with clear steps, outcomes and a simple rubric.",button:"Create Mini Project",tool:"mini-project"},
+    {icon:"🛡️",name:"AI Ethics & Safety",desc:"Prepare age-appropriate teaching on privacy, bias, accuracy, responsible use and digital judgement.",button:"Create Safety Lesson",tool:"ai-ethics-safety"}
+  ];
+
+  const studentTools = [
+    {icon:"🧠",name:"Learn AI",desc:"Learn the selected AI concept in simple language with examples suited to your class.",button:"Start Learning",tool:"learn-ai"},
+    {icon:"🔍",name:"Explore AI",desc:"Discover where the chapter concept appears in real life and learn how to observe AI around you.",button:"Explore AI",tool:"explore-ai"},
+    {icon:"✨",name:"Prompt Practice",desc:"Practise writing clearer and safer prompts, one small task at a time.",button:"Start Prompt Practice",tool:"prompt-practice"},
+    {icon:"🧪",name:"Try an Activity",desc:"Do a simple guided activity that helps you experience the chapter concept yourself.",button:"Start Activity",tool:"try-activity"},
+    {icon:"✏️",name:"Practice Me",desc:"Get fresh questions one at a time and receive hints without being given the final answer.",button:"Start Practice",tool:"practice-me"},
+    {icon:"🏆",name:"AI Challenge",desc:"Take a 4-stage challenge: Understand, Explore, Apply and Create.",button:"Start Challenge",tool:"ai-challenge"},
+    {icon:"🚀",name:"Mini Project",desc:"Build a small chapter-based project with step-by-step guidance and checkpoints.",button:"Start Mini Project",tool:"student-mini-project"},
+    {icon:"🛡️",name:"AI Safety Check",desc:"Work through realistic situations about privacy, accuracy, bias and responsible AI use.",button:"Start Safety Check",tool:"safety-check"}
+  ];
+
+  function renderTools(items) {
+    toolsGrid.innerHTML = "";
+
+    items.forEach(item => {
+      const card = document.createElement("article");
+      card.className = "tool-card";
+      card.innerHTML = `
+        <div class="tool-icon">${item.icon}</div>
+        <div class="tool-name">${item.name}</div>
+        <div class="tool-desc">${item.desc}</div>
+        <button type="button" class="tool-btn" data-tool="${item.tool}">${item.button}</button>
+      `;
+      toolsGrid.appendChild(card);
+    });
+
+    if (missingFields.length) {
+      toolsGrid.querySelectorAll(".tool-btn").forEach(button => button.disabled = true);
+    }
+
+    toolsGrid.querySelectorAll(".tool-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        try {
+          const prompt = buildPrompt(button.dataset.tool || "");
+          openChatGPT(prompt);
+        } catch (error) {
+          alert(error && error.message ? error.message : "Could not open the AI learning tool.");
+        }
+      });
+    });
+  }
+
+  function applyRoleUI(role) {
+    if (role === "teacher") {
+      const teacherDisplayName = `${currentTeacherName} ${currentTeacherTitle}`.trim();
+      modeBadgeText.textContent = teacherDisplayName ? `👨‍🏫 ${teacherDisplayName}` : "👨‍🏫 Teacher";
+      pageTitle.textContent = "Teacher AI Tools";
+      pageSubtitle.textContent = "AI-assisted classroom preparation for this AI Foundation chapter.";
+      topicLabel.innerHTML = `Today's Topic / Concept <span style="font-weight:700;color:#6a7f94;">(Optional)</span>`;
+      topicInput.placeholder = "Example: How AI learns from data";
+      topicNote.textContent = "Leave this blank to use the whole chapter. Enter a topic when you want the tool to focus only on today's lesson.";
+      toolsTitle.textContent = "Choose a Teacher Tool";
+      toolsNote.textContent = "Choose the support you need for this chapter.";
+      footerNote.textContent = "AI output should be reviewed by the teacher before classroom use.";
+      teacherLogoutBtn.style.display = "inline-block";
+      renderTools(teacherTools);
+      return;
+    }
+
+    modeBadgeText.textContent = currentStudentName ? `🎓 ${currentStudentName}` : "🎓 Student Learning";
+    pageTitle.textContent = "Student AI Learning Tools";
+    pageSubtitle.textContent = "Understand, explore, apply and create with guided AI learning support.";
+    topicLabel.innerHTML = `What do you want to learn? <span style="font-weight:700;color:#6a7f94;">(Optional)</span>`;
+    topicInput.placeholder = "Example: AI and pattern recognition";
+    topicNote.textContent = "Leave this blank to use the whole chapter. Enter a concept when you want the learning tool to focus on that topic.";
+    toolsTitle.textContent = "Choose a Student Tool";
+    toolsNote.textContent = "Choose how you want to learn this chapter.";
+    footerNote.textContent = "Use AI to think, practise and create — not to replace your own thinking.";
+    teacherLogoutBtn.textContent = "Change Details";
+    teacherLogoutBtn.style.display = "inline-block";
+    renderTools(studentTools);
+  }
+
+  function getLessonContext() {
+    const topic = String(topicInput.value || "").trim();
+    let text = "";
+
+    if (selectedRole === "teacher") {
+      if (currentSchoolName) text += `School Name: ${currentSchoolName}\n`;
+
+      if (currentTeacherName) {
+        const teacherDisplayName = `${currentTeacherName} ${currentTeacherTitle}`.trim();
+        text +=
+          `Teacher Name: ${currentTeacherName}\n` +
+          `Teacher Title: ${currentTeacherTitle}\n` +
+          `Address Teacher As: ${teacherDisplayName}\n\n` +
+          `PERSONALISATION RULE:\n` +
+          `- Use only the Teacher Name, Teacher Title and School Name provided above.\n` +
+          `- Address the teacher naturally using the exact value in "Address Teacher As" when appropriate.\n` +
+          `- Do not invent or substitute another teacher or school name.\n\n`;
+      }
+    }
+
+    if (selectedRole === "student" && currentStudentName) {
+      text +=
+        `Student Name: ${currentStudentName}\n` +
+        `School Name: ${currentStudentSchoolName}\n\n` +
+        `STUDENT PERSONALISATION RULE:\n` +
+        `- Use the student's exact name naturally when appropriate.\n` +
+        `- Use the exact School Name wherever a school name is required.\n` +
+        `- Do not invent, change or replace the student's name or school name.\n\n`;
+    }
+
+    text +=
+      `Class: ${BOOK_CONTEXT.className}\n` +
+      `Programme: ${BOOK_CONTEXT.board}\n` +
+      `Subject: ${BOOK_CONTEXT.subject}\n` +
+      `Chapter: ${BOOK_CONTEXT.chapter}\n`;
+
+    if (topic) {
+      text += selectedRole === "student"
+        ? `Selected Topic / Concept: ${topic}\n`
+        : `Today's Topic / Concept: ${topic}\n`;
+    } else {
+      text += `Scope: Use the whole chapter\n`;
+    }
+
+    return text;
+  }
+
+  function aiFoundationPrinciples() {
+    return `
+AI FOUNDATION LEARNING DESIGN:
+- Keep the content appropriate to the stated class and selected chapter.
+- Build learning through the progression: UNDERSTAND → EXPLORE → APPLY → CREATE.
+- Connect concepts to real-life AI wherever useful.
+- Prefer practical, visual and activity-based learning over abstract technical detail.
+- Introduce technical terms only when age-appropriate and explain them simply.
+- Do not unnecessarily introduce coding, mathematics or higher-class concepts.
+- Where devices or online AI tools are suggested, also give a no-device or low-tech alternative whenever practical.
+- Include responsible AI habits naturally: privacy, verification, bias awareness, safe prompting and human judgement.
+- Never ask students to enter personal, confidential or sensitive information into an AI system.
+- Verify factual claims and examples before responding.
+`;
+  }
+
+  function studentLearningRules() {
+    return `
+STUDENT LEARNING RULE FOR THIS ENTIRE CONVERSATION:
+- Help the student learn independently.
+- For practice, quiz, test or challenge questions, show only one question at a time.
+- Do not reveal the final answer before the student attempts the question.
+- If help is needed, give one useful hint at a time and stop before the final solving step.
+- Do not provide an answer key for unanswered questions.
+- You may freely teach the underlying concept using a fresh example that is different from the active question.
+- Encourage the student to explain the reasoning in their own words.
+`;
+  }
+
+  function buildBoardWorkPrompt() {
+    return `You are assisting a teacher in preparing classroom board work for an AI Foundation lesson.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Prepare classroom-ready BOARD WORK.
+
+If a specific topic is provided, prepare board work only for that topic.
+If the whole chapter is selected, divide it into realistic 40-minute periods in a logical sequence.
+
+FOR EACH PERIOD GIVE:
+1. PERIOD TITLE AND LEARNING OUTCOME
+2. QUICK RECALL / HOOK
+3. KEY WORDS AND CONCEPTS
+4. BOARD EXPLANATION SEQUENCE — exact concise points the teacher can write and explain
+5. REAL-LIFE AI EXAMPLES
+6. SIMPLE DEMONSTRATION OR ACTIVITY where useful
+7. UNDERSTAND CHECK — short oral questions with teacher answers
+8. EXPLORE — one observation/discussion task
+9. APPLY — one age-appropriate application task
+10. CREATE — one short creative extension where appropriate
+11. COMMON MISCONCEPTIONS / SAFETY NOTE
+12. PERIOD RECAP
+
+Keep each period realistic for approximately 40 minutes. Do not overload the board.`;
+  }
+
+  function buildTeachingSupportPrompt() {
+    return `You are an AI Foundation teaching coach helping a school teacher teach the selected lesson confidently.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Prepare practical TEACHING SUPPORT.
+
+Give:
+1. WHAT THE STUDENT SHOULD ALREADY KNOW
+2. LEARNING OUTCOMES
+3. CONCEPT SEQUENCE
+4. SIMPLE TEACHER EXPLANATION for each major idea
+5. ANALOGIES / REAL-LIFE CONNECTIONS
+6. IMPORTANT VOCABULARY with child-friendly meanings
+7. WHAT TO DEMONSTRATE OR SHOW
+8. CLASSROOM QUESTIONS — easy to reasoning
+9. LIKELY MISCONCEPTIONS and how to correct them
+10. DEVICE-BASED OPTION and NO-DEVICE OPTION
+11. RESPONSIBLE AI / SAFETY POINTS relevant to this lesson
+12. QUICK ASSESSMENT
+13. TEACHER PREPARATION CHECKLIST
+
+The support must help even a teacher who is not an AI specialist.`;
+  }
+
+  function buildClassroomActivityPrompt() {
+    return `You are designing an engaging classroom activity for an AI Foundation lesson.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Create a practical CLASSROOM ACTIVITY.
+
+Give:
+1. ACTIVITY TITLE
+2. LEARNING OBJECTIVE
+3. TIME REQUIRED
+4. MATERIALS / RESOURCES
+5. GROUPING — individual, pair or group
+6. TEACHER SETUP
+7. STEP-BY-STEP STUDENT INSTRUCTIONS
+8. WHAT STUDENTS SHOULD OBSERVE
+9. GUIDING QUESTIONS
+10. EXPECTED LEARNING OUTCOME
+11. QUICK ASSESSMENT / EXIT QUESTION
+12. EXTENSION FOR FAST LEARNERS
+13. SUPPORT FOR WEAK LEARNERS
+14. SAFETY / PRIVACY NOTE if technology is used
+15. NO-DEVICE ALTERNATIVE
+
+The activity must be feasible in a normal school classroom and must not require paid software.`;
+  }
+
+  function buildAIDemonstrationPrompt() {
+    return `You are helping a teacher conduct a safe, clear classroom demonstration of an AI concept.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Plan an AI DEMONSTRATION that students can understand by watching and discussing.
+
+Give:
+1. DEMONSTRATION GOAL
+2. WHAT THE TEACHER NEEDS
+3. BEFORE-YOU-BEGIN EXPLANATION
+4. EXACT DEMONSTRATION STEPS
+5. SAMPLE INPUTS / PROMPTS / EXAMPLES where relevant
+6. WHAT STUDENTS SHOULD NOTICE at each step
+7. QUESTIONS TO ASK DURING THE DEMO
+8. WHAT THE DEMO PROVES — and what it does NOT prove
+9. POSSIBLE UNEXPECTED AI OUTPUTS and how the teacher should respond
+10. PRIVACY / ACCURACY / BIAS / SAFETY CAUTIONS relevant to the demo
+11. NO-DEVICE CLASSROOM VERSION
+12. 3-MINUTE RECAP
+
+Do not claim that an AI system thinks, understands or feels like a human unless the lesson is explicitly discussing that misconception.`;
+  }
+
+  function buildPromptLabPrompt() {
+    return `You are conducting a classroom PROMPT LAB for AI Foundation students.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Teach prompt writing as an age-appropriate thinking and communication skill.
+
+Create a guided Prompt Lab with:
+1. TODAY'S PROMPT SKILL
+2. SIMPLE RULE — what makes a useful prompt
+3. WEAK PROMPT vs IMPROVED PROMPT
+4. WHY THE IMPROVED PROMPT IS BETTER
+5. TEACHER DEMONSTRATION
+6. GUIDED CLASS PRACTICE — 3 tasks
+7. STUDENT INDEPENDENT PRACTICE — 3 tasks
+8. PROMPT IMPROVEMENT CHECKLIST
+9. SAFE PROMPTING RULES — no personal/confidential data, verify important outputs, respectful use
+10. REFLECTION — what changed when the prompt improved?
+11. QUICK EXIT CHALLENGE
+
+Do not teach jailbreaks, bypassing safeguards, deceptive prompting or collection of private information.`;
+  }
+
+  function buildExitTicketPrompt() {
+    return `You are preparing a short end-of-class assessment for an AI Foundation lesson.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Prepare an EXIT TICKET.
+
+If the whole chapter is selected, first divide it into realistic teaching periods and give one exit ticket per period.
+
+EACH EXIT TICKET MUST HAVE EXACTLY 5 QUESTIONS:
+1. UNDERSTAND — essential concept check
+2. EXPLORE — identify or interpret a real-life example
+3. APPLY — use the concept in a new situation
+4. CREATE / DECIDE — choose or propose an appropriate AI use
+5. RESPONSIBLE AI — privacy, accuracy, bias, safety or human judgement when relevant
+
+Then give a concise TEACHER ANSWER KEY.
+Keep each ticket realistically answerable in 5–8 minutes.`;
+  }
+
+  function buildRemedialPrompt() {
+    return `You are helping a teacher reteach an AI Foundation lesson to students who are struggling.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Prepare REMEDIAL TEACHING SUPPORT.
+
+For each required remedial period or selected topic give:
+1. LEARNING GAP
+2. PREREQUISITE TO REBUILD
+3. SIMPLE RETEACHING EXPLANATION
+4. ONE CONCRETE REAL-LIFE EXAMPLE
+5. ONE VISUAL / ANALOGY / SORTING IDEA
+6. TEACHER-MODELLED EXAMPLE
+7. GUIDED PRACTICE
+8. INDEPENDENT CHECK
+9. COMMON WRONG IDEA and correction
+10. VERY SHORT RECAP
+11. SUCCESS CHECK — how the teacher knows the student is ready to move on
+
+Use simple language without making the concept inaccurate.`;
+  }
+
+  function buildMindMapPrompt() {
+    return `You are creating a PROFESSIONAL VISUAL MIND MAP for an AI Foundation chapter.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Create the FINAL RESULT as a HIGH-QUALITY A4 LANDSCAPE EDUCATIONAL MIND MAP IMAGE.
+
+DESIGN RULES:
+- Put the selected chapter/topic as the central node.
+- Use clear branches for the major concepts.
+- Include only high-value keywords, short definitions, examples, applications and responsible-AI reminders.
+- Use small diagrams/icons where they genuinely improve understanding.
+- Use large readable text, balanced spacing and a clean professional educational style.
+- Show UNDERSTAND → EXPLORE → APPLY → CREATE as a subtle learning progression where appropriate.
+- Keep school identity small if a school name is provided.
+- Do not overcrowd the page.
+
+Generate the actual mind map image, not a written description of one.`;
+  }
+
+  function buildSlideDeckPrompt() {
+    return `You are creating a classroom-ready slide presentation for an AI Foundation lesson.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Create a PROFESSIONAL SLIDE DECK suitable for teaching this chapter/topic.
+
+Use an age-appropriate number of slides based on the content. Include:
+- Title and learning outcomes
+- Hook / real-life connection
+- Key concepts in logical sequence
+- Clear diagrams or visual suggestions
+- Real-world AI examples
+- Demonstration or activity slides where useful
+- Prompt example(s) where relevant
+- Misconceptions / what AI can and cannot do
+- Responsible AI / safety points relevant to the lesson
+- UNDERSTAND, EXPLORE, APPLY and CREATE checks
+- Final recap and exit question
+
+Keep slide text concise and classroom-readable. Add speaker notes where the teacher needs explanation.`;
+  }
+
+  function buildVisualRevisionSheetPrompt() {
+    return `You are creating a PROFESSIONAL VISUAL REVISION SHEET for AI Foundation students.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Create the FINAL RESULT as a HIGH-QUALITY A4 PORTRAIT EDUCATIONAL REVISION SHEET IMAGE.
+
+The sheet should include only the most important material:
+1. CHAPTER / TOPIC TITLE
+2. KEY IDEAS
+3. IMPORTANT AI VOCABULARY
+4. HOW IT WORKS — simple process/flow where relevant
+5. REAL-LIFE EXAMPLES
+6. WHAT AI CAN / CANNOT DO relevant to the lesson
+7. UNDERSTAND
+8. EXPLORE
+9. APPLY
+10. CREATE
+11. COMMON MISCONCEPTIONS
+12. RESPONSIBLE AI / SAFETY REMINDER
+13. QUICK RECAP
+
+Use organised cards, mini-diagrams and visual cues. Keep text large and readable. Generate the actual revision-sheet image, not a design description.`;
+  }
+
+  function buildMiniProjectPrompt() {
+    return `You are designing a practical AI Foundation MINI PROJECT for school students.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Create ONE strong chapter-based mini project.
+
+Give:
+1. PROJECT TITLE
+2. DRIVING QUESTION
+3. WHAT STUDENTS WILL LEARN
+4. FINAL PRODUCT / OUTPUT
+5. TIME NEEDED
+6. MATERIALS / TOOLS — prefer free or commonly available options
+7. STEP-BY-STEP PROJECT PLAN
+8. TEAM ROLES if group work is suitable
+9. CHECKPOINTS for teacher review
+10. QUESTIONS STUDENTS MUST ANSWER in their own words
+11. RESPONSIBLE AI REQUIREMENTS
+12. NO-DEVICE / LOW-TECH ALTERNATIVE where practical
+13. SIMPLE 4-CRITERIA RUBRIC
+14. EXTENSION OPTION
+
+The project must require student thinking and creation. It must not be solvable merely by copying an AI-generated response.`;
+  }
+
+  function buildAIEthicsSafetyPrompt() {
+    return `You are preparing an age-appropriate AI ETHICS & SAFETY lesson connected to the selected AI Foundation chapter.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+Prepare a practical classroom lesson using realistic situations rather than abstract theory.
+
+Cover only the issues genuinely relevant to the selected class/chapter, such as:
+- privacy and personal information
+- accuracy and verification
+- AI mistakes / hallucinations
+- bias and fairness
+- copyright / ownership
+- respectful use
+- over-reliance on AI
+- human responsibility and judgement
+
+Give:
+1. LEARNING OUTCOMES
+2. SIMPLE EXPLANATION
+3. 4 REALISTIC STUDENT SCENARIOS
+4. DISCUSS: What should the student do and why?
+5. DO / DON'T TABLE
+6. TEACHER TALKING POINTS
+7. CLASS PLEDGE / RESPONSIBLE AI RULES
+8. 5-QUESTION QUICK CHECK with teacher answers
+
+Do not use frightening or inappropriate examples for the stated age group.`;
+  }
+
+  function buildLearnAIPrompt() {
+    return `You are an interactive AI Foundation tutor helping a student understand one chapter independently.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+Teach the selected concept using this sequence:
+1. BIG IDEA — one simple sentence
+2. EXPLAIN IT SIMPLY
+3. REAL-LIFE EXAMPLE
+4. IMPORTANT WORDS
+5. HOW IT WORKS — simple steps if relevant
+6. WHAT AI CAN / CANNOT DO here
+7. RESPONSIBLE AI NOTE if relevant
+8. CHECK MY UNDERSTANDING — ask ONE short question and wait for the student's reply
+
+After the student replies, continue interactively. Do not dump the whole chapter at once.`;
+  }
+
+  function buildExploreAIPrompt() {
+    return `You are guiding a student to EXPLORE how an AI Foundation concept appears in the real world.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+Create an interactive exploration.
+
+Start with:
+- 3 age-appropriate real-life examples of the selected concept
+- For each example, briefly explain what the AI is doing and what the human is still responsible for
+
+Then give ONE observation mission at a time, such as identifying AI around the student, comparing two systems, spotting patterns, classifying examples or deciding whether something is actually AI.
+
+Ask the student to respond before giving the next mission. Include privacy and verification reminders whenever relevant.`;
+  }
+
+  function buildPromptPracticePrompt() {
+    return `You are conducting interactive PROMPT PRACTICE for an AI Foundation student.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+Teach the student to communicate clearly with AI.
+
+Use this simple framework when suitable:
+GOAL + CONTEXT + TASK + USEFUL CONSTRAINTS + OUTPUT FORMAT.
+
+Begin with ONE small prompt-improvement task only.
+- Show a weak or incomplete prompt.
+- Ask the student to improve it.
+- Do not give the ideal version before the student attempts.
+- After the attempt, give brief feedback and one improvement hint.
+- Continue with progressively richer tasks.
+
+Never ask the student to share personal, confidential or sensitive information. Do not teach safeguard bypassing or deceptive prompting.`;
+  }
+
+  function buildTryActivityPrompt() {
+    return `You are guiding an AI Foundation student through a simple hands-on activity.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+Choose ONE activity suitable for the selected chapter/topic.
+
+First show only:
+ACTIVITY TITLE
+WHAT YOU WILL DISCOVER
+WHAT YOU NEED
+STEP 1
+
+Wait for the student before continuing to Step 2.
+Guide the activity step by step. Ask observation questions during the activity. End with a short reflection connecting the experience back to the chapter concept.
+
+Prefer activities that can be done safely with ordinary classroom/home materials or free tools. Give a no-device path when practical.`;
+  }
+
+  function buildPracticeMePrompt() {
+    return `You are a HINT-ONLY practice tutor for an AI Foundation student.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+Prepare 5 fresh practice questions internally, but SHOW ONLY QUESTION 1 FIRST.
+
+Use this progression:
+Question 1 — UNDERSTAND
+Question 2 — EXPLORE
+Question 3 — APPLY
+Question 4 — REASON / DECIDE
+Question 5 — CREATE / CHALLENGE
+
+Use a mix of suitable formats such as MCQ, classification, scenario, short response or prompt-improvement task. Keep the questions within the selected chapter.
+
+After each attempt, guide the student with one hint or reflective question if needed. Do not reveal answers to unanswered questions.`;
+  }
+
+  function buildAIChallengePrompt() {
+    return `You are conducting an INTERACTIVE AI FOUNDATION CHAPTER CHALLENGE for a student.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+The challenge has FOUR locked stages:
+STAGE 1 — UNDERSTAND
+STAGE 2 — EXPLORE
+STAGE 3 — APPLY
+STAGE 4 — CREATE
+
+RULES:
+- Each stage has 5 MCQs, for 20 questions total.
+- Every MCQ has exactly four options A), B), C), D) and one clearly correct option.
+- Show ONLY ONE question at a time.
+- Do not show future questions or stages in advance.
+- Questions must become progressively more demanding but remain appropriate to the stated class.
+- Use concept understanding, real-world interpretation, application, responsible AI judgement and creative decision-making.
+- Do not test obscure technical trivia.
+
+SCORING:
+- Keep score internally.
+- After each completed stage, show only the stage score and a short encouraging learning comment.
+- Then unlock the next stage.
+
+AFTER QUESTION 20:
+Give a concise result summary showing:
+- Student Name
+- School Name
+- Class
+- Chapter
+- Total score out of 20
+- Stage-wise scores
+- One strength
+- One next-step suggestion
+
+Then generate a professional 1080 × 1920 PORTRAIT ACHIEVEMENT CARD IMAGE using the student's exact name and school name. Include "AI FOUNDATION", the chapter, total score and a suitable star/achievement treatment. Do not add any publisher or platform name.
+
+Begin exactly with:
+AI CHAPTER CHALLENGE
+STAGE 1 — UNDERSTAND
+
+Then greet the student briefly and give ONLY Question 1.`;
+  }
+
+  function buildStudentMiniProjectPrompt() {
+    return `You are a project coach guiding an AI Foundation student through a small chapter-based project.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+Choose ONE suitable mini project that requires the student's own observation, decisions and creation.
+
+First show:
+PROJECT TITLE
+YOUR MISSION
+FINAL OUTPUT
+WHAT YOU NEED
+MILESTONE 1
+
+Then guide the student milestone by milestone, waiting for the student's response or work before moving forward.
+Ask the student to explain choices in their own words. Do not complete the whole project for the student.
+Include responsible-AI and privacy checks where relevant.`;
+  }
+
+  function buildSafetyCheckPrompt() {
+    return `You are conducting an interactive AI SAFETY CHECK for an AI Foundation student.
+
+${getLessonContext()}
+${aiFoundationPrinciples()}
+${studentLearningRules()}
+Use realistic age-appropriate scenarios related to privacy, accuracy, bias, respectful use, copyright, over-reliance and human judgement — only where relevant to the selected chapter.
+
+Prepare 6 scenarios internally but show ONLY SCENARIO 1 first.
+For each scenario:
+- Give a short situation.
+- Ask the student what they should do and why.
+- Wait for the response.
+- Then give concise feedback explaining the safest and most responsible reasoning.
+
+Do not use fear-based language. The goal is sound digital judgement, not memorising rules.`;
+  }
+
+  function buildPrompt(tool) {
+    if (selectedRole === "student") {
+      switch (tool) {
+        case "learn-ai": return buildLearnAIPrompt();
+        case "explore-ai": return buildExploreAIPrompt();
+        case "prompt-practice": return buildPromptPracticePrompt();
+        case "try-activity": return buildTryActivityPrompt();
+        case "practice-me": return buildPracticeMePrompt();
+        case "ai-challenge": return buildAIChallengePrompt();
+        case "student-mini-project": return buildStudentMiniProjectPrompt();
+        case "safety-check": return buildSafetyCheckPrompt();
+        default: throw new Error("Unknown student learning tool.");
+      }
+    }
+
+    switch (tool) {
+      case "board-work": return buildBoardWorkPrompt();
+      case "teaching-support": return buildTeachingSupportPrompt();
+      case "classroom-activity": return buildClassroomActivityPrompt();
+      case "ai-demonstration": return buildAIDemonstrationPrompt();
+      case "prompt-lab": return buildPromptLabPrompt();
+      case "exit-ticket": return buildExitTicketPrompt();
+      case "remedial": return buildRemedialPrompt();
+      case "mind-map": return buildMindMapPrompt();
+      case "slide-deck": return buildSlideDeckPrompt();
+      case "visual-revision-sheet": return buildVisualRevisionSheetPrompt();
+      case "mini-project": return buildMiniProjectPrompt();
+      case "ai-ethics-safety": return buildAIEthicsSafetyPrompt();
+      default: throw new Error("Unknown teacher tool.");
+    }
+  }
+
+  function openChatGPT(promptText) {
+    const chatgptUrl = "https://chatgpt.com/?q=" + encodeURIComponent(promptText);
+    window.location.href = chatgptUrl;
+  }
+</script>
+
+</body>
+</html>
