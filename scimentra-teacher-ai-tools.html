@@ -913,13 +913,14 @@
           <span style="font-weight:700;color:#6a7f94;">(Optional)</span>
         </label>
 
-        <input
-          id="topic-input"
-          class="topic-input"
-          type="text"
-          placeholder="Example: Variables and Constants"
-          autocomplete="off"
-        >
+        
+<textarea
+  id="topic-input"
+  class="topic-input"
+  rows="3"
+  placeholder="Assimilation subtopics will appear here automatically"
+  autocomplete="off"
+></textarea>
 
         <p class="topic-note" id="topic-note">
           Leave this blank to use the whole chapter.
@@ -2028,8 +2029,18 @@ const schoolBrandName =
   const infoChapter =
     document.getElementById("info-chapter");
 
-  const topicInput =
+  
+const topicInput =
     document.getElementById("topic-input");
+
+// Automatically fill assimilation subtopics from QR URL.
+// Existing chapter-only QR codes continue to work.
+const qrSubtopics = firstParam(["subtopics", "subtopic"]);
+
+if (qrSubtopics) {
+  topicInput.value = qrSubtopics;
+}
+
 
   const topicLabel =
     document.getElementById("topic-label");
