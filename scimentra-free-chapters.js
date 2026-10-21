@@ -51,11 +51,32 @@ const freeTeacherChapters = new Set([
   }
 
   return {
-    isTeacherChapterFree(context) {
-      return freeTeacherChapters.has(
-        makeKey(context)
-      );
-    }
+    
+isTeacherChapterFree(context) {
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  const subtopics = (
+    params.get("subtopics") || ""
+  ).trim();
+
+  const isPhysicsFreeAssimilation =
+    makeKey(context) === [
+      "6th Class",
+      "IIT & NEET Foundation",
+      "Physics IIT & NEET",
+      "Units and Measurements"
+    ].join("|") &&
+    subtopics ===
+      "Importance of Measurements, Physical Quantity and its Types, Unit";
+
+  return (
+    freeTeacherChapters.has(makeKey(context)) ||
+    isPhysicsFreeAssimilation
+  );
+}
+
   };
 
 })();
