@@ -2,11 +2,12 @@ window.SCIMENTRA_FREE_ACCESS = (() => {
 
  
 const freeTeacherChapters = new Set([
-    [
+   
+[
       "6th Class",
       "IIT & NEET Foundation",
       "Physics IIT & NEET",
-      "Units and Measurements"
+      "Units and Measurements: Assimilation 1 (Subtopics: Importance of Measurements, Physical Quantity and its Types, Unit)"
     ].join("|"),
 
     [
