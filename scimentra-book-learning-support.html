@@ -1041,7 +1041,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="scimentra-free-chapters.js"></script>
+<script src="scimentra-free-chapters.js?v=20261021-1"></script>
+
 
 <script>
   // ============================================================
@@ -1330,8 +1331,8 @@ teacherRoleBtn.addEventListener("click", async () => {
   roleGate.style.display = "none";
   mainPage.style.display = "none";
 
-  const isFreeChapter =
-    !questionsAuth.currentUser &&
+  
+const isFreeChapter =
     window.SCIMENTRA_FREE_ACCESS &&
     typeof window.SCIMENTRA_FREE_ACCESS
       .isTeacherChapterFree === "function" &&
@@ -1339,6 +1340,7 @@ teacherRoleBtn.addEventListener("click", async () => {
       .isTeacherChapterFree(
         BOOK_CONTEXT
       );
+
 
   if (isFreeChapter) {
     openFreeTeacherAccess();
