@@ -1,12 +1,21 @@
 window.SCIMENTRA_FREE_ACCESS = (() => {
 
-  const freeTeacherChapters = new Set([
+ 
+const freeTeacherChapters = new Set([
+    [
+      "6th Class",
+      "IIT & NEET Foundation",
+      "Physics IIT & NEET",
+      "Units and Measurements"
+    ].join("|"),
+
     [
       "6th Class",
       "IIT & NEET Foundation",
       "Math IIT",
       "Inroduction to Algebra"
     ].join("|"),
+
 
     [
       "7th Class",
