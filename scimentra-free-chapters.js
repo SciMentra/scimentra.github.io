@@ -18,6 +18,14 @@ const freeTeacherChapters = new Set([
     ].join("|"),
 
 
+    
+[
+      "7th Class",
+      "IIT & NEET Foundation",
+      "Physics IIT & NEET",
+      "Units and Measurements: Assimilation 1 (Subtopics: Physical Quantity, Fundamental Physical Quantity, Derived Quantity, Unit, System of Units, Guidelines for Writing Units)"
+    ].join("|"),
+
     [
       "7th Class",
       "IIT & NEET Foundation",
