@@ -33,7 +33,7 @@ const freeTeacherChapters = new Set([
       "Number System"
     ].join("|"),
 
-    [
+        [
       "8th Class",
       "IIT & NEET Foundation",
       "Math IIT",
@@ -41,10 +41,24 @@ const freeTeacherChapters = new Set([
     ].join("|"),
 
     [
+      "8th Class",
+      "IIT & NEET Foundation",
+      "Physics IIT & NEET",
+      "Units and Dimensions: Assimilation 1 (Subtopics: Physical Quantities, Standards and Units, Definitions of Fundamental Units, Multiplication Factors of Units)"
+    ].join("|"),
+
+    [
       "9th Class",
       "IIT & NEET Foundation",
       "Math IIT",
       "Theory of Numbers - Basics"
+    ].join("|"),
+
+    [
+      "9th Class",
+      "IIT & NEET Foundation",
+      "Physics IIT & NEET",
+      "Basics: Assimilation 1 (Subtopics: Physical Quantity, Multiples And Sub –Multiples, Dimensions Of A Physical Quantities, Rest and Motion, Speed And Velocity, Acceleration And Its Types, Equations Of Motion)"
     ].join("|")
   ]);
 
