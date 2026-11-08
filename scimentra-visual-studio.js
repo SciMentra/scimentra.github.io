@@ -248,7 +248,7 @@ async function generate(){
  else if(tool==='slide-deck'){if(!Array.isArray(result.slides)||!result.slides.length||result.slides.length>80||result.slides.some(s=>!s.title||!Array.isArray(s.bullets)))throw Error('Slide deck requires slides containing title and bullets arrays.');slideIndex=0;$('slideArea').style.display='block';$('slideControls').style.display='flex';displaySlide()}
  else if(tool==='infographic'||tool==='visual-revision-sheet')presentSvg(result.svg);
  }
- $('preview').style.display='block';$('exports').style.display='flex';const allowed={downloadPng:['mind-map','infographic','visual-revision-sheet'],downloadPdf:['mind-map','flashcards','infographic','visual-revision-sheet'],downloadPptx:['slide-deck'],downloadGif:['educational-gif'],downloadSvg:['mind-map','infographic','visual-revision-sheet']};
+ $('preview').style.display='block';$('exports').style.display='flex';const allowed={downloadPng:['mind-map','infographic','visual-revision-sheet'],downloadPdf:['mind-map','flashcards','slide-deck','infographic','visual-revision-sheet','educational-gif'],downloadPptx:['slide-deck'],downloadGif:['educational-gif'],downloadSvg:['mind-map','infographic','visual-revision-sheet']};
  Object.entries(allowed).forEach(([key,types])=>$(key).style.display=types.includes(tool)?'inline-block':'none');
  say('Generated. Review the result and use Download.',false);$('preview').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){say(e.message||'Unable to generate. Check the code and retry.',true)}
