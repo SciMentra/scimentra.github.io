@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Visual Teaching Studio</title>
+<meta name="theme-color" content="#123d69">
+<style>
+:root{--navy:#133f6b;--blue:#1766aa;--line:#d5e5f4;--muted:#627991;--bg:#f3f8fd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#193a56;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{padding:16px;background:linear-gradient(120deg,#166ab3,#103a61);text-align:center;color:white}
+header h1{margin:0;font-size:clamp(23px,4vw,32px)}header p{margin:4px 0 0;color:#e4f3ff;font-size:13px}
+main{max-width:1130px;margin:17px auto 40px;padding:0 12px}
+.panel{border:1px solid var(--line);border-radius:16px;background:white;box-shadow:0 5px 16px #123e6d0b;padding:16px;margin:0 0 14px}
+h2{margin:0 0 7px;font-size:20px;color:var(--navy)}.intro{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+a{color:#1766aa;font-weight:750;text-decoration:none}.hint{margin:8px 0 13px;color:var(--muted);font-size:13px;line-height:1.55}
+.chips,.actions,.steps,.controls{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.chips{margin-top:12px}.chip{border-radius:25px;padding:6px 12px;font-size:12px;font-weight:700;background:#eaf4ff;color:#245d89;overflow-wrap:anywhere}
+.steps{margin-bottom:12px}.step{background:#edf4fc;color:#225b8c;padding:7px 11px;font-size:12px;border-radius:9px;font-weight:800}
+button{font:inherit;min-height:42px;padding:10px 15px;font-size:14px;font-weight:800;cursor:pointer;color:var(--navy);border:0;border-radius:11px;background:#eaf2fb}
+button.primary{background:linear-gradient(90deg,#1671c2,#114575);color:white}button.secondary{background:white;border:1px solid #bed7ea}
+button:disabled{opacity:.45;cursor:not-allowed}
+textarea{display:block;width:100%;min-height:180px;padding:13px;resize:vertical;border:1.5px solid #b7d3ea;border-radius:11px;background:#fcfeff;font:13px/1.55 Consolas,"Courier New",monospace;color:#163f67}
+textarea:focus{outline:2px solid #c8e5ff}
+#status{display:none;font-size:13px;font-weight:750;margin-top:10px;padding:11px;border-radius:10px;white-space:pre-line}
+#status.show{display:block}#status.error{background:#fff0ee;border:1px solid #f6c7c2;color:#a4342e}#status.ok{background:#e9f9f2;border:1px solid #bde8d2;color:#166b44}
+#preview{display:none}.preview-shell{border:1px solid var(--line);border-radius:12px;background:#eff4fa;padding:13px;overflow:auto}
+#svgArea,#mapArea,#cardArea,#slideArea,#gifArea{display:none}
+#svgImage{max-width:100%;max-height:78vh;height:auto;display:block;margin:auto;box-shadow:0 4px 14px #17365822;background:white}
+#mapArea{min-height:350px;max-height:76vh;overflow:auto;background:white;border-radius:10px}
+#mapArea svg{transform-origin:top left;display:block}
+#cardBox{min-height:300px;display:flex;flex-direction:column;gap:15px;align-items:center;justify-content:center;padding:25px;text-align:center;cursor:pointer;border:2px solid #c8dfef;background:linear-gradient(140deg,#fff,#eaf5ff);border-radius:16px}
+#cardBox.flipped{background:linear-gradient(140deg,#fff,#ddf3ed);border-color:#b9decf}
+#cardText{font-size:clamp(20px,3vw,30px);font-weight:800;white-space:pre-wrap;line-height:1.4}
+#cardCategory{color:#2872a1;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.slide{position:relative;width:100%;aspect-ratio:16/9;max-width:960px;margin:auto;background:white;box-shadow:0 5px 15px #123e6d20;border-radius:7px;overflow:hidden}
+.slide:before{position:absolute;content:"";height:11px;top:0;left:0;right:0;background:linear-gradient(90deg,#176dbb,#27b1be)}
+.slide-body{padding:5% 5% 6%;height:100%;display:flex;flex-direction:column;justify-content:center}
+#slideTitle{font-weight:900;font-size:clamp(21px,3vw,40px);line-height:1.2;color:#173f6b;margin:0 0 18px}
+#slideBullets{font-size:clamp(12px,1.85vw,23px);margin:0;padding:0 0 0 26px;line-height:1.55}
+#slideBullets li{margin:4px 0}
+.slide-footer{position:absolute;bottom:11px;left:25px;right:25px;display:flex;justify-content:space-between;color:#52718e;font-size:12px}
+#gifCanvas{display:block;margin:auto;max-width:100%;max-height:75vh;width:auto;height:auto;box-shadow:0 4px 17px #16395c28;background:white}
+.controls{justify-content:center;margin-top:13px}
+.controls input[type="range"]{accent-color:#1667ac;width:145px}
+#exports{display:none;margin-top:15px}.small{font-size:12px;color:var(--muted)}
+@media(max-width:650px){.panel{padding:13px}.actions button{flex-grow:1}.controls{gap:6px}.slide-footer{bottom:5px;font-size:9px}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js" defer></script>
+<script src="scimentra-visual-studio.js" defer></script>
+</head>
+<body>
+<header><h1 id="pageHeading">Visual Teaching Studio</h1><p id="schoolHeading">Teacher AI Tools</p></header>
+<main>
+<section class="panel">
+<div class="intro"><h2 id="toolHeading">Visual Generator</h2><a href="scimentra-teacher-ai-tools.html" id="backLink">← Back to Teacher AI Tools</a></div>
+<div class="chips" id="contextChips"></div>
+<p class="hint">Uses the school, teacher, class, board, subject, chapter and topic already supplied by Teacher AI Tools.</p>
+</section>
+<section class="panel">
+<div class="steps"><span class="step">1 · Get Code</span><span class="step">2 · Paste Code</span><span class="step">3 · Generate</span><span class="step">4 · Download</span></div>
+<div class="actions" style="margin-bottom:12px"><button class="primary" id="getCode">Get Code from ChatGPT</button></div>
+<label for="codeInput" style="font-weight:800;display:block;margin:8px 0">Paste Illustration / Content Code</label>
+<textarea id="codeInput" spellcheck="false" placeholder="Paste the complete JSON illustration code ChatGPT generates here."></textarea>
+<div class="actions" style="margin-top:12px"><button class="primary" id="generate">Generate &amp; Preview</button><button class="secondary" id="clearCode">Clear Code</button></div>
+<div id="status" role="status" aria-live="polite"></div>
+</section>
+<section class="panel" id="preview">
+<h2>Preview</h2>
+<p class="hint">Verify educational accuracy, labels, spelling, formulas and completeness before sharing with students.</p>
+<div class="preview-shell">
+<div id="svgArea"><img id="svgImage" alt="Generated educational illustration"></div>
+<div id="mapArea"></div>
+<div id="cardArea"><div id="cardBox" role="button" tabindex="0" aria-label="Flip flashcard"><div id="cardCategory"></div><div id="cardText"></div><div class="small">Tap to flip</div></div></div>
+<div id="slideArea"><div class="slide"><div class="slide-body"><div id="slideTitle"></div><ul id="slideBullets"></ul></div><div class="slide-footer"><span id="slideSchool"></span><span id="slideNumber"></span></div></div></div>
+<div id="gifArea"><canvas id="gifCanvas" width="900" height="1200"></canvas></div>
+</div>
+<div class="controls" id="mapControls" style="display:none"><button id="zoomOut">− Zoom</button><button id="zoomIn">+ Zoom</button><button id="expandAll">Expand All</button></div>
+<div class="controls" id="cardControls" style="display:none"><button id="cardPrev">← Previous</button><span id="cardCounter"></span><button id="cardNext">Next →</button><button id="shuffle">Shuffle</button></div>
+<div class="controls" id="slideControls" style="display:none"><button id="slidePrev">← Previous</button><span id="slideCounter"></span><button id="slideNext">Next →</button></div>
+<div class="controls" id="gifControls" style="display:none"><button id="gifPrev">← Stage</button><button id="gifPlay">Pause</button><button id="gifNext">Next Stage →</button><label for="gifSpeed">Speed</label><input id="gifSpeed" type="range" min="400" max="3000" step="100" value="1300"><span id="gifSpeedLabel">1.3 s</span><span id="gifStage"></span></div>
+<div class="actions" id="exports">
+<button class="primary" id="downloadPng">Download PNG</button>
+<button class="secondary" id="downloadPdf">Download PDF</button>
+<button class="secondary" id="downloadPptx">Download PPTX</button>
+<button class="primary" id="downloadGif">Download GIF</button>
+<button class="secondary" id="downloadSvg">Download SVG</button>
+</div>
+<p class="hint">No paid AI API. ChatGPT generates JSON/SVG code; your browser renders and downloads the finished material.</p>
+</section>
+</main>
+</body></html>
