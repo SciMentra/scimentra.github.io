@@ -44,6 +44,16 @@ textarea:focus{outline:2px solid #c8e5ff}
 .controls{justify-content:center;margin-top:13px}
 .controls input[type="range"]{accent-color:#1667ac;width:145px}
 #exports{display:none;margin-top:15px}.small{font-size:12px;color:var(--muted)}
+.topic-editor{margin:14px 0 4px;max-width:100%;padding:13px 15px;border:1px solid #c5dff0;background:linear-gradient(110deg,#f4faff,#f8fdff);border-radius:13px}
+.topic-label{display:block;font-size:14px;font-weight:800;color:#123f6b;margin-bottom:9px}
+.optional-label{font-size:12px;color:#60809b;font-weight:600}
+#topicInput{display:block;width:100%;padding:12px 14px;border:1.5px solid #9fc6e3;border-radius:11px;background:white;font:600 15px system-ui,-apple-system,"Segoe UI",sans-serif;color:#173e65;min-height:46px}
+#topicInput:focus{border-color:#1672ba;outline:3px solid #c6e6ff}
+.topic-editor #topicHelp{margin-bottom:0}
+body[data-tool="mind-map"] .preview-shell{background:linear-gradient(155deg,#edf5fb,#fbfdff)}
+body[data-tool="mind-map"] #svgArea{overflow:auto;max-width:100%}
+body[data-tool="mind-map"] #svgImage{max-height:none;width:100%;max-width:100%;min-height:auto;border-radius:8px}
+
 @media(max-width:650px){.panel{padding:13px}.actions button{flex-grow:1}.controls{gap:6px}.slide-footer{bottom:5px;font-size:9px}}
 </style>
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" defer></script>
@@ -56,7 +66,12 @@ textarea:focus{outline:2px solid #c8e5ff}
 <section class="panel">
 <div class="intro"><h2 id="toolHeading">Visual Generator</h2><a href="scimentra-teacher-ai-tools.html" id="backLink">← Back to Teacher AI Tools</a></div>
 <div class="chips" id="contextChips"></div>
-<p class="hint">Uses the school, teacher, class, board, subject, chapter and topic already supplied by Teacher AI Tools.</p>
+<div class="topic-editor">
+  <label for="topicInput" class="topic-label">Topic / Concept <span class="optional-label">(you can edit this)</span></label>
+  <input id="topicInput" type="text" maxlength="190" autocomplete="off" spellcheck="false" placeholder="Enter the specific topic you want to teach">
+  <div id="topicHelp" class="hint">Edit the topic, or leave it blank to cover the whole chapter.</div>
+</div>
+<p class="hint">School, teacher, class, board, subject and chapter are loaded automatically. You can change the topic below before opening ChatGPT.</p>
 </section>
 <section class="panel">
 <div class="steps"><span class="step">1 · Get Code</span><span class="step">2 · Paste Code</span><span class="step">3 · Generate</span><span class="step">4 · Download</span></div>
