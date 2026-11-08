@@ -15,10 +15,37 @@ const ctx=valid?session:{schoolName:'',teacherName:'',teacherTitle:'',className:
 $('pageHeading').textContent=label+' Creator';$('toolHeading').textContent=label+' Creator';
 $('schoolHeading').textContent=(ctx.schoolName||'Teacher AI Tools')+' · Visual Teaching Studio';
 document.title=label+' | Teacher AI Tools';
-[ctx.schoolName,ctx.teacherName?ctx.teacherName+' '+(ctx.teacherTitle||''):'',ctx.className,ctx.board,ctx.subject,ctx.chapter,ctx.topic?'Topic: '+ctx.topic:'Whole chapter'].filter(Boolean).forEach(s=>{const item=document.createElement('span');item.className='chip';item.textContent=s;$('contextChips').appendChild(item)});
+document.body.setAttribute('data-tool',tool);
+// The topic is teacher-editable; GIFs intentionally start with a blank topic.
+const topicEntry=$('topicInput');
+const topicHelp=$('topicHelp');
+const topicDraftKey='scimentraStudioTopic:'+(session&&session.createdAt||'')+':'+tool;
+let initialTopic=(tool==='educational-gif')?'':String(ctx.topic||'');
+try{const saved=sessionStorage.getItem(topicDraftKey);if(saved!==null)initialTopic=saved}catch(e){}
+ctx.topic=initialTopic;topicEntry.value=initialTopic;
+if(tool==='educational-gif'){
+ topicEntry.placeholder='Write the process or experiment you want to animate';
+ topicHelp.textContent='GIF topic starts blank. Write a specific process (example: Germination of a Seed) before requesting code.';
+}else if(tool==='mind-map'){
+ topicEntry.placeholder='Example: Fundamental and Derived Physical Quantities';
+ topicHelp.textContent='Edit the focus topic, or leave it blank to create a mind map for the whole chapter.';
+}
+function updateContextChips(){
+ const parent=$('contextChips');parent.replaceChildren();
+ [ctx.schoolName,ctx.teacherName?ctx.teacherName+' '+(ctx.teacherTitle||''):'',ctx.className,ctx.board,ctx.subject,ctx.chapter,ctx.topic?'Topic: '+ctx.topic:(tool==='educational-gif'?'Topic not entered':'Whole chapter')].filter(Boolean).forEach(s=>{
+   const item=document.createElement('span');item.className='chip';item.textContent=s;parent.appendChild(item);
+ });
+}
+updateContextChips();
+topicEntry.addEventListener('input',()=>{
+ ctx.topic=topicEntry.value.trim();
+ try{sessionStorage.setItem(topicDraftKey,topicEntry.value)}catch(e){}
+ updateContextChips();
+});
+
 function say(message,isError){$('status').textContent=message;$('status').className='show '+(isError?'error':'ok')}
 if(!valid){say('Please open this generator from Teacher AI Tools after signing in. It needs the school, teacher and lesson details.',true);$('getCode').disabled=true;$('generate').disabled=true}
-const basePrompt=[
+function getBasePrompt(){return [
 'You are an expert school teacher, educational illustrator and accurate subject specialist.',
 'CLASS AND SCHOOL CONTEXT:',
 'School Name: '+(ctx.schoolName||''),
@@ -33,12 +60,18 @@ const basePrompt=[
 'Use high-quality clear classroom designs; avoid decorative clutter and childish simplistic sketches.',
 'Return ONLY one valid JSON object, optionally inside a single JSON code fence, with no introduction or explanation.',
 'Never include JavaScript, external images, remote URLs, iframe, foreignObject or untrusted SVG features.'
-].join('\n');
+].join('\n')}
 const formatPrompts={
  'mind-map':[
-'Return format EXACTLY: {"format":"scimentra-visual-v1","type":"mind-map","title":"Title","nodes":[{"id":"root","label":"Main topic","parent":null,"details":"..."},{"id":"one","label":"First concept","parent":"root","details":"..."}]}',
-'Create ONE central root and 12–28 useful nodes. Every other node must have a valid parent ID. IDs unique.',
-'Organize major categories and subordinate ideas. Labels short (3–6 words), meaningful, correct. No SVG; the app draws the tree.'
+'OUTPUT MUST BE A FINISHED PREMIUM LANDSCAPE SVG MIND MAP, NOT A PLAIN RECTANGLE FLOWCHART, NOT GENERIC NODE JSON.',
+'Return exactly one JSON object with this schema: {"format":"scimentra-visual-v1","type":"mind-map","title":"Topic title","svg":"<svg xmlns='+"'"+'http://www.w3.org/2000/svg'+"'"+' viewBox='+"'"+'0 0 1600 900'+"'"+'>...FULL FINISHED MIND MAP ARTWORK...</svg>"}',
+'SVG CANVAS: 1600 x 900 px, horizontal 16:9 landscape. Entire map must stay INSIDE the canvas with 65px outer margin. No text may be clipped or cross boxes, margins, illustrations or connecting lines.',
+'VISUAL QUALITY: Make a polished illustrated educational mind map like a professionally designed ChatGPT teaching graphic: a sophisticated editorial infographic, not a database tree. Use tasteful light background, harmonious color-coded topic clusters, elegant organic curved connectors, soft shadows, purposeful highlights and accurate small VECTOR line illustrations related to the subject.',
+'COMPOSITION: One prominent central topic badge/illustration with 4–6 main branches distributed BALANCED LEFT and RIGHT (and above/below when helpful). Each branch contains 2–4 concise subtopics. Use colorful section panels, pill-shaped topic labels and small concept-specific SVG diagrams where they improve understanding. Do not produce a monotonous chain of identical rounded boxes.',
+'TEXT: Use polished typography with precise hierarchy, highly legible 24–34px labels and 18–22px short explanations. Wrap text with SVG <text> and individual <tspan> elements. Never exceed the width of its box or section. Do not print words on top of lines; visually separate every content area.',
+'CONTENT: Key definitions, principles, categories, relationships, examples, and equations must accurately match the selected board, class and chapter. Avoid repetitive generic points. Each branch should help students revise meaningfully. Include school name discreetly if provided.',
+'TECHNICAL: All artwork must be actual self-contained SVG shapes, paths, gradients and text. No scripts, external images, CSS stylesheets, animation, emoji, <foreignObject>, <image> or <use>. SVG attributes should use single quotes; escape any ampersands and quotation marks correctly inside JSON. Show the FINISHED illustration as the code value of svg, not a description of an illustration.',
+'RETURN ONLY valid JSON (no markdown narrative). The app will export exactly this SVG to LANDSCAPE PNG and PDF.'
 ].join('\n'),
  'flashcards':[
 'Return format EXACTLY: {"format":"scimentra-visual-v1","type":"flashcards","title":"Title","cards":[{"front":"A question","back":"Accurate answer","category":"Concept"}]}',
@@ -72,7 +105,8 @@ const formatPrompts={
 };
 $('getCode').addEventListener('click',()=>{
  if(!valid)return;
- const prompt=basePrompt+'\n\nOUTPUT CODE REQUIREMENTS:\n'+formatPrompts[tool];
+ if(tool==='educational-gif'&&!ctx.topic){say('Enter the GIF topic or process first.',true);topicEntry.focus();return;}
+ const prompt=getBasePrompt()+'\n\nOUTPUT CODE REQUIREMENTS:\n'+formatPrompts[tool];
  const url='https://chatgpt.com/?q='+encodeURIComponent(prompt);
  // Keep ChatGPT in the same browser tab; Back returns to this generator.
  window.location.href=url;
@@ -243,12 +277,24 @@ async function generate(){
  else{
  if(result.format!=='scimentra-visual-v1'||result.type!==tool)throw Error('Code format or tool type does not match '+label+'. Get the code for this specific tool.');
  data=result;
- if(tool==='mind-map'){if(!Array.isArray(result.nodes)||result.nodes.length<2||result.nodes.length>160||result.nodes.some(n=>!n.id||!n.label))throw Error('Mind map nodes require id, label and parent fields.');mindNodes=result.nodes;collapsed=new Set();zoom=.78;renderMap()}
+ if(tool==='mind-map'){
+   if(typeof result.svg==='string'&&result.svg.trim()){
+     const d=new DOMParser().parseFromString(result.svg,'image/svg+xml');
+     const box=(d.documentElement.getAttribute('viewBox')||'').trim().split(/[\s,]+/).map(Number);
+     if(box.length!==4||!Number.isFinite(box[2])||box[2]<=box[3])throw Error('The mind map needs landscape SVG with viewBox="0 0 1600 900". Ask ChatGPT to correct the layout.');
+     presentSvg(result.svg);
+   }else if(Array.isArray(result.nodes)){
+     // Backward compatibility for mind maps created before the SVG upgrade.
+     if(result.nodes.length<2||result.nodes.length>160||result.nodes.some(n=>!n.id||!n.label))throw Error('Mind map nodes require unique id, label and parent fields.');
+     mindNodes=result.nodes;collapsed=new Set();zoom=.78;renderMap();
+     say('Older mind-map code loaded. For a more illustrated landscape mind map, click Get Code for the latest SVG design.',false);
+   }else throw Error('Mind map code needs a complete landscape SVG under the "svg" field. Click Get Code from ChatGPT to regenerate.');
+ }
  else if(tool==='flashcards'){if(!Array.isArray(result.cards)||!result.cards.length||result.cards.length>100||result.cards.some(c=>!c.front||!c.back))throw Error('Flashcards require nonempty front and back text.');cardsOrder=result.cards.map((_,i)=>i);cardIndex=0;cardFlip=false;$('cardArea').style.display='block';$('cardControls').style.display='flex';displayCard()}
  else if(tool==='slide-deck'){if(!Array.isArray(result.slides)||!result.slides.length||result.slides.length>80||result.slides.some(s=>!s.title||!Array.isArray(s.bullets)))throw Error('Slide deck requires slides containing title and bullets arrays.');slideIndex=0;$('slideArea').style.display='block';$('slideControls').style.display='flex';displaySlide()}
  else if(tool==='infographic'||tool==='visual-revision-sheet')presentSvg(result.svg);
  }
- $('preview').style.display='block';$('exports').style.display='flex';const allowed={downloadPng:['mind-map','infographic','visual-revision-sheet'],downloadPdf:['mind-map','flashcards','slide-deck','infographic','visual-revision-sheet','educational-gif'],downloadPptx:['slide-deck'],downloadGif:['educational-gif'],downloadSvg:['mind-map','infographic','visual-revision-sheet']};
+ $('preview').style.display='block';$('exports').style.display='flex';const allowed={downloadPng:['mind-map','infographic','visual-revision-sheet'],downloadPdf:['mind-map','flashcards','slide-deck','infographic','visual-revision-sheet','educational-gif'],downloadPptx:['slide-deck'],downloadGif:['educational-gif'],downloadSvg:['infographic','visual-revision-sheet']};
  Object.entries(allowed).forEach(([key,types])=>$(key).style.display=types.includes(tool)?'inline-block':'none');
  say('Generated. Review the result and use Download.',false);$('preview').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){say(e.message||'Unable to generate. Check the code and retry.',true)}
@@ -336,24 +382,11 @@ async function exportCardsPDF(){
  savePdfPages(pages,filename(data.title)+'_Flashcards.pdf');
 }
 async function exportVisualPDF(){
- const image=await drawingCanvas(1.15);
- const map=tool==='mind-map',pages=[pdfPage(image,map,map?'A3':'A4')];
- if(map&&(image.width>1900||image.height>1300)){
-   // Page one is the complete mind map. Additional tiled A3 pages keep every label legible.
-   const tw=1700,th=1180,overlap=60;
-   const cols=Math.ceil(Math.max(1,image.width-overlap)/(tw-overlap));
-   const rows=Math.ceil(Math.max(1,image.height-overlap)/(th-overlap));
-   if(cols*rows>70)throw Error('This mind map is too large for one PDF. Collapse some branches and try again.');
-   for(let r=0;r<rows;r++)for(let col=0;col<cols;col++){
-     const x=col*(tw-overlap),y=r*(th-overlap);
-     const w=Math.min(tw,image.width-x),h=Math.min(th,image.height-y);
-     const tile=document.createElement('canvas');tile.width=tw;tile.height=th;
-     const g=tile.getContext('2d');g.fillStyle='white';g.fillRect(0,0,tw,th);
-     g.drawImage(image,x,y,w,h,0,0,w,h);
-     pages.push(pdfPage(tile,true,'A3'));
-   }
- }
- savePdfPages(pages,filename(data.title)+'.pdf');
+ // Mind-map exports are ALWAYS a single landscape page (A3). Other visual sheets remain A4 portrait.
+ const isMindMap=tool==='mind-map';
+ const canvas=await drawingCanvas(isMindMap?1.6:1.15);
+ const pages=[pdfPage(canvas,isMindMap,isMindMap?'A3':'A4')];
+ savePdfPages(pages,filename(data.title)+(isMindMap?'_Mind_Map_Landscape':'')+'.pdf');
 }
 async function exportSlidesPDF(){
  const pages=[];
