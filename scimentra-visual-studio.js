@@ -99,21 +99,119 @@ function presentSvg(raw){activeSvg=safeSvg(raw);if(imageUrl)URL.revokeObjectURL(
 function tag(parent,name,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,String(v)));if(text!==undefined)e.textContent=String(text);parent.appendChild(e);return e}
 function splitText(s,len){const words=String(s||'').trim().split(/\s+/),lines=[];let line='';for(const word of words){if((line+' '+word).trim().length>len&&line){lines.push(line);line=word}else line=(line+' '+word).trim()}if(line)lines.push(line);return lines}
 function renderMap(){
- const map=new Map(mindNodes.map(n=>[n.id,{...n,kids:[]}]));if(map.size!==mindNodes.length)throw Error('Mind map IDs must be unique.');
- const roots=[];for(const n of map.values()){if(n.parent===null||n.parent===undefined||n.parent==='')roots.push(n);else if(map.has(n.parent))map.get(n.parent).kids.push(n);else throw Error('Missing mind map parent: '+n.parent)}
+ // Measure text in pixels; character counts cannot reliably fit different fonts or words.
+ const columnWidth=300, columnGap=130, rowGap=54, textPadding=20, fontSize=18, lineHeight=25;
+ const measureCanvas=document.createElement('canvas');
+ const measure=measureCanvas.getContext('2d');
+ measure.font='700 '+fontSize+'px Arial';
+ const nodes=new Map();
+ for(const n of mindNodes){
+   if(nodes.has(n.id))throw Error('Mind map node IDs must be unique.');
+   nodes.set(n.id,{...n,kids:[],lines:[],height:78});
+ }
+ const roots=[];
+ for(const n of nodes.values()){
+   if(n.parent===null||n.parent===undefined||n.parent==='')roots.push(n);
+   else if(nodes.has(n.parent))nodes.get(n.parent).kids.push(n);
+   else throw Error('Mind map parent ID '+n.parent+' does not exist.');
+ }
  if(roots.length!==1)throw Error('Mind map requires exactly one root node.');
- const pos=new Map(),visiting=new Set();let leaf=0,maxDepth=0;
- function place(n,depth){if(visiting.has(n.id))throw Error('A circular parent relationship was found in the mind map.');visiting.add(n.id);maxDepth=Math.max(maxDepth,depth);const children=collapsed.has(n.id)?[]:n.kids;if(!children.length){pos.set(n.id,{x:60+depth*260,y:75+leaf*100});leaf++}else{children.forEach(c=>place(c,depth+1));const ys=children.map(c=>pos.get(c.id).y);pos.set(n.id,{x:60+depth*260,y:(Math.min(...ys)+Math.max(...ys))/2})}visiting.delete(n.id)}
- place(roots[0],0);const width=Math.max(1020,350+maxDepth*260),height=Math.max(550,160+leaf*100);
- const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('xmlns','http://www.w3.org/2000/svg');svg.setAttribute('viewBox','0 0 '+width+' '+height);svg.setAttribute('width',width);svg.setAttribute('height',height);
- tag(svg,'rect',{width,height,fill:'#f9fcff'});const palette=['#1468a8','#16847d','#8c5caa','#b9683b','#3372ba','#a45a77'];
- function branch(n,depth,col){const p=pos.get(n.id);const children=collapsed.has(n.id)?[]:n.kids;for(const c of children){const q=pos.get(c.id);tag(svg,'path',{d:'M'+(p.x+218)+' '+(p.y+31)+' C'+(p.x+245)+' '+(p.y+31)+' '+(q.x-40)+' '+(q.y+31)+' '+q.x+' '+(q.y+31),stroke:col,'stroke-width':3.2,fill:'none'})}
- tag(svg,'rect',{x:p.x,y:p.y,width:218,height:65,rx:13,fill:depth===0?'#123e67':col});const lines=splitText(n.label,29).slice(0,3);lines.forEach((txt,i)=>tag(svg,'text',{x:p.x+109,y:p.y+30+(i-(lines.length-1)/2)*17,'text-anchor':'middle',fill:'#ffffff','font-family':'Arial,sans-serif','font-size':lines.length>1?14:17,'font-weight':750},txt));
- if(n.kids.length){tag(svg,'circle',{cx:p.x+207,cy:p.y+7,r:10,fill:'#eff7fe',stroke:'#c2ddec'});tag(svg,'text',{x:p.x+207,y:p.y+12,'text-anchor':'middle',fill:'#14517a','font-size':15},collapsed.has(n.id)?'+':'−')}
- if(n.details)tag(svg,'title',{},n.details);
- const hit=tag(svg,'rect',{x:p.x,y:p.y,width:218,height:65,fill:'transparent'});hit.style.cursor=n.kids.length?'pointer':'default';hit.addEventListener('click',()=>{if(!n.kids.length)return;if(collapsed.has(n.id))collapsed.delete(n.id);else collapsed.add(n.id);renderMap()});
- children.forEach((child,i)=>branch(child,depth+1,depth===0?palette[i%palette.length]:col))}
- branch(roots[0],0,palette[0]);const el=$('mapArea');el.replaceChildren(svg);svg.style.width=Math.round(width*zoom)+'px';svg.style.height=Math.round(height*zoom)+'px';activeSvg=new XMLSerializer().serializeToString(svg);$('mapArea').style.display='block';$('mapControls').style.display='flex'}
+ function fitLines(label,limit){
+   const words=String(label||'').trim().split(/\s+/);
+   const result=[];let current='';
+   for(const word of words){
+     const candidate=current?current+' '+word:word;
+     if(measure.measureText(candidate).width<=limit){current=candidate;continue}
+     if(current){result.push(current);current=''}
+     // Break very long words too; never let even a single word overflow.
+     let fragment='';
+     for(const ch of word){
+       if(fragment&&measure.measureText(fragment+ch).width>limit){result.push(fragment);fragment=ch}
+       else fragment+=ch;
+     }
+     current=fragment;
+   }
+   if(current)result.push(current);
+   return result.length?result:[''];
+ }
+ let maxHeight=78;
+ for(const n of nodes.values()){
+   const maxTextWidth=columnWidth-textPadding*2-(n.kids.length?21:0);
+   n.lines=fitLines(n.label,maxTextWidth);
+   n.height=Math.max(78,n.lines.length*lineHeight+30);
+   maxHeight=Math.max(maxHeight,n.height);
+ }
+ const rowStep=maxHeight+rowGap, topPad=64, leftPad=58;
+ let leaves=0,maxDepth=0;
+ const positions=new Map(),active=new Set(),visited=new Set();
+ function layout(n,depth){
+   if(active.has(n.id))throw Error('Circular parent relationship in the mind map.');
+   if(visited.has(n.id))throw Error('A mind map node has been linked more than once.');
+   active.add(n.id);visited.add(n.id);maxDepth=Math.max(maxDepth,depth);
+   const children=collapsed.has(n.id)?[]:n.kids;
+   const x=leftPad+depth*(columnWidth+columnGap);
+   let centerY;
+   if(!children.length){
+     centerY=topPad+(leaves+.5)*rowStep;
+     leaves++;
+   }else{
+     children.forEach(child=>layout(child,depth+1));
+     const first=positions.get(children[0].id);
+     const last=positions.get(children[children.length-1].id);
+     centerY=(first.cy+last.cy)/2;
+   }
+   positions.set(n.id,{x,y:centerY-n.height/2,cy:centerY});
+   active.delete(n.id);
+ }
+ layout(roots[0],0);
+ // One SVG exported for the entire mind map; no branches or labels are cropped.
+ const width=leftPad*2+(maxDepth+1)*columnWidth+maxDepth*columnGap;
+ const height=Math.max(540,topPad*2+leaves*rowStep);
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+ svg.setAttribute('viewBox','0 0 '+width+' '+height);
+ svg.setAttribute('width',width);svg.setAttribute('height',height);
+ tag(svg,'rect',{width,height,fill:'#f9fcff'});
+ const palette=['#1769a8','#16877b','#885cad','#b9673a','#3374ba','#9a5882','#4a8b5f'];
+ const branchPalette=new Map();
+ function draw(n,depth,color){
+   const p=positions.get(n.id),children=collapsed.has(n.id)?[]:n.kids;
+   const fill=depth===0?'#143e66':color;
+   for(const child of children){
+     const c=positions.get(child.id);
+     const x0=p.x+columnWidth, x1=c.x, y0=p.cy, y1=c.cy;
+     tag(svg,'path',{d:'M'+x0+' '+y0+' C'+(x0+columnGap*.45)+' '+y0+' '+(x1-columnGap*.45)+' '+y1+' '+x1+' '+y1,fill:'none',stroke:color,'stroke-width':3.5,'stroke-linecap':'round'});
+   }
+   tag(svg,'rect',{x:p.x,y:p.y,width:columnWidth,height:n.height,rx:14,fill});
+   // Lines are individually measured to stay within the rectangle, including long technical terms.
+   const textCenter=p.x+textPadding+(columnWidth-2*textPadding-(n.kids.length?21:0))/2;
+   const lineBlock=n.lines.length*lineHeight;
+   const startY=p.cy-lineBlock/2+fontSize/2+lineHeight*.1;
+   n.lines.forEach((line,i)=>tag(svg,'text',{
+     x:textCenter,y:startY+i*lineHeight,
+     'text-anchor':'middle',
+     'font-family':'Arial,Helvetica,sans-serif',
+     'font-size':fontSize,
+     'font-weight':'700',
+     fill:'#ffffff'
+   },line));
+   if(n.kids.length){
+     tag(svg,'circle',{cx:p.x+columnWidth-14,cy:p.y+14,r:12,fill:'#eff8ff',stroke:'#c0dceb','stroke-width':1});
+     tag(svg,'text',{x:p.x+columnWidth-14,y:p.y+19,'text-anchor':'middle',fill:'#155882','font-family':'Arial','font-size':17,'font-weight':'bold'},collapsed.has(n.id)?'+':'−');
+   }
+   if(n.details)tag(svg,'title',{},n.details);
+   const clickZone=tag(svg,'rect',{x:p.x,y:p.y,width:columnWidth,height:n.height,fill:'transparent'});
+   if(n.kids.length)clickZone.addEventListener('click',()=>{if(collapsed.has(n.id))collapsed.delete(n.id);else collapsed.add(n.id);renderMap()});
+   children.forEach((child,i)=>draw(child,depth+1,depth===0?palette[i%palette.length]:color));
+ }
+ draw(roots[0],0,palette[0]);
+ const area=$('mapArea');
+ area.replaceChildren(svg);
+ svg.style.width=Math.round(width*zoom)+'px';
+ svg.style.height=Math.round(height*zoom)+'px';
+ activeSvg=new XMLSerializer().serializeToString(svg);
+ area.style.display='block';$('mapControls').style.display='flex';
+}
 $('zoomIn').onclick=()=>{zoom=Math.min(2.4,zoom+.15);renderMap()};
 $('zoomOut').onclick=()=>{zoom=Math.max(.35,zoom-.15);renderMap()};
 $('expandAll').onclick=()=>{collapsed.clear();renderMap()};
