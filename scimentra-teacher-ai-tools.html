@@ -3652,7 +3652,7 @@ Otherwise provide the complete slide-by-slide deck content.`;
 
 ${getLessonContext()}
 
-Create the FINAL RESULT as a HIGH-QUALITY A4 EDUCATIONAL REVISION SHEET IMAGE.
+Create the FINAL RESULT as a HIGH-QUALITY 1080 x 1920 PIXEL EDUCATIONAL REVISION SHEET IMAGE.
 
 PURPOSE:
 Create a one-page visual study sheet that allows a student to revise the most important content of the selected chapter or topic quickly.
@@ -3665,8 +3665,10 @@ This is NOT a generic infographic.
 It should look like a professionally designed textbook QUICK REVISION / FORMULA / CONCEPT SHEET.
 
 PAGE FORMAT:
-- A4 portrait orientation.
-- High resolution.
+- Exact target dimensions: 1080 x 1920 pixels (width x height).
+- Portrait 9:16 aspect ratio, suitable for full-screen phone viewing.
+- Produce the finished image at 1080 x 1920 resolution, not an A4 paper layout.
+- Keep all text, illustrations and panels at least 50 pixels from the image edges.
 - Suitable for printing, classroom projection, PPT use and student sharing.
 - Clean light background.
 - Keep all important content safely inside page margins.
@@ -3779,7 +3781,7 @@ SCHOOL IDENTITY:
 - Keep school identity small and professional so the academic content remains dominant.
 
 FINAL OUTPUT RULE:
-Generate the actual A4 VISUAL REVISION SHEET IMAGE.
+Generate the actual 1080 x 1920 PIXEL PORTRAIT VISUAL REVISION SHEET IMAGE.
 Do not respond with a long textual explanation of how to design it.
 Do not merely describe the sheet.
 Produce the finished visual revision sheet.`;
@@ -3795,10 +3797,12 @@ ${getLessonContext()}
 Create the final result as a PORTRAIT EDUCATIONAL INFOGRAPHIC IMAGE.
 
 IMAGE SIZE AND FORMAT:
-- A4 size.
+- Exact target dimensions: 1080 x 1920 pixels (width x height).
+- Portrait 9:16 aspect ratio.
 - Portrait orientation.
 - High-resolution image suitable for printing, classroom display, PPT use and student sharing.
-- Keep important content safely inside the A4 page margins.
+- Keep all content, labels, diagrams and headings at least 50 pixels from the image edges.
+- Create the finished image at 1080 x 1920 resolution, not A4 dimensions.
 
 INFOGRAPHIC DESIGN:
 - This must look like a professional EDUCATIONAL INFOGRAPHIC, NOT a mind map.
@@ -3830,7 +3834,7 @@ Use age-appropriate language for the selected class.
 Use correct mathematical/scientific notation.
 Verify all facts, formulas and examples.
 
-The final response should be the generated INFOGRAPHIC IMAGE, not a long textual explanation.`;
+The final response should be the actual generated 1080 x 1920 PIXEL PORTRAIT INFOGRAPHIC IMAGE, not a long textual explanation.`;
   }
 
 
@@ -3845,7 +3849,9 @@ The final response should be the generated INFOGRAPHIC IMAGE, not a long textual
     "Animate the process in six to eight meaningful teaching stages, or an appropriate number for the topic.",
     "Use vivid professional colours, consistent frames, legible labels and clear visual motion. Avoid childish cartoons and oversimplified anatomy.",
     "Place one short stage heading and a concise educational explanation inside a reserved caption area ON THE IMAGE; never cover the diagram or labels.",
-    "Prefer a vertical 9:16 output useful on mobile phones. Maintain a readable pace, loop appropriately, and keep the scene stable across frames.",
+    "MANDATORY GIF FRAME SIZE: 1080 pixels wide by 1920 pixels high (1080 x 1920, portrait 9:16). Every frame must use these exact dimensions.",
+    "Keep all captions, labels, arrows and illustrations at least 50 pixels inside the frame edges; no clipping or cropped text.",
+    "Maintain a readable pace, loop appropriately, and keep the scene stable across 1080 x 1920 frames.",
     "If showing a school name, use ONLY the exact school name supplied in the lesson context. Never invent a school or teacher name.",
     "OUTPUT MUST BE AN ACTUAL DOWNLOADABLE ANIMATED GIF FILE CREATED HERE IN CHATGPT.",
     "Do not return JSON, SVG code, Python code, programming instructions, or a static picture instead.",
