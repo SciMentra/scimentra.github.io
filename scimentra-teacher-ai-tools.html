@@ -1123,7 +1123,7 @@
 <article class="tool-card" id="tool-card-11">
   <div class="tool-icon" id="tool-icon-11">🎞️</div>
   <div class="tool-name" id="tool-name-11">Educational GIF</div>
-  <div class="tool-desc" id="tool-desc-11">Generate detailed animated lesson diagrams using ChatGPT SVG code.</div>
+  <div class="tool-desc" id="tool-desc-11">Generate finished educational animation directly in ChatGPT.</div>
   <button type="button" class="tool-btn" id="tool-btn-11" data-tool="educational-gif">Create Educational GIF</button>
 </article>
 
@@ -2357,7 +2357,7 @@ if (qrSubtopics) {
   {
     icon:"🎞️",
     name:"Educational GIF",
-    desc:"Generate animated lessons with ChatGPT SVG code, a live preview, speed control and GIF download.",
+    desc:"Generate a finished animated educational GIF directly in ChatGPT.",
     button:"Create Educational GIF",
     tool:"educational-gif"
   }
@@ -3834,7 +3834,27 @@ The final response should be the generated INFOGRAPHIC IMAGE, not a long textual
   }
 
 
-    function buildPrompt(tool) {
+    function buildEducationalGifPrompt() {
+  const topic = String(topicInput.value || "").trim();
+  return [
+    "You are an expert school teacher, scientific illustrator and educational animator.",
+    getLessonContext(),
+    "TASK: Generate the ACTUAL FINISHED ANIMATED EDUCATIONAL GIF directly in ChatGPT for this lesson.",
+    "Create a high-quality illustrated GIF, not source code or an explanation of how to create one.",
+    "Use accurate textbook-quality diagrams, labels, scientific notation, objects and examples appropriate to the specified class, board, subject and chapter.",
+    "Animate the process in six to eight meaningful teaching stages, or an appropriate number for the topic.",
+    "Use vivid professional colours, consistent frames, legible labels and clear visual motion. Avoid childish cartoons and oversimplified anatomy.",
+    "Place one short stage heading and a concise educational explanation inside a reserved caption area ON THE IMAGE; never cover the diagram or labels.",
+    "Prefer a vertical 9:16 output useful on mobile phones. Maintain a readable pace, loop appropriately, and keep the scene stable across frames.",
+    "If showing a school name, use ONLY the exact school name supplied in the lesson context. Never invent a school or teacher name.",
+    "OUTPUT MUST BE AN ACTUAL DOWNLOADABLE ANIMATED GIF FILE CREATED HERE IN CHATGPT.",
+    "Do not return JSON, SVG code, Python code, programming instructions, or a static picture instead.",
+    "If you cannot make a real animated GIF in this conversation, say so accurately rather than claiming a file was made.",
+    topic ? "Specific process or topic to animate: " + topic : "If no topic is supplied, select one concept or process from the specified chapter."
+  ].join("\n");
+}
+
+function buildPrompt(tool) {
 
     if (selectedRole === "student") {
 
@@ -3895,6 +3915,9 @@ default:
 case "visual-revision-sheet":
   return buildVisualRevisionSheetPrompt();
 
+case "educational-gif":
+  return buildEducationalGifPrompt();
+
 default:
   throw new Error(
     "Unknown teacher tool."
@@ -3909,36 +3932,11 @@ function openChatGPT(promptText) {
     window.location.href = chatgptUrl;
   }
 
-  const visualToolIds = new Set([
-    "mind-map", "flashcards", "slide-deck", "infographic",
-    "visual-revision-sheet", "educational-gif"
-  ]);
-
   toolButtons.forEach(button => {
     button.addEventListener("click", () => {
       try {
 
                const tool = button.dataset.tool || "";
-        // Only teacher visual tools use the code-based studio.
-        if (selectedRole === "teacher" && visualToolIds.has(tool)) {
-          const visualContext = {
-            role: "teacher",
-            createdAt: Date.now(),
-            schoolName: currentSchoolName || "",
-            teacherName: currentTeacherName || "",
-            teacherTitle: currentTeacherTitle || "",
-            className: TEACHER_CONTEXT.className,
-            board: TEACHER_CONTEXT.board,
-            subject: TEACHER_CONTEXT.subject,
-            chapter: TEACHER_CONTEXT.chapter,
-            topic: String(topicInput.value || "").trim()
-          };
-          sessionStorage.setItem("scimentraVisualStudioContext", JSON.stringify(visualContext));
-          window.location.href = "scimentra-visual-studio.html?tool=" + encodeURIComponent(tool);
-          return;
-        }
-
-
                if (
           tool === "interactive-quiz"
         ) {
