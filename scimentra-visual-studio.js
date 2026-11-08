@@ -74,7 +74,8 @@ $('getCode').addEventListener('click',()=>{
  if(!valid)return;
  const prompt=basePrompt+'\n\nOUTPUT CODE REQUIREMENTS:\n'+formatPrompts[tool];
  const url='https://chatgpt.com/?q='+encodeURIComponent(prompt);
- window.open(url,'_blank','noopener,noreferrer');
+ // Keep ChatGPT in the same browser tab; Back returns to this generator.
+ window.location.href=url;
 });
 const draftKey='scimentraStudioDraft:'+ctx.schoolName+':'+ctx.teacherName+':'+tool;
 try{$('codeInput').value=sessionStorage.getItem(draftKey)||''}catch(e){}
