@@ -1120,6 +1120,13 @@
   </button>
 </article>
 
+<article class="tool-card" id="tool-card-11">
+  <div class="tool-icon" id="tool-icon-11">🎞️</div>
+  <div class="tool-name" id="tool-name-11">Educational GIF</div>
+  <div class="tool-desc" id="tool-desc-11">Generate detailed animated lesson diagrams using ChatGPT SVG code.</div>
+  <button type="button" class="tool-btn" id="tool-btn-11" data-tool="educational-gif">Create Educational GIF</button>
+</article>
+
       </div>
       <p class="footer-note" id="footer-note">
         AI output should be reviewed by the teacher before classroom use.
@@ -2089,7 +2096,7 @@ if (qrSubtopics) {
     );
 
 
-   const toolUI = [1,2,3,4,5,6,7,8,9,10].map(
+   const toolUI = [1,2,3,4,5,6,7,8,9,10,11].map(
     number => ({
 
       card:
@@ -2344,6 +2351,15 @@ if (qrSubtopics) {
     desc:"Create an A4 visual quick-revision sheet with key concepts, formulas, diagrams and high-value chapter points.",
     button:"Generate Revision Sheet",
     tool:"visual-revision-sheet"
+  }
+
+,
+  {
+    icon:"🎞️",
+    name:"Educational GIF",
+    desc:"Generate animated lessons with ChatGPT SVG code, a live preview, speed control and GIF download.",
+    button:"Create Educational GIF",
+    tool:"educational-gif"
   }
 
 ];
@@ -3893,11 +3909,35 @@ function openChatGPT(promptText) {
     window.location.href = chatgptUrl;
   }
 
+  const visualToolIds = new Set([
+    "mind-map", "flashcards", "slide-deck", "infographic",
+    "visual-revision-sheet", "educational-gif"
+  ]);
+
   toolButtons.forEach(button => {
     button.addEventListener("click", () => {
       try {
 
                const tool = button.dataset.tool || "";
+        // Only teacher visual tools use the code-based studio.
+        if (selectedRole === "teacher" && visualToolIds.has(tool)) {
+          const visualContext = {
+            role: "teacher",
+            createdAt: Date.now(),
+            schoolName: currentSchoolName || "",
+            teacherName: currentTeacherName || "",
+            teacherTitle: currentTeacherTitle || "",
+            className: TEACHER_CONTEXT.className,
+            board: TEACHER_CONTEXT.board,
+            subject: TEACHER_CONTEXT.subject,
+            chapter: TEACHER_CONTEXT.chapter,
+            topic: String(topicInput.value || "").trim()
+          };
+          sessionStorage.setItem("scimentraVisualStudioContext", JSON.stringify(visualContext));
+          window.location.href = "scimentra-visual-studio.html?tool=" + encodeURIComponent(tool);
+          return;
+        }
+
 
                if (
           tool === "interactive-quiz"
