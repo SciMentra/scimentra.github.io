@@ -1460,6 +1460,32 @@
       : String(value ?? '');
   }
 
+  // QR answer key: MCQs show the correct option and its explanation.
+  // Descriptive questions show their complete saved answer, without a
+  // separate explanation section.
+  function __scKeyIsMcq(question) {
+    const type = String(
+      question.mcqType ||
+      question.type ||
+      question.questionType ||
+      ''
+    );
+    return Boolean(
+      (Array.isArray(question.options) && question.options.length) ||
+      /mcq|assertion|reason/i.test(type)
+    );
+  }
+
+  function __scKeyMcqExplanation(question) {
+    if (!__scKeyIsMcq(question)) return '';
+    const explanation = String(question.explanation || '').trim();
+    if (!explanation) return '';
+    return '<div class="sc-key-explanation">' +
+      '<b>Explanation:</b>' +
+      '<div class="sc-key-explanation-body">' + rich(explanation) + '</div>' +
+      '</div>';
+  }
+
   function __scKeyLeaf(question) {
     const value = __scKeyValue(question)
       .replace(/^(?:final\s*)?(?:answer|ans)\s*:\s*/i, '');
@@ -1495,7 +1521,7 @@
       ) {
         return letters
           .map(letter => letter.toUpperCase() + ')')
-          .join(', ');
+          .join(', ') + __scKeyMcqExplanation(question);
       }
 
       if (!/multiple/i.test(type)) {
@@ -1504,12 +1530,12 @@
         );
 
         if (match) {
-          return match[1].toUpperCase() + ')';
+          return match[1].toUpperCase() + ')' + __scKeyMcqExplanation(question);
         }
       }
     }
 
-    return html;
+    return html + __scKeyMcqExplanation(question);
   }
 
   function __scKeyLabel(index, reading, alternative = false) {
@@ -1638,7 +1664,7 @@
     const html = hasChildren
       ? __scKeyNative(question, reading)
       : saved
-      ? question.answerKeyHtml
+      ? question.answerKeyHtml + __scKeyMcqExplanation(question)
       : __scKeyLeaf(question);
 
     const number = String(question.number || '')
