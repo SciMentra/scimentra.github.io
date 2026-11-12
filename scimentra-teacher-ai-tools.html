@@ -3592,42 +3592,44 @@ IMPORTANT:
 
 
   function buildSlideDeckPrompt() {
-    return `You are a master classroom teacher, curriculum specialist, scientific illustrator and professional PowerPoint presentation designer.
+    return `You are a master subject teacher, scientific illustrator, realistic educational image director, and premium PowerPoint presentation designer.
 
-NON-NEGOTIABLE DELIVERABLE: Create the ACTUAL FINISHED DOWNLOADABLE EDITABLE PowerPoint (.pptx) presentation directly in THIS ChatGPT conversation. Do not return a slide-by-slide outline, plain text, design instructions, JSON, source code or a request to use another application.
+MANDATORY DELIVERABLE: Create the ACTUAL FINISHED DOWNLOADABLE EDITABLE PowerPoint (.pptx) file directly in THIS ChatGPT conversation. Do not provide only text, an outline, JSON, design instructions, slides written in chat or a request to use another application.
 
-LESSON CONTEXT:
+LESSON AND SCHOOL CONTEXT:
 ${getLessonContext()}
 
-IDENTITY RULES:
-- Use exactly the School Name provided in the context on the title slide and on content-slide branding; never substitute or invent another school, logo, teacher name or other personal information.
-- The current school and teacher information are dynamic. If a school logo is not supplied, do not make one up.
+IDENTITY AND CONTENT ACCURACY:
+- Use exactly the School Name from the context on the title slide and discreetly on the content slides. Never invent or substitute a school, teacher name or logo. If school identity is dynamically loaded from authenticated account data, retain it precisely.
+- Match the specified class, board, subject, chapter and topic. When an entire chapter is requested, cover all core grade-appropriate topics in a logical teaching sequence. Set the number of slides by scope, not a rigid quota.
+- Teach with objectives, prerequisite recall, progressively explained concepts, formulas, worked examples, experiments or applications, common mistakes, questions and recap where appropriate. Verify every label, scientific claim, unit, mathematical step and chemical equation.
+- Keep slide copy succinct and readable. Place fuller teacher explanations, conceptual reasoning and classroom questions in speaker notes.
 
-TEACHING AND SCIENTIFIC ACCURACY:
-- Follow precisely the specified class, board, subject, chapter and topic. If the topic is the full chapter, cover its core concepts thoroughly and progressively.
-- Decide slide count based on real teaching needs: roughly 6–12 for a narrow concept and 18–35 or more for a full chapter, if justified. Do not force a fixed count or insert filler.
-- Build a logical lesson using, where relevant, a visual title, learning objectives, recall, key concepts, definitions, formulas, scientific processes or experiments, annotated examples, worked solutions, applications, common misconceptions, checks for understanding and a visual recap.
-- Independently check calculations, balanced chemical equations, formulas, axes, diagrams, labels, units, symbols and answers. Use age-appropriate explanations suitable for the specified board and syllabus. Avoid unsupported textbook-specific claims.
-- Keep visible text concise and pedagogical; add more complete explanation, teaching cues and question answers in the actual PowerPoint speaker notes.
+CRITICAL TEXTBOOK-REALISM STANDARD FOR ALL VISUALS:
+- The finished PowerPoint MUST contain realistic, high-resolution, detailed textbook-grade illustrations and scientific imagery. These must look like authentic premium school science textbooks, botanical plates, laboratory visuals or professionally rendered 3D scientific visualisations — NOT cartoon clip art, emoji, simplified geometric PowerPoint drawings or decorative shapes.
+- In BIOLOGY use naturalistic accurately structured botanical/anatomical illustrations, realistic specimens, detailed cellular models and scientifically accurate longitudinal sections or cutaways. Preserve real proportions, anatomical relationships, fine texture, natural colours, soft realistic shadows and lifelike lighting.
+- FLOWER EXAMPLE: show a botanically believable natural flower with real petals, sepals, anthers, filaments, stigma, style, ovary and ovules. For reproductive structures, use a meaningful labelled longitudinal flower section. A pink oval-petal icon, cartoon flower, basic coloured circles connected by sticks, or simplistic abstract diagram is NOT acceptable.
+- For HUMAN BIOLOGY, CELLS and REPRODUCTION use medically/anatomically accurate detailed educational scientific images with correct structures and stages. Do not represent fertilisation merely by two ribbon-like DNA strands, or replace a process diagram with unrelated decorative symbols.
+- For PHYSICS and CHEMISTRY use realistic apparatus, experimentally credible scenes, correct instruments and connections; use precise technical 2D/vector diagrams when necessary for circuits, forces, ray diagrams, particle models and quantitative relationships. Do not use misleading 3D when a clear schematic is more accurate.
+- For MATHEMATICS, GEOGRAPHY and other subjects prefer textbook-grade geometry, graphs, cartography, accurate objects, specimens or context-relevant real imagery; do not force photorealism onto abstract symbols.
+- USE ACTUAL IMAGE ASSETS. If image-generation tools are available, create high-resolution photorealistic/realistic 3D scientific illustrations with fine detail, physically plausible form, materials, illumination and correct structure. Otherwise use reputable, legally usable, scientifically verified reference photographs/illustrations when available and appropriate.
+- Embed the complete illustration assets within the actual PPTX. NEVER simulate supposed realistic photographs or high-detail 3D illustrations using a few native PowerPoint circles, ovals, ellipses, blobs, lines, gradients or flat vector icons. Use native shapes only for accurate labels, leaders, arrows, equations, charts and genuinely schematic technical diagrams.
+- Microscopic or otherwise unphotographable processes may use detailed, conceptually correct scientific models. Label them as conceptual or not to scale where relevant. Never misrepresent AI renders as actual microscope or laboratory photographs.
+- All anatomical labels must be attached to the correct structures with unambiguous leader lines. Avoid visual hallucinations such as impossible structures, wrong connections, inaccurate numbers, unnatural anatomy and inaccurate scale.
+- IMAGE ACCEPTANCE CHECK: inspect prominent visuals for realism, textbook quality, biological and physical plausibility, correct proportions, educational relevance, legible labelling and scientific precision. Reject and replace cartoonish, overly simplified, blurry, distorted, decorative or inaccurate visuals BEFORE final delivery.
 
-EXCEPTIONAL VISUAL DESIGN:
-- Produce a beautiful, modern, premium presentation in landscape 16:9 widescreen, with elegant typography, strong hierarchy, visual consistency, high contrast, generous whitespace and classroom-projector-readable labels.
-- Create and EMBED subject-relevant ORIGINAL high-quality 3D-style illustrations, realistic educational renders, models, cutaways, apparatus and accurately labelled scientific scenes wherever they genuinely improve understanding.
-- Prefer accurate vector/2D scientific schematics for topics where realistic 3D would confuse the meaning, e.g., circuit symbols, force diagrams, graph axes, geometry and microscopic or conceptual models. Mark simplified models or not-to-scale illustrations appropriately.
-- Use varied slide layouts: cinematic hero illustration, annotated 3D cutaway, step-by-step experiment, split diagram/text view, formula and worked example, correct/incorrect comparison, visual concept-check and summary. Do not repeat a generic title-and-bullets slide on every page.
-- All visual assets MUST actually appear inside the final PPTX: never provide image suggestions or empty placeholders. No stock-photo filler, unreadable text, overlapping labels, stretched illustrations, invented scientific apparatus or misleading diagrams.
+PREMIUM POWERPOINT DESIGN:
+- Create a beautiful widescreen 16:9 classroom presentation with modern elegant typography, sophisticated restrained colours, generous whitespace, readable visual hierarchy, and clear projection-scale text.
+- Use varied slide compositions built around real imagery: scientific visual hero, natural specimen close-up, realistic labelled section, annotated cutaway, experimental sequence, clear comparison, worked example, misconception correction and visual recap. Avoid a repetitive title-plus-bullet template.
+- Keep the exact dynamically supplied school name prominently on the title slide, with compact consistent school branding on content slides so visuals have space.
+- Native PowerPoint text, equations, labels, leader lines, arrows and diagrams should remain editable where practical. Realistic illustration assets may be embedded bitmap images. Do not pretend individual structures inside a raster illustration are editable.
+- Include useful speaker notes on substantial teaching slides. Add animations or transitions only when genuinely supported; do not claim a feature exists when it does not.
+- Check final PPTX for image quality, scientific accuracy, correct anatomical labelling, layout, spelling, cropping, contrast, alignment, legibility, complete chapter coverage and teacher notes.
 
-EDITABLE POWERPOINT REQUIREMENTS:
-- Make a real .pptx with native editable text, equations, labels, arrows, shapes and charts wherever practical; embedded 3D-style images can be raster illustrations.
-- Put the exact school name prominently on the title slide and use a compact, consistent header or footer on teaching slides, allowing abundant space for visuals.
-- Include speaker notes for substantial slides with explanations and classroom questions.
-- Add tasteful slide transitions or teaching-sequence animations only if supported reliably by the file-creation tools. Never claim an animation exists unless it is present in the file.
-- Before delivery, review accuracy, slide density, legibility, alignment, cropping, images, labels, spelling and teacher notes.
-
-OUTPUT:
-- Generate, save and provide a working downloadable .pptx file here. Optionally include a PDF preview.
-- Do not supply only an outline, source code, JSON, SVG, HTML or manual instructions instead of the finished presentation.
-- If this session lacks an essential file or illustration creation capability, state the precise limitation rather than pretending that a file exists.`;
+FINAL OUTPUT:
+- Generate and save the ACTUAL .pptx file and provide a working download link in this conversation. A PDF preview is optional.
+- Do not return JSON, SVG, HTML, Python, slide outlines, descriptions of suggested images, or instructions for copy-and-paste instead of the file.
+- If realistic image or PowerPoint creation tools are unavailable, clearly state that limitation; do not quietly substitute cartoon-like primitives for requested scientific imagery or claim high-detail renders exist when they do not.`;
   }
 
 
