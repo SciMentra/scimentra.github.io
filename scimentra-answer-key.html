@@ -1476,9 +1476,32 @@
     );
   }
 
+  // Strip obsolete verdicts referring to a shuffled answer-choice letter.
+  // Only remove explicit answer-choice conclusions; preserve the actual
+  // reasoning, mathematics, option definitions and assertion/reason labels.
+  // This runs at display time, so previously printed QR links also benefit.
+  function __scKeyCleanMcqExplanation(raw) {
+    let value = String(raw || '');
+    const verdicts = [
+      /(?:therefore|thus|hence|so)\s*[,:\-]?\s*(?:(?:the\s*)?(?:correct|right)\s*)?(?:answer|option|choice)\s*(?:is|:)\s*\(?[A-D]\)?\s*[.!?]?/gi,
+      /(?:therefore|thus|hence|so)\s*[,:\-]?\s*(?:option|choice)?\s*\(?[A-D]\)?\s*(?:is|was)\s*(?:the\s*)?(?:correct|right)(?:\s*(?:answer|option|choice))?\s*[.!?]?/gi,
+      /\b(?:option|choice)\s*\(?[A-D]\)?\s*(?:is|was)\s*(?:the\s*)?(?:correct|right)(?:\s*(?:answer|option|choice))?\s*[.!?]?/gi,
+      /\b(?:the\s*)?(?:correct|right)\s*(?:answer|option|choice)\s*(?:is|:)\s*\(?[A-D]\)?\s*[.!?]?/gi,
+      /(?:అందువల్ల|అందువలన|కాబట్టి|కనుక|అందుచేత|అందుకే|దీనివల్ల|ఇందువల్ల|కాబట్టే)\s*(?:ఆప్షన్|ఎంపిక|option)?\s*\(?[A-D]\)?\s*(?:అనేది|యే|ఏ)?\s*(?:సరైన|సరియైన|సరైంది|కరెక్ట్)\s*(?:సమాధానం|జవాబు|ఎంపిక)?(?:\s*అవుతుంది)?\s*[.!।॥]?/giu,
+      /(?:సరైన|సరియైన)\s*(?:సమాధానం|జవాబు|ఎంపిక)\s*(?:అనేది|:|=)?\s*\(?[A-D]\)?\s*[.!।॥]?/giu
+    ];
+    for (const verdict of verdicts) value = value.replace(verdict, '');
+    // Clean empty numbered lines left by deleted verdicts, not real steps.
+    value = value.replace(
+      /(^|<br\s*\/?>|\n)\s*\d+[.)]\s*(?=<br\s*\/?>|\n|$)/gi,
+      '$1'
+    );
+    return value.replace(/(?:<br\s*\/?>\s*){2,}/gi, '<br>').trim();
+  }
+
   function __scKeyMcqExplanation(question) {
     if (!__scKeyIsMcq(question)) return '';
-    const explanation = String(question.explanation || '').trim();
+    const explanation = __scKeyCleanMcqExplanation(question.explanation);
     if (!explanation) return '';
     return '<div class="sc-key-explanation">' +
       '<b>Explanation:</b>' +
