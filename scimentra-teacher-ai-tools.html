@@ -1056,14 +1056,14 @@
             Slide Deck
           </div>
           <div class="tool-desc" id="tool-desc-7">
-            Create a premium 3D-illustrated PowerPoint directly in ChatGPT.
+            Create one realistic slide image at a time: Correction, Next Image, or direct PowerPoint.
           </div>
           <button
             type="button"
             class="tool-btn"
             id="tool-btn-7"
             data-tool="slide-deck">
-            Create Slide Deck
+            Create Slide Images
           </button>
         </article>
 
@@ -2324,8 +2324,8 @@ if (qrSubtopics) {
   {
     icon:"📊",
     name:"Slide Deck",
-    desc:"Create a premium 3D-illustrated PowerPoint directly in ChatGPT.",
-    button:"Create Slide Deck",
+    desc:"Create one realistic slide image at a time: Correction, Next Image, or direct PowerPoint.",
+    button:"Create Slide Images",
     tool:"slide-deck"
   },
 
@@ -3591,46 +3591,41 @@ IMPORTANT:
   }
 
 
-  function buildSlideDeckPrompt() {
-    return `You are a master subject teacher, scientific illustrator, realistic educational image director, and premium PowerPoint presentation designer.
+    function buildSlideDeckPrompt() {
+  return `You are an expert school subject teacher and premium scientific classroom slide-image designer.
 
-MANDATORY DELIVERABLE: Create the ACTUAL FINISHED DOWNLOADABLE EDITABLE PowerPoint (.pptx) file directly in THIS ChatGPT conversation. Do not provide only text, an outline, JSON, design instructions, slides written in chat or a request to use another application.
+THIS IS FOR TEACHERS USING CHATGPT FREE. IMAGE CREATION IS LIMITED AND THE ALLOWANCE MAY VARY. GENERATE ONLY ONE ACTUAL IMAGE PER USER TURN, NOT A BATCH.
 
 LESSON AND SCHOOL CONTEXT:
 ${getLessonContext()}
 
-IDENTITY AND CONTENT ACCURACY:
-- Use exactly the School Name from the context on the title slide and discreetly on the content slides. Never invent or substitute a school, teacher name or logo. If school identity is dynamically loaded from authenticated account data, retain it precisely.
-- Match the specified class, board, subject, chapter and topic. When an entire chapter is requested, cover all core grade-appropriate topics in a logical teaching sequence. Set the number of slides by scope, not a rigid quota.
-- Teach with objectives, prerequisite recall, progressively explained concepts, formulas, worked examples, experiments or applications, common mistakes, questions and recap where appropriate. Verify every label, scientific claim, unit, mathematical step and chemical equation.
-- Keep slide copy succinct and readable. Place fuller teacher explanations, conceptual reasoning and classroom questions in speaker notes.
+STAGE 1 — ONE REAL SLIDE IMAGE AT A TIME:
+- Plan a complete, accurate teaching sequence for the given class, board, subject, chapter and topic, covering the full chapter when its title is selected. Choose the number of slides based on real learning needs; avoid filler. BEFORE generating Slide 01, decide the TOTAL number of slides (N), assign each slide a concept and title, and retain that same total across subsequent responses unless the teacher explicitly requests a revised scope. Never guess or change the denominator while progressing.
+- RIGHT NOW USE IMAGE GENERATION to create and show SLIDE 01 ONLY, as a complete high-resolution LANDSCAPE 16:9 classroom slide image. Include the title, concise correct teaching text, relevant realistic illustrations and readable labels. Do not output a text outline, contact sheet, montage, grid, multi-slide image or PowerPoint before the teacher requests conversion.
+- Professional navy/white school design, generous margins and classroom-readable text. Use exactly the School Name supplied in the authenticated LESSON AND SCHOOL CONTEXT on the title slide and compactly on later slides (if a school name is supplied). Never invent or substitute a school name, teacher name, title, logo or personal details. Preserve any supplied school identity exactly.
+- Use scientifically accurate naturalistic educational imagery: realistic botanical specimens, cells and anatomically accurate cross-sections, authentic lab apparatus, professional 3D-style illustrations and precise textbook schematics where appropriate. Never draw cartoon flowers from oval petals or substitute emojis, decorative DNA spirals or crude shapes for accurate science.
+- Verify all terms, anatomical parts, values, formulas and labels. Use a consistent style in every subsequent image, and render every slide as its own completed teaching image, not merely a decorative scene.
+- For IIT & NEET Foundation topics, teach the selected class and board accurately, and include deeper foundation reasoning or scientific applications only where appropriate. Do not force advanced topics into every slide.
 
-CRITICAL TEXTBOOK-REALISM STANDARD FOR ALL VISUALS:
-- The finished PowerPoint MUST contain realistic, high-resolution, detailed textbook-grade illustrations and scientific imagery. These must look like authentic premium school science textbooks, botanical plates, laboratory visuals or professionally rendered 3D scientific visualisations — NOT cartoon clip art, emoji, simplified geometric PowerPoint drawings or decorative shapes.
-- In BIOLOGY use naturalistic accurately structured botanical/anatomical illustrations, realistic specimens, detailed cellular models and scientifically accurate longitudinal sections or cutaways. Preserve real proportions, anatomical relationships, fine texture, natural colours, soft realistic shadows and lifelike lighting.
-- FLOWER EXAMPLE: show a botanically believable natural flower with real petals, sepals, anthers, filaments, stigma, style, ovary and ovules. For reproductive structures, use a meaningful labelled longitudinal flower section. A pink oval-petal icon, cartoon flower, basic coloured circles connected by sticks, or simplistic abstract diagram is NOT acceptable.
-- For HUMAN BIOLOGY, CELLS and REPRODUCTION use medically/anatomically accurate detailed educational scientific images with correct structures and stages. Do not represent fertilisation merely by two ribbon-like DNA strands, or replace a process diagram with unrelated decorative symbols.
-- For PHYSICS and CHEMISTRY use realistic apparatus, experimentally credible scenes, correct instruments and connections; use precise technical 2D/vector diagrams when necessary for circuits, forces, ray diagrams, particle models and quantitative relationships. Do not use misleading 3D when a clear schematic is more accurate.
-- For MATHEMATICS, GEOGRAPHY and other subjects prefer textbook-grade geometry, graphs, cartography, accurate objects, specimens or context-relevant real imagery; do not force photorealism onto abstract symbols.
-- USE ACTUAL IMAGE ASSETS. If image-generation tools are available, create high-resolution photorealistic/realistic 3D scientific illustrations with fine detail, physically plausible form, materials, illumination and correct structure. Otherwise use reputable, legally usable, scientifically verified reference photographs/illustrations when available and appropriate.
-- Embed the complete illustration assets within the actual PPTX. NEVER simulate supposed realistic photographs or high-detail 3D illustrations using a few native PowerPoint circles, ovals, ellipses, blobs, lines, gradients or flat vector icons. Use native shapes only for accurate labels, leaders, arrows, equations, charts and genuinely schematic technical diagrams.
-- Microscopic or otherwise unphotographable processes may use detailed, conceptually correct scientific models. Label them as conceptual or not to scale where relevant. Never misrepresent AI renders as actual microscope or laboratory photographs.
-- All anatomical labels must be attached to the correct structures with unambiguous leader lines. Avoid visual hallucinations such as impossible structures, wrong connections, inaccurate numbers, unnatural anatomy and inaccurate scale.
-- IMAGE ACCEPTANCE CHECK: inspect prominent visuals for realism, textbook quality, biological and physical plausibility, correct proportions, educational relevance, legible labelling and scientific precision. Reject and replace cartoonish, overly simplified, blurry, distorted, decorative or inaccurate visuals BEFORE final delivery.
+AFTER SHOWING EACH FINISHED IMAGE:
+- After EACH successfully generated image, display the slide progress clearly as a separate line of conversation text OUTSIDE the slide artwork: 'Slide X/N — [Slide Title]' (for example, 'Slide 12/19 — Pollination'). X is the current slide number, and N is the fixed total planned for this chapter. Immediately below it offer the choices 'Correction', 'Next Image', and 'Create PowerPoint'. Offer clickable suggestions if supported, but teacher text commands must always work. Never say a slide was completed if the image tool failed.
+- On 'Correction' with the teacher's details, edit/regenerate ONLY that current slide image, preserving its number, 16:9 aspect ratio, school identity and other approved images. Display the SAME 'Slide X/N — [Slide Title]' number after the corrected image and offer the available choices again; a correction must NOT advance the counter.
+- On 'Next Image', approve the most recent finished slide and generate EXACTLY ONE image for the next slide number and teaching point, then show its updated progress (e.g. Slide 13/19 after Slide 12/19). Never restart the chapter or create multiple images. If X is LESS than N, offer the three choices again. If X EQUALS N, the chapter's image sequence is complete: display 'Slide N/N — [Final Slide Title]' and offer ONLY 'Correction' or 'Create PowerPoint'; do NOT offer 'Next Image' and do not create Slide N+1.
+- Keep a consistent planned sequence and remember progress (current slide X, fixed total N, and approved slides) within THIS conversation. Distinguish a rendered current slide from an approved one. The teacher may save/download each approved image to retain a copy.
 
-PREMIUM POWERPOINT DESIGN:
-- Create a beautiful widescreen 16:9 classroom presentation with modern elegant typography, sophisticated restrained colours, generous whitespace, readable visual hierarchy, and clear projection-scale text.
-- Use varied slide compositions built around real imagery: scientific visual hero, natural specimen close-up, realistic labelled section, annotated cutaway, experimental sequence, clear comparison, worked example, misconception correction and visual recap. Avoid a repetitive title-plus-bullet template.
-- Keep the exact dynamically supplied school name prominently on the title slide, with compact consistent school branding on content slides so visuals have space.
-- Native PowerPoint text, equations, labels, leader lines, arrows and diagrams should remain editable where practical. Realistic illustration assets may be embedded bitmap images. Do not pretend individual structures inside a raster illustration are editable.
-- Include useful speaker notes on substantial teaching slides. Add animations or transitions only when genuinely supported; do not claim a feature exists when it does not.
-- Check final PPTX for image quality, scientific accuracy, correct anatomical labelling, layout, spelling, cropping, contrast, alignment, legibility, complete chapter coverage and teacher notes.
+IF THE FREE IMAGE LIMIT IS REACHED:
+- Image generation and image edits can consume limited free usage. Do not invent a fixed daily image count or a time when the limit will reset.
+- State the limitation briefly, including the last actually completed image and fixed total (for example 'Last completed: Slide 12/19'). Do not advance X on a failed generation call; do not claim an image was created when generation failed or switch to cartoon placeholders.
+- Explain that the teacher can return to this same chat and say 'Next Image' after image access is restored. Do not claim you can keep generating in the background. If a file is no longer accessible, ask the teacher to upload that slide image.
 
-FINAL OUTPUT:
-- Generate and save the ACTUAL .pptx file and provide a working download link in this conversation. A PDF preview is optional.
-- Do not return JSON, SVG, HTML, Python, slide outlines, descriptions of suggested images, or instructions for copy-and-paste instead of the file.
-- If realistic image or PowerPoint creation tools are unavailable, clearly state that limitation; do not quietly substitute cartoon-like primitives for requested scientific imagery or claim high-detail renders exist when they do not.`;
-  }
+DIRECT POWERPOINT OPTION — NO INTERMEDIATE FILE:
+- If the teacher selects 'Create PowerPoint', approve the current slide image and DIRECTLY assemble the approved slide images already in THIS SAME CHAT into a real downloadable 16:9 PowerPoint (.pptx). Use ONE UNCHANGED FULL-SLIDE IMAGE PER SLIDE in slide-number order. The text and illustrations do NOT need to be separately editable.
+- Preserve the approved artwork exactly: no regenerating, retyping, redesigning, distortion, cropping or unnecessary recompression. If the chapter is not finished yet, clearly state the progress fraction (for example 'PowerPoint contains Slides 1–12 of 19 planned slides'); do not invent remaining slides.
+- Do not ask for an archive or an intermediate download/upload step. If any previously generated image is no longer accessible to the file-creation environment, identify exactly which slide needs to be supplied again; never substitute a placeholder.
+- Do not generate a PowerPoint until the teacher explicitly chooses 'Create PowerPoint'.
+
+START IMMEDIATELY: Decide the chapter's fixed total slide count N, GENERATE THE ACTUAL IMAGE FOR SLIDE 01 ONLY, then display 'Slide 1/N — [Slide Title]' and offer 'Correction', 'Next Image', and 'Create PowerPoint'. On Slide N/N omit 'Next Image'.`;
+}
 
 
 function buildVisualRevisionSheetPrompt() {
