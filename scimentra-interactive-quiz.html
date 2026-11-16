@@ -465,6 +465,7 @@
   board: firstParam(["board", "b"], "IIT & NEET Foundation"),
   subject: firstParam(["subject", "sub", "s"]),
   chapter: firstParam(["chapter", "ch"]),
+  subtopics: firstParam(["subtopics", "subtopic"]),
   role: firstParam(["role"]),
   schoolName: firstParam(["school", "schoolName"]),
   teacherName: firstParam(["teacher", "teacherName"]),
@@ -665,6 +666,7 @@ Class: ${QUIZ_CONTEXT.className}
 Board: ${QUIZ_CONTEXT.board}
 Subject: ${QUIZ_CONTEXT.subject}
 Chapter: ${QUIZ_CONTEXT.chapter}
+${QUIZ_CONTEXT.subtopics ? "SELECTED SUBHEADINGS (mandatory quiz scope):\n" + QUIZ_CONTEXT.subtopics.split("|").map((heading, index) => (index + 1) + ". " + heading).join("\n") + "\nOnly ask questions from the selected subheadings. Never include unchecked parts of the chapter." : "Scope: Whole chapter."}
 
 ${creatorInstruction}
 
