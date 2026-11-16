@@ -191,6 +191,31 @@
       box-shadow:0 0 0 3px rgba(23,98,167,.12);
     }
 
+
+    /* Styled QR chapter subheading checklist */
+    #subtopics-picker[hidden],.topic-input[hidden]{display:none}
+    .subtopics-picker{padding:14px;border:1px solid #c8ddf0;border-radius:17px;background:linear-gradient(140deg,#f9fcff,#edf6ff);box-shadow:0 6px 19px rgba(15,61,107,.055)}
+    .subtopics-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    .subtopics-heading{font-size:13px;font-weight:850;color:#174e7d}
+    .subtopics-actions{display:flex;gap:7px}
+    .subtopics-action{font:800 12px "Segoe UI",Arial,sans-serif;color:#1262a3;border:1px solid #b9d7f2;border-radius:999px;padding:8px 12px;background:white;cursor:pointer;transition:background .18s}
+    .subtopics-action:hover:not(:disabled){background:#e7f3ff}
+    .subtopics-action:disabled{opacity:.45;cursor:default}
+    .subtopics-list{display:grid;gap:8px;max-height:335px;overflow:auto;padding:2px;scrollbar-width:thin;scrollbar-color:#a6cae9 transparent}
+    .subtopic-option{display:flex;align-items:center;gap:11px;padding:12px 13px;background:#fff;border:1.5px solid #deebf6;border-radius:12px;line-height:1.4;color:#254e6d;font-size:14px;font-weight:680;cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s}
+    .subtopic-option.is-selected{background:#f9fcff;border-color:#a8d2f1}
+    .subtopic-option:hover{border-color:#6eafe1;box-shadow:0 3px 10px rgba(23,98,167,.08)}
+    .subtopic-check{appearance:none;-webkit-appearance:none;display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;margin:0;border:2px solid #9dbad2;border-radius:7px;background:white;cursor:pointer}
+    .subtopic-check:checked{background:#1762a7;border-color:#1762a7}
+    .subtopic-check:checked::after{content:"✓";font-size:15px;font-weight:900;line-height:1;color:white}
+    .subtopic-check:focus-visible,.subtopics-action:focus-visible{outline:3px solid rgba(23,98,167,.32);outline-offset:3px}
+    .subtopic-name{flex:1;overflow-wrap:anywhere}
+    .subtopics-count{font-size:12.5px;font-weight:800;color:#19734f;margin:11px 2px 0}
+    .subtopics-count.is-empty{color:#b42318}
+    .scimentra-toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:9999;max-width:calc(100vw - 32px);width:max-content;padding:13px 20px;border:1px solid #f0b4a9;border-radius:14px;background:#fff8f6;color:#923022;text-align:center;font:750 14px/1.4 "Segoe UI",Arial,sans-serif;box-shadow:0 16px 48px rgba(20,44,78,.21);opacity:0;transform:translate(-50%,20px);pointer-events:none;transition:opacity .2s,transform .2s}
+    .scimentra-toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:480px){.subtopics-picker{padding:11px}.subtopic-option{padding:11px;font-size:13.5px}.subtopics-actions{width:100%}.subtopics-action{flex:1}}
+
     .topic-note{
       margin:7px 0 0;
       color:var(--muted);
@@ -914,7 +939,19 @@
         </label>
 
         
-<textarea
+<div id="subtopics-picker" class="subtopics-picker" hidden>
+          <div class="subtopics-toolbar">
+            <span class="subtopics-heading">Choose what to include</span>
+            <div class="subtopics-actions">
+              <button type="button" id="subtopics-select-all" class="subtopics-action">✓ Select All</button>
+              <button type="button" id="subtopics-clear-all" class="subtopics-action">Clear All</button>
+            </div>
+          </div>
+          <div id="subtopics-list" class="subtopics-list" role="group" aria-label="Chapter subheadings"></div>
+          <p id="subtopics-count" class="subtopics-count" aria-live="polite"></p>
+        </div>
+
+        <textarea
   id="topic-input"
   class="topic-input"
   rows="3"
@@ -1994,9 +2031,7 @@ const schoolBrandName =
           error
         );
 
-        alert(
-          "Could not log out. Please try again."
-        );
+        showUiNotice("Could not log out. Please try again.");
       }
     }
   );
@@ -2040,14 +2075,79 @@ const schoolBrandName =
 const topicInput =
     document.getElementById("topic-input");
 
-// Automatically fill assimilation subtopics from QR URL.
-// Existing chapter-only QR codes continue to work.
+// Parse subheadings from modern and older QR destinations.
 const qrSubtopics = firstParam(["subtopics", "subtopic"]);
-
-if (qrSubtopics) {
-  topicInput.value = qrSubtopics;
+function parseQrSubtopics(raw) {
+  const source = String(raw || "").replace(/\\r\\n|\\n|\\r/g, "\n")
+    .replace(/\r\n?/g, "\n").replace(/<br\s*\/?>/gi, "\n")
+    .replace(/\s*(?:\||;|•|●|▪)\s*/g, "\n")
+    .replace(/,\s*(?=\d{1,2}[.)]\s+)/g, "\n");
+  let items = source.split(/\n+/).map(item => item.trim()).filter(Boolean);
+  if (items.length === 1 && items[0].includes(",")) items = items[0].split(/\s*,\s*/);
+  const seen = new Set();
+  return items.map(item => item.replace(/^(?:\d{1,2}[.)]\s*|[-*]\s+)/, "").trim())
+    .filter(item => {const key=item.toLowerCase();if(!item||seen.has(key))return false;seen.add(key);return true;});
 }
-
+const qrSubtopicItems = parseQrSubtopics(qrSubtopics);
+const subtopicsPicker = document.getElementById("subtopics-picker");
+const subtopicsList = document.getElementById("subtopics-list");
+const subtopicsCount = document.getElementById("subtopics-count");
+const selectAllSubtopicsBtn = document.getElementById("subtopics-select-all");
+const clearAllSubtopicsBtn = document.getElementById("subtopics-clear-all");
+const scimentraToast = document.getElementById("scimentra-toast");
+let toastTimer = null;
+function showUiNotice(message) {
+  scimentraToast.textContent = String(message || "Please try again.");
+  scimentraToast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => scimentraToast.classList.remove("show"), 3800);
+}
+function getSelectedQrSubtopics() {
+  if (!qrSubtopicItems.length) return [];
+  return Array.from(subtopicsList.querySelectorAll(".subtopic-check:checked"))
+    .map(input => qrSubtopicItems[Number(input.dataset.index)]);
+}
+function refreshSubtopicSelection() {
+  const selected = getSelectedQrSubtopics().length, total = qrSubtopicItems.length;
+  subtopicsList.querySelectorAll(".subtopic-check").forEach(input => {
+    input.closest(".subtopic-option").classList.toggle("is-selected", input.checked);
+  });
+  subtopicsCount.textContent = selected === total ? "✓ All " + total + " subheadings selected"
+    : selected === 0 ? "Select at least one subheading to use an AI tool"
+    : "✓ " + selected + " of " + total + " subheadings selected";
+  subtopicsCount.classList.toggle("is-empty", selected === 0);
+  selectAllSubtopicsBtn.disabled = selected === total;
+  clearAllSubtopicsBtn.disabled = selected === 0;
+}
+if (qrSubtopicItems.length) {
+  subtopicsPicker.hidden = false;
+  topicInput.hidden = true;
+  topicInput.value = "";
+  qrSubtopicItems.forEach((heading, index) => {
+    const label = document.createElement("label");
+    label.className = "subtopic-option is-selected";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.className = "subtopic-check";
+    input.dataset.index = String(index);
+    input.checked = true;
+    const name = document.createElement("span");
+    name.className = "subtopic-name";
+    name.textContent = heading;
+    label.append(input, name);
+    input.addEventListener("change", refreshSubtopicSelection);
+    subtopicsList.appendChild(label);
+  });
+  selectAllSubtopicsBtn.addEventListener("click", () => {
+    subtopicsList.querySelectorAll(".subtopic-check").forEach(input => {input.checked = true;});
+    refreshSubtopicSelection();
+  });
+  clearAllSubtopicsBtn.addEventListener("click", () => {
+    subtopicsList.querySelectorAll(".subtopic-check").forEach(input => {input.checked = false;});
+    refreshSubtopicSelection();
+  });
+  refreshSubtopicSelection();
+}
 
   const topicLabel =
     document.getElementById("topic-label");
@@ -2208,25 +2308,17 @@ if (qrSubtopics) {
       `Chapter: ${TEACHER_CONTEXT.chapter}\n`;
 
 
-    if (topic) {
-
-      if (selectedRole === "student") {
-
-        text +=
-          `Selected Topic / Concept: ${topic}\n`;
-
-      } else {
-
-        text +=
-          `Today's Topic / Concept: ${topic}\n`;
-      }
-
+    if (qrSubtopicItems.length) {
+      const chosen = getSelectedQrSubtopics();
+      if (!chosen.length) throw new Error("Please select at least one subheading.");
+      text += "Scope: ONLY these selected subheadings of the chapter:\n";
+      text += chosen.map((heading, i) => (i + 1) + ". " + heading).join("\n") + "\n";
+      text += "IMPORTANT: Generate content and questions ONLY from selected subheadings, and never from unchecked subheadings, even if general tool instructions mention the whole chapter.\n";
+    } else if (topic) {
+      text += (selectedRole === "student" ? "Selected Topic / Concept: " : "Today's Topic / Concept: ") + topic + "\n";
     } else {
-
-      text +=
-        `Scope: Use the whole chapter\n`;
+      text += "Scope: Use the whole chapter\n";
     }
-
 
     return text;
   }
@@ -2257,6 +2349,11 @@ if (qrSubtopics) {
 
       topicNote.textContent =
         "Leave this blank to use the whole chapter. Enter a topic when you want the AI tool to focus only on today's lesson.";
+      if (qrSubtopicItems.length) {
+        topicLabel.textContent = "Select Subheadings";
+        topicLabel.removeAttribute("for");
+        topicNote.textContent = "All selected by default. Uncheck any subheading you do not want included in the AI tool.";
+      }
 
       toolsTitle.textContent =
         "Choose a Teacher Tool";
@@ -2407,6 +2504,11 @@ if (qrSubtopics) {
 
     topicNote.textContent =
       "Leave this blank to use the whole chapter. Enter a concept when you want the learning tool to focus on that topic.";
+      if (qrSubtopicItems.length) {
+        topicLabel.textContent = "Select Subheadings";
+        topicLabel.removeAttribute("for");
+        topicNote.textContent = "All selected by default. Uncheck any subheading you do not want included in the AI tool.";
+      }
 
     toolsTitle.textContent =
       "Choose a Student Tool";
@@ -3821,7 +3923,7 @@ The final response should be the actual generated 1080 x 1920 PIXEL PORTRAIT INF
 
 
     function buildEducationalGifPrompt() {
-  const topic = String(topicInput.value || "").trim();
+  const topic = qrSubtopicItems.length ? getSelectedQrSubtopics().join("; ") : String(topicInput.value || "").trim();
   return [
     "You are an expert school teacher, scientific illustrator and educational animator.",
     getLessonContext(),
@@ -3925,6 +4027,11 @@ function openChatGPT(promptText) {
       try {
 
                const tool = button.dataset.tool || "";
+               if (qrSubtopicItems.length && !getSelectedQrSubtopics().length) {
+                 showUiNotice("Please select at least one subheading before opening an AI tool.");
+                 subtopicsPicker.scrollIntoView({behavior:"smooth",block:"center"});
+                 return;
+               }
                if (
           tool === "interactive-quiz"
         ) {
@@ -3939,6 +4046,8 @@ function openChatGPT(promptText) {
   teacher: currentTeacherName || "",
   teacherTitle: currentTeacherTitle || ""
 });
+
+          if (qrSubtopicItems.length) quizParams.set("subtopics", getSelectedQrSubtopics().join("|"));
 
           const quizUrl =
             "scimentra-interactive-quiz.html?" +
@@ -3955,16 +4064,13 @@ function openChatGPT(promptText) {
 
       } catch (error) {
 
-        alert(
-          error && error.message
-            ? error.message
-            : "Could not open the AI learning tool."
-        );
+        showUiNotice(error && error.message ? error.message : "Could not open the AI learning tool.");
 
       }
     });
   });
 </script>
 
+  <div id="scimentra-toast" class="scimentra-toast" role="status" aria-live="polite"></div>
 </body>
 </html>
