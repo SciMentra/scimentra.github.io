@@ -9,7 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="scimentra-free-chapters.js"></script>
+<script src="scimentra-free-chapters.js?v=20261122-assimilation-fix"></script>
 
   <style>
     :root{
@@ -1630,7 +1630,6 @@ const schoolBrandName =
       mainPage.style.display = "none";
 
       const isFreeChapter =
-        !questionsAuth.currentUser &&
         window.SCIMENTRA_FREE_ACCESS &&
         typeof window.SCIMENTRA_FREE_ACCESS
           .isTeacherChapterFree === "function" &&
