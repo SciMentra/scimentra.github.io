@@ -1,19 +1,14 @@
-/*
- * SciMentra IIT & NEET Foundation - complimentary Teacher access
- * Replace the contents of scimentra-free-chapters.js with this file.
- * Only the listed mathematics chapters and Physics Assimilation 1 are free.
- * Physics Assimilation 2+ remains login-protected.
- */
+// SciMentra complimentary teacher access: first chapters only.
+// Matches the chapter formats used by both the original and updated QR codes.
 window.SCIMENTRA_FREE_ACCESS = (() => {
-  const mathFreeChapters = new Set([
-    ["6th Class", "IIT & NEET Foundation", "Math IIT", "Inroduction to Algebra"].join("|"),
-    ["7th Class", "IIT & NEET Foundation", "Math IIT", "Number System"].join("|"),
-    ["8th Class", "IIT & NEET Foundation", "Math IIT", "Exponents & Powers; Square Roots & Cube Roots"].join("|"),
-    ["9th Class", "IIT & NEET Foundation", "Math IIT", "Theory of Numbers - Basics"].join("|")
-  ]);
+  const freeMathChapters = [
+    ["6th Class", "Inroduction to Algebra"],
+    ["7th Class", "Number System"],
+    ["8th Class", "Exponents & Powers; Square Roots & Cube Roots"],
+    ["9th Class", "Theory of Numbers - Basics"]
+  ];
 
-  // Exact first-assimilation subtopic lists, retained from your existing file.
-  const freePhysics = [
+  const firstPhysicsAssimilations = [
     {
       className: "6th Class",
       chapter: "Units and Measurements",
@@ -36,89 +31,62 @@ window.SCIMENTRA_FREE_ACCESS = (() => {
     }
   ];
 
-  function clean(value) {
-    return String(value == null ? "" : value).trim().replace(/\s+/g, " ");
-  }
-
-  // Normalize typographic dash differences without changing QR content.
-  function comparable(value) {
-    return clean(value)
+  function normal(value) {
+    return String(value == null ? "" : value)
       .replace(/[‐‑‒–—−]/g, "-")
-      .replace(/\s*-\s*/g, "-")
+      .replace(/\s+/g, " ")
+      .trim()
       .toLowerCase();
   }
 
-  function key(parts) {
-    return parts.map(clean).join("|");
-  }
-
-  function subtopicList(value) {
-    return String(value || "")
-      .split(/\s*(?:\||;|,|\r?\n)\s*/)
-      .map(comparable)
-      .filter(Boolean)
-      .sort();
-  }
-
-  function identicalSubtopics(actual, expected) {
-    const a = subtopicList(actual);
-    const b = subtopicList(expected);
-    return a.length === b.length && a.every((part, i) => part === b[i]);
+  function normalTopics(value) {
+    return normal(value).replace(/[^a-z0-9]+/g, " ").trim();
   }
 
   function isTeacherChapterFree(context = {}) {
-    const className = clean(context.className || context.class);
-    const board = clean(context.board);
-    const subject = clean(context.subject);
-    const rawChapter = clean(context.chapter);
+    const cls = normal(context.className || context.class);
+    const board = normal(context.board);
+    const subject = normal(context.subject);
+    const chapter = String(context.chapter || "").trim();
 
-    // Keep all four existing Mathematics complimentary chapters working.
-    if (mathFreeChapters.has(key([className, board, subject, rawChapter]))) {
-      return true;
+    if (board !== normal("IIT & NEET Foundation")) return false;
+
+    if (subject === normal("Math IIT")) {
+      return freeMathChapters.some(([c, title]) =>
+        cls === normal(c) && normal(chapter) === normal(title)
+      );
     }
 
-    if (board !== "IIT & NEET Foundation" || subject !== "Physics IIT & NEET") {
-      return false;
-    }
+    if (subject !== normal("Physics IIT & NEET")) return false;
 
-    // Match QR chapter forms such as:
-    //   Units and Measurements
-    //   Units and Measurements: Assimilation 1
-    //   Units and Measurements (Assimilation 1)
-    //   Units and Measurements: Assimilation 1 (Subtopics: ...)
-    const assimilationMatch = rawChapter.match(
+    // The QR chapter can be either:
+    // "Units and Measurements (Assimilation 1)"
+    // "Units and Measurements: Assimilation 1 (Subtopics: ...)"
+    // or the bare chapter title with subtopics in a separate URL parameter.
+    const match = chapter.match(
       /^(.*?)\s*(?::|\()\s*Assimilation\s*(\d+)\b/i
     );
-    const baseChapter = clean(assimilationMatch ? assimilationMatch[1] : rawChapter);
-    const explicitAssimilation = assimilationMatch ? Number(assimilationMatch[2]) : null;
+    const baseChapter = match ? match[1].trim() : chapter;
+    const assimilationNumber = match ? Number(match[2]) : null;
 
-    // Never make Assimilation 2, 3, etc. complimentary.
-    if (explicitAssimilation !== null && explicitAssimilation !== 1) {
-      return false;
-    }
-
-    const rule = freePhysics.find(item =>
-      className === item.className && comparable(baseChapter) === comparable(item.chapter)
+    const rule = firstPhysicsAssimilations.find(item =>
+      cls === normal(item.className) && normal(baseChapter) === normal(item.chapter)
     );
     if (!rule) return false;
 
-    // The QR may include the complete legacy label in chapter, or may
-    // transmit the actual headings separately through subtopics.
-    const params = new URLSearchParams(window.location.search);
-    const urlSubtopics = clean(params.get("subtopics") || params.get("subtopic"));
-    const embeddedMatch = rawChapter.match(/\(\s*Subtopics\s*:\s*(.*?)\)\s*$/i);
-    const embeddedSubtopics = embeddedMatch ? embeddedMatch[1] : "";
-    const topics = urlSubtopics || embeddedSubtopics;
-
-    // If a QR explicitly identifies Assimilation 1, that designation is enough,
-    // provided any accompanying headings agree with the free assimilation.
-    if (explicitAssimilation === 1) {
-      return !topics || identicalSubtopics(topics, rule.subtopics);
+    // Assimilation 2 and later are never complimentary.
+    if (assimilationNumber !== null) {
+      return assimilationNumber === 1;
     }
 
-    // With only the base chapter title, require the exact Assimilation 1
-    // heading list. This prevents later assimilations from becoming free.
-    return identicalSubtopics(topics, rule.subtopics);
+    // For older QR codes without an assimilation label, verify their
+    // exact first-assimilation subtopics to avoid freeing Assimilation 2.
+    const params = new URLSearchParams(window.location.search);
+    const separate = params.get("subtopics") || params.get("subtopic") || "";
+    const embedded = chapter.match(/\(\s*Subtopics\s*:\s*(.*?)\)\s*$/i);
+    const topics = separate || (embedded ? embedded[1] : "");
+
+    return !!topics && normalTopics(topics) === normalTopics(rule.subtopics);
   }
 
   return { isTeacherChapterFree };
