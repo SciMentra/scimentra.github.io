@@ -1428,18 +1428,26 @@
       gap:7px;
       max-width:100%;
       padding:10px 14px;
-      border:1px solid #1265a6;
+      border:2px solid #1762a7 !important;
       border-radius:10px;
-      background:#1669ad;
-      color:#fff !important;
+      background:#ffffff !important;
+      color:#1762a7 !important;
       font:600 14px/1.3 system-ui,-apple-system,Segoe UI,Arial,sans-serif;
       text-decoration:none !important;
       text-align:center;
       cursor:pointer;
       box-sizing:border-box;
     }
+    /* Stronger selector preserves blue text against global link rules. */
+    #print-preview.sc-key-root a.sc-key-help-btn,
+    #print-preview.sc-key-root a.sc-key-help-btn:visited,
+    #print-preview.sc-key-root a.sc-key-help-btn:hover,
+    #print-preview.sc-key-root a.sc-key-help-btn:focus-visible {
+      background:#ffffff !important;
+      color:#1762a7 !important;
+      border-color:#1762a7 !important;
+    }
     .sc-key-help-btn:hover,.sc-key-help-btn:focus-visible {
-      background:#0d4e88;
       outline-offset:3px;
     }
     .sc-key-help-hint {
