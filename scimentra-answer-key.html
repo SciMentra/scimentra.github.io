@@ -1420,6 +1420,35 @@
       overflow-x:auto;
     }
 
+    /* Only the scanned, online answer key shows per-question ChatGPT help. */
+    .sc-key-help-wrap {margin:10px 0 7px;}
+    .sc-key-help-btn {
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      max-width:100%;
+      padding:10px 14px;
+      border:1px solid #1265a6;
+      border-radius:10px;
+      background:#1669ad;
+      color:#fff !important;
+      font:600 14px/1.3 system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+      text-decoration:none !important;
+      text-align:center;
+      cursor:pointer;
+      box-sizing:border-box;
+    }
+    .sc-key-help-btn:hover,.sc-key-help-btn:focus-visible {
+      background:#0d4e88;
+      outline-offset:3px;
+    }
+    .sc-key-help-hint {
+      display:block;
+      margin-top:5px;
+      color:#34536e;
+      font:12px/1.35 system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+    }
+
     @media screen {
       .sc-key-root {
         width:100%!important;
@@ -1443,6 +1472,7 @@
     @media print {
       .sc-key-question {color:#000;}
       .sc-key-number {break-after:avoid;}
+      .sc-key-help-wrap {display:none !important;}
     }
   `;
 
@@ -1659,6 +1689,150 @@
     return holder.innerHTML.trim();
   }
 
+
+  // Help actions are available only on the public QR answer-key display.
+  // The prompt is kept in memory rather than embedded as question data in HTML.
+  const __scKeyHelpPrompts = new Map();
+  let __scKeyHelpCounter = 0;
+
+  function __scKeyHelpPlain(value) {
+    const input = Array.isArray(value)
+      ? value.join('\n')
+      : String(value ?? '');
+    const readable = input
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .replace(/<\/(?:p|div|li|tr|h[1-6])\s*>/gi, '\n');
+    const doc = new DOMParser().parseFromString(readable, 'text/html');
+    return (doc.body.textContent || '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function __scKeyHelpQuestionDetails(question, depth = 0) {
+    if (!question || depth > 5) return '';
+    const result = [];
+    const passage = __scKeyHelpPlain(question.passage || '');
+    const questionText = __scKeyHelpPlain(
+      question.question || question.text || question.body ||
+      question.html || question.renderedHTML || question.finalHTML || ''
+    );
+    if (passage) result.push('Passage / context:\n' + passage);
+    if (questionText) result.push('Question:\n' + questionText);
+
+    if (Array.isArray(question.options) && question.options.length) {
+      result.push('Options in the current printed-paper order:\n' +
+        question.options.map((option,index) => {
+          const value = typeof option === 'object' && option !== null
+            ? (option.text || option.value || JSON.stringify(option))
+            : option;
+          const clean = __scKeyHelpPlain(value)
+            .replace(/^\s*[A-D][).:]\s*/i, '');
+          return String.fromCharCode(65 + index) + ') ' + clean;
+        }).join('\n'));
+    }
+
+    const answer = __scKeyHelpPlain(__scKeyValue(question));
+    if (answer) result.push('Saved correct answer:\n' + answer);
+    const explanation = __scKeyHelpPlain(
+      __scKeyIsMcq(question)
+        ? __scKeyCleanMcqExplanation(question.explanation)
+        : question.explanation
+    );
+    if (explanation) result.push('Saved explanation:\n' + explanation);
+    if (question.image) result.push(
+      'This question has an image or diagram on the paper. ' +
+      'Ask the student to upload a photo of it if needed.'
+    );
+
+    const childKind = ['alternatives','parts','mcqs'].find(
+      key => Array.isArray(question[key]) && question[key].length
+    );
+    if (childKind) {
+      question[childKind].forEach((child,index) => {
+        result.push('Sub-question (' + (index + 1) + '):\n' +
+          __scKeyHelpQuestionDetails(child,depth+1));
+      });
+    }
+    return result.join('\n\n');
+  }
+
+  function __scKeyHelpPrompt(question, number, subjectName) {
+    const meta = window.__scKeyHelpContext || {};
+    const introduction = [
+      'Act as a patient teacher and explain this one examination question in detail.',
+      meta.className ? 'Class: ' + meta.className : '',
+      meta.board ? 'Board: ' + meta.board : '',
+      subjectName ? 'Subject: ' + subjectName : '',
+      meta.examName ? 'Examination: ' + meta.examName : '',
+      'Question number: ' + number,
+      '',
+      __scKeyHelpQuestionDetails(question),
+      '',
+      'Explain the concept and solution step by step in clear language suitable for this class.',
+      'For MCQs, refer to the options in the exact order supplied above, explain why the correct option(s) work, and clarify the other options.',
+      'For descriptive questions, explain the provided answer with examples or working where useful.',
+      'Independently verify the saved answer and explanation. If something is wrong or incomplete, clearly explain the correction.',
+      'If the question requires a diagram not included in this text, ask me to upload its image. Answer my follow-up doubts.'
+    ];
+    return introduction.filter((line,index) => line !== '' ||
+      (index > 0 && introduction[index-1] !== '')).join('\n').trim();
+  }
+
+  function __scKeyHelpFallbackCopy(prompt) {
+    const field = document.createElement('textarea');
+    field.value = prompt;
+    field.readOnly = true;
+    field.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0;';
+    document.body.appendChild(field);
+    field.focus();
+    field.select();
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch (_) {}
+    field.remove();
+    return copied;
+  }
+
+  document.addEventListener('click', event => {
+    const link = event.target.closest?.('a.sc-key-help-btn');
+    if (!link) return;
+    const prompt = __scKeyHelpPrompts.get(link.dataset.scKeyHelpId);
+    if (!prompt) return;
+    const hint = link.parentElement.querySelector('.sc-key-help-hint');
+    const copiedMsg = 'Question copied. If ChatGPT does not fill it automatically, paste it there.';
+    const manualMsg = 'ChatGPT is opening. If the question is not filled in, copy it from the box below.';
+    function showManualCopy() {
+      if (hint) {
+        hint.textContent = manualMsg;
+        let box = link.parentElement.querySelector('textarea.sc-key-help-copy-box');
+        if (!box) {
+          box = document.createElement('textarea');
+          box.className = 'sc-key-help-copy-box';
+          box.readOnly = true;
+          box.style.cssText = 'display:block;width:100%;height:90px;margin-top:7px;';
+          link.parentElement.appendChild(box);
+        }
+        box.value = prompt;
+      }
+    }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(prompt)
+        .then(() => { if (hint) hint.textContent = copiedMsg; })
+        .catch(() => {
+          if (__scKeyHelpFallbackCopy(prompt)) {
+            if (hint) hint.textContent = copiedMsg;
+          } else showManualCopy();
+        });
+    } else if (__scKeyHelpFallbackCopy(prompt)) {
+      if (hint) hint.textContent = copiedMsg;
+    } else {
+      showManualCopy();
+    }
+    // Let the anchor open ChatGPT as a direct user-initiated navigation.
+    // ChatGPT URL prefilling is not guaranteed on every device; copy is the fallback.
+  });
+
   function __scKeyQuestion(
     question,
     subjectName = '',
@@ -1693,13 +1867,33 @@
     const number = String(question.number || '')
       .replace(/\.$/, '');
 
+    let helpHtml = '';
+    if (new URLSearchParams(window.location.search).get('mode') === 'answerkey') {
+      const id = String(++__scKeyHelpCounter);
+      const prompt = __scKeyHelpPrompt(question,number,subjectName);
+      __scKeyHelpPrompts.set(id,prompt);
+      const prefilled = 'https://chatgpt.com/?q=' + encodeURIComponent(prompt);
+      const link = prefilled.length <= 5500
+        ? prefilled
+        : 'https://chatgpt.com/';
+      helpHtml =
+        '<div class="sc-key-help-wrap">' +
+          '<a class="sc-key-help-btn" target="_blank" rel="noopener noreferrer" ' +
+          'data-sc-key-help-id="' + esc(id) + '" href="' + esc(link) + '" ' +
+          'aria-label="Get more help for question ' + esc(number) + ' in ChatGPT">' +
+          '🤖 Need More Help? Ask ChatGPT' +
+          '</a>' +
+          '<span class="sc-key-help-hint" aria-live="polite"></span>' +
+        '</div>';
+    }
+
     return (
       '<div class="sc-key-question">' +
         '<span class="sc-key-number">' +
           esc(number) + '.' +
         '</span>' +
         '<div class="sc-key-text">' +
-          (__scKeyFormat(html, reading) || '—') +
+          (__scKeyFormat(html, reading) || '—') + helpHtml +
         '</div>' +
       '</div>'
     );
@@ -5074,6 +5268,11 @@ async function renderAnswerKeyPageFromUrl() {
 
     const data = snap.data() || {};
     const subjects = data.subjects || [];
+    window.__scKeyHelpContext = {
+      className: data.className || '',
+      board: data.board || '',
+      examName: data.examName || ''
+    };
     const topSubject = subjects.length === 1
       ? (subjects[0]?.subject || '')
       : (subjects.length > 1 ? 'MULTI SUBJECT' : '');
